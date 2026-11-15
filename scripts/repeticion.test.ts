@@ -94,6 +94,71 @@ test('una ruta fuera del repo no sale y una del repo queda relativa', () => {
   assert.equal(extraer(r, 'REQ-009').eventos.find((e) => e.tipo === 'escribe')?.ruta, 'artifacts/REQ-009/01-extraccion.json');
 });
 
+test('una ruta que sale del repo con .. no sale', () => {
+  const r = registro();
+  r.subagentes[0].lineas.push(
+    uso('10:01:10', 'Read', { file_path: `${RAIZ}\\..\\..\\alguien\\.ssh\\id_rsa` }, 'e5', 'claude-haiku-5-5'),
+    uso('10:01:20', 'Grep', { pattern: 'x', path: `${RAIZ}/../otro` }, 'e6', 'claude-haiku-5-5'),
+  );
+  const ev = extraer(r, 'REQ-009').eventos.filter((e) => e.t >= 59);
+  assert.deepEqual(ev.filter((e) => e.tipo === 'lee' || e.tipo === 'busca').map((e) => e.ruta), [undefined, undefined]);
+});
+
+test('sin cwd en la sesión no sale ninguna ruta', () => {
+  const r = registro();
+  for (const l of r.principal as { cwd?: string }[]) delete l.cwd;
+  assert.ok(extraer(r, 'REQ-009').eventos.every((e) => !e.ruta || e.ruta.startsWith('/')));
+  assert.equal(extraer(r, 'REQ-009').eventos.find((e) => e.tipo === 'lee')?.ruta, undefined);
+});
+
+test('la ruta de una llamada a la API solo sale si es una URL limpia', () => {
+  const r = registro();
+  r.subagentes[0].lineas.push(
+    uso('10:01:10', 'Bash', { command: 'curl https://api.practicesoftwaretesting.com/users/login>$HOME/tok.json' }, 'e5', 'claude-haiku-5-5'),
+    uso('10:01:20', 'Bash', { command: 'curl "https://api.practicesoftwaretesting.com/products?page=2"' }, 'e6', 'claude-haiku-5-5'),
+    uso('10:01:30', 'Bash', { command: 'curl https://api.practicesoftwaretesting.com/$c' }, 'e7', 'claude-haiku-5-5'),
+  );
+  const api = extraer(r, 'REQ-009').eventos.filter((e) => e.tipo === 'api');
+  assert.deepEqual(api.map((e) => e.ruta), [undefined, '/products', undefined]);
+});
+
+test('un regreso marcado como meta sigue contando como fin', () => {
+  const r = registro();
+  (r.principal[3] as { isMeta?: boolean }).isMeta = true;
+  assert.deepEqual(tipos(extraer(r, 'REQ-009'), 'extractor').at(-1), 'fin');
+});
+
+test('una línea meta o de comando local no es un mensaje de la persona', () => {
+  const r = conAutomator(registro(), true);
+  r.principal.push(
+    { ...dice('10:05:45', 'cualquier cosa'), isMeta: true },
+    dice('10:05:50', '<bash-input>ls</bash-input>'),
+    uso('10:06:00', 'SendMessage', { to: 'bbb222' }, 'o2'),
+  );
+  const res = extraer(r, 'REQ-009');
+  assert.deepEqual(tipos(res, 'persona'), []);
+  assert.equal(res.eventos.filter((e) => e.tipo === 'puerta').at(-1)?.resultado, 'no-pasa');
+});
+
+test('la puerta que pasa por un pedido lo dice, y descartar el pedido la deja en no pasa', () => {
+  const r = conAutomator(registro(), true);
+  r.principal.push(dice('10:05:50', 'voy por un café'), uso('10:06:00', 'SendMessage', { to: 'bbb222' }, 'o2'));
+  const res = extraer(r, 'REQ-009');
+  const puerta = res.eventos.filter((e) => e.tipo === 'puerta').at(-1)!;
+  const pide = res.eventos.find((e) => e.tipo === 'pide')!;
+  assert.equal(puerta.resultado, 'pasa');
+  assert.equal(puerta.porPide, pide.t);
+  const limpio = aplicarNotas(res, [{ hora: '10:05:50', tipo: 'pide', descartar: true }]);
+  assert.equal(limpio.eventos.some((e) => e.tipo === 'pide'), false);
+  assert.equal(limpio.eventos.filter((e) => e.tipo === 'puerta').at(-1)?.resultado, 'no-pasa');
+});
+
+test('un pide sin nota hace fallar las notas', () => {
+  const r = conAutomator(registro(), false);
+  r.principal.push(dice('10:05:50', 'agrega un caso'), uso('10:06:00', 'SendMessage', { to: 'bbb222' }, 'o2'));
+  assert.throws(() => aplicarNotas(extraer(r, 'REQ-009'), []), /pide/);
+});
+
 test('la puerta no pasa si el orquestador devuelve el trabajo al mismo agente', () => {
   const r = conAutomator(registro(), true);
   r.principal.push(uso('10:06:00', 'SendMessage', { to: 'bbb222', summary: 'corrige' }, 'o2'));
@@ -185,8 +250,16 @@ test('una nota sin evento cerca o de otro tipo hace fallar', () => {
 for (const malo of ['C:\\Users\\alguien', 'C:/Users/alguien', '/c/Users/alguien', 'AppData', 'a@b.co', 'toolu_01abc', 'agent-a2021cb566021842d', 'a2021cb566021842d'])
   test(`revisarPrivacidad rechaza ${malo}`, () => assert.throws(() => revisarPrivacidad(JSON.stringify({ x: malo }))));
 
+for (const clave of ['sk-ant-api03-abcdefghij', 'ghp_abcdefghijklmnop', 'Bearer abc.def', 'eyJhbGciOiJIUzI1NiJ9.eyJ', 'password=hunter2', 'token: abc'])
+  test(`revisarPrivacidad rechaza una clave como ${clave.slice(0, 8)}`, () => assert.throws(() => revisarPrivacidad(JSON.stringify({ x: clave }), 'nadie')));
+
+test('revisarPrivacidad rechaza el usuario del equipo, pero no una palabra que lo contiene', () => {
+  assert.throws(() => revisarPrivacidad(JSON.stringify({ ruta: '../../alguien/.ssh' }), 'alguien'), /usuario/);
+  revisarPrivacidad(JSON.stringify({ x: 'Alguienes' }), 'alguien');
+});
+
 test('revisarPrivacidad deja pasar rutas del repo, modelos y fechas', () => {
-  revisarPrivacidad(JSON.stringify({ ruta: 'artifacts/REQ-004/02-plan.md', modelo: 'Claude Opus 5.5', inicio: '2026-11-15T15:16:13.636Z' }));
+  revisarPrivacidad(JSON.stringify({ ruta: 'artifacts/REQ-004/02-plan.md', modelo: 'Claude Opus 5.5', inicio: '2026-11-15T15:16:13.636Z' }), 'nadie');
 });
 
 test('nombreModelo', () => {

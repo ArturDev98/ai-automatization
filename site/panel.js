@@ -203,9 +203,11 @@
       const suyos = hechos.filter((x) => x.actor === e.actor);
       const cuenta = (tipos) => suyos.filter((x) => tipos.includes(x.tipo)).length;
       const pruebas = [...hechos].reverse().find((x) => x.tipo === 'pruebas');
+      const COMANDOS = ['snapshot', 'api', 'comando', 'pruebas', 'calidad', 'trazabilidad'];
       const cifras = [
         ['lecturas', cuenta(['lee', 'busca'])],
-        ['comandos', cuenta(['snapshot', 'api', 'comando', 'pruebas', 'calidad', 'trazabilidad'])],
+        // Un comando que hace varias cosas deja varios eventos a la misma hora: cuenta uno.
+        ['comandos', new Set(suyos.filter((x) => COMANDOS.includes(x.tipo)).map((x) => x.t)).size],
         ['archivos', cuenta(['escribe', 'edita'])],
       ];
       $('.accion-cifras').innerHTML =
@@ -217,25 +219,27 @@
         .map((x) => `<li><time>${hora(x)}</time><span><b>${esc(t(clave(x.actor)))}</b> ${esc(verbo(x))}${x.ruta ? ` <code>${esc(x.ruta)}</code>` : ''}</span></li>`)
         .join('');
 
-      // El letrero muestra la última revisión; atenuada cuando ya quedó atrás.
+      // El letrero muestra la última revisión; al quedar atrás solo se atenúa, sin reescribirse
+      // (reescribirlo haría que el lector de pantalla lo anunciara otra vez).
       const c = [...hechos].reverse().find((x) => CONTROL.includes(x.tipo));
       const letrero = $('.accion-letrero');
-      const id = c ? `${ev.indexOf(c)}${idioma}${v - c.v < 0.04 ? '' : 'p'}` : idioma;
+      const id = c ? `${ev.indexOf(c)}${idioma}` : idioma;
       if (letrero.dataset.id !== id) {
         letrero.dataset.id = id;
         if (!c) {
-          letrero.innerHTML = `<p class="aviso-ctl pasado"><svg aria-hidden="true"><use href="#i-pendiente"/></svg><span>${esc(t('a.sinControl'))}</span></p>`;
+          letrero.innerHTML = `<p class="aviso-ctl"><svg aria-hidden="true"><use href="#i-pendiente"/></svg><span>${esc(t('a.sinControl'))}</span></p>`;
         } else {
-          let texto = c.nota ? c.nota[idioma] : verbo(c);
+          // La puerta dice siempre si pasa o no, también cuando trae nota.
+          let texto = c.tipo === 'puerta' ? verbo(c) + (c.nota ? `: ${c.nota[idioma]}` : '') : c.nota ? c.nota[idioma] : verbo(c);
           if (c.tipo === 'pausa') {
             const d = ev.find((x) => x.tipo === 'decision' && x.t >= c.t);
             if (d) texto += `. ${t('a.esperando')}: ${Math.round((d.t - c.t) / 60)} min`;
           }
           const icono = c.tipo === 'puerta' ? (c.resultado === 'pasa' ? 'ok' : 'falla') : ICONO[c.tipo];
-          const pasado = id.endsWith('p') ? ' pasado' : '';
-          letrero.innerHTML = `<p class="aviso-ctl ${c.tipo} ${c.resultado || ''}${pasado}"><svg aria-hidden="true"><use href="#i-${icono}"/></svg><span><time>${hora(c)}</time> <b>${esc(t(clave(c.actor)))}</b> ${esc(texto)}</span></p>`;
+          letrero.innerHTML = `<p class="aviso-ctl ${c.tipo} ${c.resultado || ''}"><svg aria-hidden="true"><use href="#i-${icono}"/></svg><span><time>${hora(c)}</time> <b>${esc(t(clave(c.actor)))}</b> ${esc(texto)}</span></p>`;
         }
       }
+      letrero.firstElementChild.classList.toggle('pasado', !c || v - c.v >= 0.04);
 
       barra.value = String(Math.round(v * 1000));
       barra.setAttribute('aria-valuetext', `${hora(e)} UTC`);

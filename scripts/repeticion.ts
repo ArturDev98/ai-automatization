@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { userInfo } from 'node:os';
+import { join, posix } from 'node:path';
 
-export type Actor ='orquestador' | 'persona' | 'extractor' | 'planner' | 'automator' | 'reporter';
+export type Actor = 'orquestador' | 'persona' | 'extractor' | 'planner' | 'automator' | 'reporter';
 export type Tipo =
   | 'inicio' | 'fin' | 'lee' | 'busca' | 'escribe' | 'edita' | 'snapshot' | 'api' | 'comando'
   | 'pruebas' | 'calidad' | 'trazabilidad' | 'puerta' | 'pausa' | 'decision' | 'pide' | 'devuelve'
@@ -21,6 +22,7 @@ export interface Evento {
   a?: Actor;
   resultado?: 'pasa' | 'no-pasa';
   nota?: { es: string; en: string };
+  porPide?: number;
 }
 
 export interface Repeticion {
@@ -38,14 +40,16 @@ export interface Registro {
 }
 
 interface Bloque { type: string; id?: string; name?: string; input?: Record<string, unknown>; tool_use_id?: string; content?: unknown; text?: string }
-interface Linea { type?: string; timestamp?: string; cwd?: string; message?: { model?: string; content?: string | Bloque[] } }
+interface Linea { type?: string; isMeta?: boolean; timestamp?: string; cwd?: string; message?: { model?: string; content?: string | Bloque[] } }
 // Evento con su hora absoluta, antes de pasarla a segundos desde el inicio.
-type Crudo = Omit<Evento, 't'> & { ms: number };
+type Crudo = Omit<Evento, 't' | 'porPide'> & { ms: number; porPideMs?: number };
 
 const AGENTES: Actor[] = ['extractor', 'planner', 'automator', 'reporter'];
-const HOST = /https?:\/\/(?:[\w-]+\.)*practicesoftwaretesting\.com(\/[^\s"'|;&)?#]*)?/;
+// Lista blanca de la ruta: si tras ella sigue algo que no cierra la URL, la ruta no sale.
+const HOST = /https?:\/\/(?:[\w-]+\.)*practicesoftwaretesting\.com(\/[A-Za-z0-9._~/-]*)?(.?)/;
+const rutaDe = (url: RegExpMatchArray | null) => (url && (!url[2] || /[\s"'?#]/.test(url[2])) ? url[1] ?? '/' : undefined);
 // Mensajes del sistema que llegan como texto del usuario y no los escribió la persona.
-const NO_PERSONA = /^\s*(Base directory|<task-notification|Another Claude session|<system-reminder|<local-command|<command-|\[Request interrupted)/;
+const NO_PERSONA = /^\s*(Base directory|<task-notification|Another Claude session|<system-reminder|<local-command|<command-|<bash-|Caveat:|This session is being continued|\[Request interrupted)/;
 
 export function nombreModelo(id: string): string {
   const m = id.match(/^claude-([a-z]+)-(\d+)-(\d+)/);
@@ -68,12 +72,13 @@ function normal(p: string): string {
   return p.replace(/\\/g, '/').replace(/^\/([a-z])\//i, '$1:/').toLowerCase();
 }
 
+// Se resuelven los .. antes de comparar: una ruta que sale del repo no se publica.
 function relativa(ruta: unknown, raiz: string): string | undefined {
-  if (typeof ruta !== 'string' || !ruta) return undefined;
-  const base = normal(raiz).replace(/\/$/, '') + '/';
-  const n = normal(ruta);
-  if (!n.startsWith(base)) return undefined;
-  return ruta.replace(/\\/g, '/').slice(ruta.replace(/\\/g, '/').length - (n.length - base.length));
+  if (typeof ruta !== 'string' || !ruta || !raiz) return undefined;
+  const base = posix.normalize(normal(raiz)).replace(/\/$/, '') + '/';
+  const limpia = posix.normalize(ruta.replace(/\\/g, '/').replace(/^\/([a-z])\//i, '$1:/'));
+  if (!limpia.toLowerCase().startsWith(base) || limpia.split('/').includes('..')) return undefined;
+  return limpia.slice(base.length) || undefined;
 }
 
 function cifras(salida: string) {
@@ -92,8 +97,9 @@ function deComando(cmd: string, salida: string): Omit<Crudo, 'ms' | 'actor'>[] {
   if (/eslint|npm run (-s )?lint|\btsc\b|typecheck/.test(cmd)) ev.push({ tipo: 'calidad' });
   if (ev.length) return ev;
   const url = cmd.match(HOST);
-  if (/snapshot/.test(cmd)) return [{ tipo: 'snapshot', ...(url ? { ruta: url[1] ?? '/' } : {}) }];
-  if (/\bcurl\b/.test(cmd) && url) return [{ tipo: 'api', ruta: url[1] ?? '/' }];
+  const ruta = rutaDe(url);
+  if (/snapshot/.test(cmd)) return [{ tipo: 'snapshot', ...(ruta ? { ruta } : {}) }];
+  if (/\bcurl\b/.test(cmd) && url) return [{ tipo: 'api', ...(ruta ? { ruta } : {}) }];
   return [{ tipo: 'comando' }];
 }
 
@@ -146,7 +152,7 @@ export function extraer(reg: Registro, req: string): Repeticion {
       if (de && actorDeId.has(de)) {
         fines.push({ ms: t, actor: actorDeId.get(de)! });
         crudos.push({ ms: t, actor: actorDeId.get(de)!, tipo: 'fin' });
-      } else if (!NO_PERSONA.test(txt)) personas.push(t);
+      } else if (!l.isMeta && !NO_PERSONA.test(txt)) personas.push(t);
       continue;
     }
     for (const b of bloques(l)) {
@@ -192,9 +198,16 @@ export function extraer(reg: Registro, req: string): Repeticion {
     const ancla = anclas.filter((t) => t > f.ms).sort((a, b) => a - b)[0];
     if (ancla === undefined) continue;
     const sig = dirigidas.filter((d) => d.ms > f.ms).sort((a, b) => a.ms - b.ms)[0];
-    const pidio = sig ? personas.some((p) => p > f.ms && p < sig.ms) : false;
-    const noPasa = !!sig && sig.tipo === 'SendMessage' && sig.a === f.actor && !pidio;
-    crudos.push({ ms: ancla, actor: 'orquestador', tipo: 'puerta', resultado: noPasa ? 'no-pasa' : 'pasa' });
+    const pidio = sig ? personas.filter((p) => p > f.ms && p < sig.ms).at(-1) : undefined;
+    const devuelto = !!sig && sig.tipo === 'SendMessage' && sig.a === f.actor;
+    // Si pasa solo porque la persona pidió algo, lo dice: aplicarNotas exige que alguien lo revise.
+    crudos.push({
+      ms: ancla,
+      actor: 'orquestador',
+      tipo: 'puerta',
+      resultado: devuelto && pidio === undefined ? 'no-pasa' : 'pasa',
+      ...(devuelto && pidio !== undefined ? { porPideMs: pidio } : {}),
+    });
   }
 
   // Pedido de la persona: su último mensaje antes de una devolución, sin un regreso en medio.
@@ -217,7 +230,12 @@ export function extraer(reg: Registro, req: string): Repeticion {
     .sort((x, y) => x.c.ms - y.c.ms || Number(y.c.tipo === 'puerta') - Number(x.c.tipo === 'puerta') || x.i - y.i)
     .map(({ c }) => c);
   const cero = orden[0]?.ms ?? desde;
-  const eventos: Evento[] = orden.map(({ ms: m, ...resto }) => ({ t: Math.round((m - cero) / 100) / 10, ...resto }));
+  const seg = (m: number) => Math.round((m - cero) / 100) / 10;
+  const eventos: Evento[] = orden.map(({ ms: m, porPideMs, ...resto }) => ({
+    t: seg(m),
+    ...resto,
+    ...(porPideMs !== undefined ? { porPide: seg(porPideMs) } : {}),
+  }));
 
   const vistos = [...new Set(orden.map((c) => c.actor))];
   const actores = (['orquestador', ...AGENTES, 'persona'] as Actor[])
@@ -228,19 +246,30 @@ export function extraer(reg: Registro, req: string): Repeticion {
   return { req, fecha: inicio.slice(0, 10), inicio, fin: new Date(hasta).toISOString(), actores, eventos };
 }
 
-export interface Nota { hora: string; tipo: Tipo; es: string; en: string }
+// `descartar` quita un pide que no era un pedido; la puerta que pasaba por él queda en no pasa.
+export interface Nota { hora: string; tipo: Tipo; es?: string; en?: string; descartar?: boolean }
 
 export function aplicarNotas(r: Repeticion, notas: Nota[]): Repeticion {
   const cero = Date.parse(r.inicio);
-  const eventos = r.eventos.map((e) => ({ ...e }));
+  let eventos = r.eventos.map((e) => ({ ...e }));
+  const hhmmss = (e: Evento) => new Date(cero + e.t * 1000).toISOString().slice(11, 19);
   for (const n of notas) {
     const objetivo = Date.parse(`${r.fecha}T${n.hora}.000Z`);
     const cerca = eventos
       .filter((e) => e.tipo === n.tipo && Math.abs(cero + e.t * 1000 - objetivo) <= 60_000)
       .sort((a, b) => Math.abs(cero + a.t * 1000 - objetivo) - Math.abs(cero + b.t * 1000 - objetivo))[0];
     if (!cerca) throw new Error(`La nota de las ${n.hora} (${n.tipo}) no cae sobre ningún evento`);
-    cerca.nota = { es: n.es, en: n.en };
+    if (n.descartar && n.tipo === 'pide') {
+      eventos = eventos.filter((e) => e !== cerca);
+      for (const p of eventos.filter((e) => e.porPide === cerca.t)) {
+        p.resultado = 'no-pasa';
+        delete p.porPide;
+      }
+    } else if (n.es && n.en) cerca.nota = { es: n.es, en: n.en };
+    else throw new Error(`La nota de las ${n.hora} (${n.tipo}) no trae texto en es y en`);
   }
+  const sinRevisar = eventos.find((e) => e.tipo === 'pide' && !e.nota);
+  if (sinRevisar) throw new Error(`El pide de las ${hhmmss(sinRevisar)} no tiene nota: escríbela o márcalo con descartar`);
   return { ...r, eventos };
 }
 
@@ -252,10 +281,16 @@ const PRIVADO: [string, RegExp][] = [
   ['correo', /[\w.+-]+@[\w-]+\.[a-z]{2,}/i],
   ['id de herramienta', /toolu_/],
   ['id de agente', /\ba[0-9a-f]{16}\b/],
+  ['clave de API', /\b(sk-[\w-]{8,}|gh[pousr]_\w{8,}|eyJ[\w-]{10,}\.)/],
+  ['cabecera Bearer', /Bearer\s+\S/],
+  ['clave en texto', /(password|passwd|secret|token)\s*[:=]/i],
 ];
 
-export function revisarPrivacidad(json: string): void {
-  for (const [nombre, patron] of PRIVADO) {
+const escRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+export function revisarPrivacidad(json: string, usuario = userInfo().username): void {
+  const patrones: [string, RegExp][] = usuario.length >= 3 ? [...PRIVADO, ['usuario del equipo', new RegExp(`\\b${escRegex(usuario)}\\b`, 'i')]] : PRIVADO;
+  for (const [nombre, patron] of patrones) {
     const m = json.match(patron);
     if (m) throw new Error(`La repetición contiene un dato privado (${nombre}): ${m[0]}`);
   }

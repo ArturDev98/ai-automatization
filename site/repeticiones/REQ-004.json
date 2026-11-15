@@ -480,8 +480,7 @@
     {
       "t": 1557.1,
       "actor": "automator",
-      "tipo": "api",
-      "ruta": "/$c"
+      "tipo": "api"
     },
     {
       "t": 1578.6,

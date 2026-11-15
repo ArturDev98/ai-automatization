@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { comprimir } from '../../scripts/panel-repeticion';
+import { comprimir, duracionSegundos } from '../../scripts/panel-repeticion';
 import { CONTROL, type Repeticion } from '../../scripts/repeticion';
 
 // Se prueba el archivo generado tal cual se publica; antes hay que correr `npm run panel`.
@@ -212,6 +212,36 @@ test.describe('Panel generado', () => {
       await expect(page.locator('.accion-reloj time')).toHaveText(reloj!);
       await expect(page.locator('.accion-bitacora li').first()).toContainText(textos.en[`a.${ultimo.tipo}`]);
       await expect(barra(page)).toHaveValue('500');
+    });
+
+    test('Comandos cuenta cada comando una vez aunque haga varias cosas', async ({ page }) => {
+      await page.goto(PANEL);
+      await barra(page).fill('1000');
+      const actor = rep.eventos.at(-1)!.actor;
+      const TIPOS = ['snapshot', 'api', 'comando', 'pruebas', 'calidad', 'trazabilidad'];
+      const distintos = new Set(rep.eventos.filter((e) => e.actor === actor && TIPOS.includes(e.tipo)).map((e) => e.t)).size;
+      await expect(page.locator('[data-cifra="comandos"]')).toHaveText(String(distintos));
+    });
+
+    test('el letrero no se reescribe cuando la revisión queda atrás', async ({ page }) => {
+      const control = eventos.filter((e) => CONTROL.includes(e.tipo));
+      const c = control.find((x, i) => (control[i + 1]?.v ?? 1) - x.v > 0.06)!;
+      await page.goto(PANEL);
+      await barra(page).fill(String(Math.ceil(c.v * 1000)));
+      await page.locator('.aviso-ctl').evaluate((el) => el.setAttribute('data-marca', 'mismo'));
+      await barra(page).fill(String(Math.ceil((c.v + 0.05) * 1000)));
+      await expect(page.locator('.aviso-ctl')).toHaveClass(/pasado/);
+      await expect(page.locator('.aviso-ctl')).toHaveAttribute('data-marca', 'mismo');
+    });
+
+    test('la puerta que no pasa lo dice en texto en la lista', async ({ page }) => {
+      await page.goto(PANEL);
+      await expect(page.locator('.accion-control li.puerta.no-pasa').first()).toContainText('no pasa');
+    });
+
+    test('la ficha dice cuánto dura de verdad la repetición', async ({ page }) => {
+      await page.goto(PANEL);
+      await expect(page.locator('.accion-ficha')).toContainText(`${duracionSegundos(eventos)} s`);
     });
 
     test.describe('con movimiento reducido', () => {

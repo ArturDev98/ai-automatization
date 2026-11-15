@@ -14,6 +14,11 @@ export function comprimir(eventos: Evento[], tope = 180): EventoPanel[] {
   return eventos.map((e, i) => ({ ...e, v: Math.round((pasos[i] / total) * 10000) / 10000 }));
 }
 
+// Los mismos valores que usa site/panel.js para reproducir: 60 s de avance y 2,5 s por parada.
+export function duracionSegundos(eventos: EventoPanel[]): number {
+  return Math.round(60 + new Set(eventos.filter((e) => CONTROL.includes(e.tipo)).map((e) => e.v)).size * 2.5);
+}
+
 const AGENTES: Actor[] = ['extractor', 'planner', 'automator', 'reporter'];
 export const claveActor = (a: Actor) => (AGENTES.includes(a) ? `e.${a}` : `a.${a}`);
 const LECTURAS = ['lee', 'busca'];
@@ -33,9 +38,11 @@ const ICONO: Partial<Record<string, string>> = {
 function controlHtml(e: Evento, i: number, inicio: number): string {
   const iso = new Date(inicio + e.t * 1000).toISOString();
   const icono = ICONO[e.tipo === 'puerta' ? `puerta-${e.resultado}` : e.tipo] ?? 'ok';
-  const texto = e.nota
-    ? `<span class="ctl-t" data-nota="${i}">${esc(e.nota.es)}</span>`
-    : `<span class="ctl-t"><span data-i18n="a.${e.tipo}"></span>${e.a ? ` <span data-i18n="${claveActor(e.a)}"></span>` : ''}</span>`;
+  // El resultado de la puerta va siempre en texto: el ícono y el color no le llegan a todos.
+  const resultado = e.tipo === 'puerta' ? ` <span data-i18n="${e.resultado === 'pasa' ? 'a.pasa' : 'a.noPasa'}"></span>` : '';
+  const base = `<span data-i18n="a.${e.tipo}"></span>${e.a ? ` <span data-i18n="${claveActor(e.a)}"></span>` : ''}${resultado}`;
+  const nota = e.nota ? `<span data-nota="${i}">${esc(e.nota.es)}</span>` : '';
+  const texto = `<span class="ctl-t">${nota && e.tipo !== 'puerta' ? nota : base + (nota ? `: ${nota}` : '')}</span>`;
   return `<li class="ctl ${e.tipo}${e.resultado ? ' ' + e.resultado : ''}"><time datetime="${iso}">${iso.slice(11, 16)}</time><svg aria-hidden="true"><use href="#i-${icono}"/></svg><span class="ctl-cuerpo"><b data-i18n="${claveActor(e.actor)}"></b>${texto}</span></li>`;
 }
 
@@ -47,7 +54,9 @@ function resumenHtml(r: Repeticion, inicio: number): string {
       const suyos = r.eventos.filter((e) => e.actor === a.clave);
       if (!suyos.length) return '';
       const cuenta = (tipos: string[]) => suyos.filter((e) => tipos.includes(e.tipo)).length;
-      return `<tr><th scope="row" data-i18n="${claveActor(a.clave)}"></th><td>${esc(a.modelo ?? '')}</td><td><time>${hhmm(suyos[0].t)}</time>–<time>${hhmm(suyos.at(-1)!.t)}</time></td><td>${cuenta(LECTURAS)}</td><td>${cuenta(COMANDOS)}</td><td>${cuenta(ARCHIVOS)}</td></tr>`;
+      // Un comando que corre pruebas, trazabilidad y lint deja tres eventos a la misma hora.
+      const comandos = new Set(suyos.filter((e) => COMANDOS.includes(e.tipo)).map((e) => e.t)).size;
+      return `<tr><th scope="row" data-i18n="${claveActor(a.clave)}"></th><td>${esc(a.modelo ?? '')}</td><td><time>${hhmm(suyos[0].t)}</time>–<time>${hhmm(suyos.at(-1)!.t)}</time></td><td>${cuenta(LECTURAS)}</td><td>${comandos}</td><td>${cuenta(ARCHIVOS)}</td></tr>`;
     })
     .join('');
   return `<div class="tabla-scroll"><table class="accion-resumen"><thead><tr><th scope="col" data-i18n="a.quien"></th><th scope="col" data-i18n="a.modelo"></th><th scope="col" data-i18n="a.tramo"></th><th scope="col" data-i18n="a.lecturas"></th><th scope="col" data-i18n="a.comandos"></th><th scope="col" data-i18n="a.archivos"></th></tr></thead><tbody>${filas}</tbody></table></div>`;
@@ -75,7 +84,7 @@ export function repeticionHtml(r: Repeticion | null): string {
   return `<section id="accion" aria-labelledby="t-accion">
     <h2 id="t-accion" data-i18n="t.accion"></h2>
     <p class="bajada" data-i18n="t.accionBajada"></p>
-    <p class="accion-ficha"><code>${esc(r.req)}</code> <time datetime="${esc(r.inicio)}">${esc(r.fecha)}</time> <b>${minutos} min</b> <span data-i18n="a.escala"></span></p>
+    <p class="accion-ficha"><code>${esc(r.req)}</code> <time datetime="${esc(r.inicio)}">${esc(r.fecha)}</time> <b>${minutos} min</b> <span data-i18n="a.escala"></span> <b>${duracionSegundos(comprimir(r.eventos))} s</b></p>
     <div class="accion" hidden>
       <div class="accion-cabeza">
         <p class="accion-reloj"><time></time><span>UTC</span></p>
