@@ -105,6 +105,8 @@ export function leerEjecuciones(reporte: { suites?: PwSuite[] }): Ejecucion[] {
   return salida;
 }
 
+const GRAVEDAD: Estado[] = ['falla', 'inestable', 'bug-conocido', 'pasa', 'omitido'];
+
 export function construir(
   planes: { req: string; criterios: Criterio[]; casos: Caso[] }[],
   ejecuciones: Ejecucion[],
@@ -114,7 +116,12 @@ export function construir(
   for (const { req, criterios, casos } of planes) {
     const conEstado: CasoEnMatriz[] = casos.map((caso) => {
       const estados: Record<string, Estado> = {};
-      for (const e of ejecuciones) if (e.req === req && e.tc === caso.id) estados[e.proyecto] = e.estado;
+      for (const e of ejecuciones) {
+        if (e.req !== req || e.tc !== caso.id) continue;
+        // Un caso con varias pruebas vale lo que su peor resultado.
+        const previo = estados[e.proyecto];
+        if (!previo || GRAVEDAD.indexOf(e.estado) < GRAVEDAD.indexOf(previo)) estados[e.proyecto] = e.estado;
+      }
       if (caso.tipo === 'automatizado' && Object.keys(estados).length === 0) {
         problemas.push(`${req} ${caso.id}: planeado como automatizado pero no tiene prueba ejecutada`);
       }

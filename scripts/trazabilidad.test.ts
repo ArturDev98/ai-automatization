@@ -70,3 +70,20 @@ test('construir denuncia criterios sin caso, casos sin prueba y pruebas fuera de
   assert.ok(t.problemas.some((p) => p.includes('TC-002')));
   assert.ok(t.problemas.some((p) => p.includes('TC-099')));
 });
+
+test('un caso con varias pruebas se queda con su peor resultado', () => {
+  const criterios = ['CA-1', 'CA-2', 'CA-3'].map((id) => ({ id, texto: id }));
+  const ejecuciones = leerEjecuciones({
+    suites: [
+      {
+        specs: [
+          spec('a1', ['REQ-001', 'TC-001'], 'expected', 'failed'),
+          spec('a2', ['REQ-001', 'TC-001'], 'expected'),
+          spec('b', ['REQ-001', 'TC-002'], 'expected'),
+        ],
+      },
+    ],
+  });
+  const t = construir([{ req: 'REQ-001', criterios, casos: leerCasos(PLAN) }], ejecuciones);
+  assert.equal(t.filas[0].casos[0].estados.ui, 'bug-conocido');
+});
