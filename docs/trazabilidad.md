@@ -27,3 +27,9 @@ _Generada por `npm run trazabilidad` a partir del plan y de los resultados de Pl
 | REQ-003 | **CA-5** POST /users/login entrega un token con credenciales válidas y responde 401 con credenciales inválidas. GET /users/me exige ese token: sin él responde 401. | TC-009 ✅ api<br>TC-010 ✅ api<br>TC-011 ✅ api |
 | REQ-003 | **CA-6** El carrito se puede crear, recibir un producto, consultarse, cambiar la cantidad y eliminarse, y cada paso deja el carrito en el estado esperado. | TC-012 ✅ api |
 | REQ-003 | **CA-7** Una petición con datos inválidos responde con un error de cliente (4xx) y un cuerpo que explica el problema; nunca con un 5xx. | TC-013 ✅ api<br>TC-014 ✅ api |
+| REQ-004 | **CA-1** Un visitante sin sesión puede enviar el formulario con nombre, apellido, correo, un asunto elegido de la lista y un mensaje. Al enviarlo ve una confirmación y el formulario ya no se muestra. | TC-001 ✅ ui-bugs ✅ ui<br>TC-013 ✋ |
+| REQ-004 | **CA-2** Si envía el formulario vacío, cada campo obligatorio dice que falta y no se envía nada. | TC-002 ✅ ui-bugs ✅ ui<br>TC-003 ✅ ui-bugs ✅ ui<br>TC-011 🐞 ui-bugs 🐞 ui<br>TC-013 ✋<br>TC-014 🐞 ui-bugs 🐞 ui |
+| REQ-004 | **CA-3** Un correo con formato inválido se rechaza con un mensaje en ese campo. | TC-004 🐞 ui-bugs ✅ ui<br>TC-011 🐞 ui-bugs 🐞 ui<br>TC-012 🐞 api |
+| REQ-004 | **CA-4** El mensaje tiene un largo mínimo. Uno más corto se rechaza diciendo cuál es el mínimo, y uno que lo cumple justo se acepta. | TC-005 ✅ ui-bugs ✅ ui<br>TC-011 🐞 ui-bugs 🐞 ui<br>TC-012 🐞 api |
+| REQ-004 | **CA-5** Se puede adjuntar un archivo. Si el archivo no es aceptado, el formulario dice por qué y no se envía. | TC-006 ✅ ui-bugs ✅ ui<br>TC-007 🐞 ui-bugs ✅ ui<br>TC-008 🐞 ui-bugs ✅ ui<br>TC-013 ✋ |
+| REQ-004 | **CA-6** Un cliente con sesión iniciada no tiene que volver a escribir su nombre ni su correo para enviar el formulario. | TC-009 ✅ ui-bugs ✅ ui<br>TC-010 🐞 ui-bugs ✅ ui |

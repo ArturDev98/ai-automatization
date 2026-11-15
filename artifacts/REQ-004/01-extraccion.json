@@ -1,0 +1,96 @@
+{
+  "requisito": "REQ-004",
+  "titulo": "Formulario de contacto",
+  "generadoPor": "extractor (Claude Haiku 5.5)",
+  "fecha": "2026-11-15",
+  "criterios": [
+    { "id": "CA-1", "texto": "Un visitante sin sesión puede enviar el formulario con nombre, apellido, correo, un asunto elegido de la lista y un mensaje. Al enviarlo ve una confirmación y el formulario ya no se muestra." },
+    { "id": "CA-2", "texto": "Si envía el formulario vacío, cada campo obligatorio dice que falta y no se envía nada." },
+    { "id": "CA-3", "texto": "Un correo con formato inválido se rechaza con un mensaje en ese campo." },
+    { "id": "CA-4", "texto": "El mensaje tiene un largo mínimo. Uno más corto se rechaza diciendo cuál es el mínimo, y uno que lo cumple justo se acepta." },
+    { "id": "CA-5", "texto": "Se puede adjuntar un archivo. Si el archivo no es aceptado, el formulario dice por qué y no se envía." },
+    { "id": "CA-6", "texto": "Un cliente con sesión iniciada no tiene que volver a escribir su nombre ni su correo para enviar el formulario." }
+  ],
+  "restricciones": [
+    "Cliente de prueba: cada corrida registra su propio cliente con POST /users/register de la API (correo único) y entra con él. Las cuentas de demostración son compartidas y no se usan.",
+    "Los mensajes de prueba llevan datos ficticios y correos de example.com.",
+    "La misma suite debe poder correr contra la versión con bugs sembrados (https://with-bugs.practicesoftwaretesting.com) sin cambios."
+  ],
+  "pantallas": [
+    {
+      "nombre": "Contacto",
+      "url": "https://practicesoftwaretesting.com/contact",
+      "selectores": [
+        { "dataTest": "first-name", "elemento": "input type=text (placeholder \"Your first name *\"), obligatorio (ng-invalid si vacío)", "uso": "Nombre (CA-1, CA-2; CA-6 si hay sesión, oculto)" },
+        { "dataTest": "last-name", "elemento": "input type=text (placeholder \"Your last name *\"), obligatorio (ng-invalid si vacío)", "uso": "Apellido (CA-1, CA-2; CA-6 si hay sesión, oculto)" },
+        { "dataTest": "email", "elemento": "input type=email (placeholder \"Your email *\"), obligatorio (ng-invalid si vacío)", "uso": "Correo (CA-2, CA-3; CA-6 si hay sesión, oculto)" },
+        { "dataTest": "subject", "elemento": "select, opción vacía \"Select a subject *\" deshabilitada, obligatorio", "uso": "Asunto de la lista (CA-1, CA-2)" },
+        { "dataTest": "message", "elemento": "textarea, obligatorio, validación en blur", "uso": "Mensaje (CA-1, CA-2, CA-4)" },
+        { "dataTest": "attachment", "elemento": "input type=file, accept=\".txt\"", "uso": "Adjunto (CA-5)" },
+        { "dataTest": "contact-submit", "elemento": "input type=submit (value \"Send\")", "uso": "Envía el formulario (CA-1, CA-2, CA-3, CA-4, CA-5)" }
+      ]
+    },
+    {
+      "nombre": "Contacto (versión con bugs sembrados)",
+      "url": "https://with-bugs.practicesoftwaretesting.com/#/contact",
+      "selectores": [
+        { "dataTest": "first-name", "elemento": "input type=text (placeholder \"Your first name *\"), obligatorio (ng-invalid si vacío)", "uso": "Nombre (CA-1, CA-2)" },
+        { "dataTest": "last-name", "elemento": "input type=text (placeholder \"Your last name *\"), obligatorio (ng-invalid si vacío)", "uso": "Apellido (CA-1, CA-2)" },
+        { "dataTest": "email", "elemento": "input type=email (placeholder \"Your email *\")", "uso": "Correo (CA-2, CA-3). Con bugs, un correo sin @ queda válido (ver ambiguedades)" },
+        { "dataTest": "subject", "elemento": "select, incluye \"Error 101: Subject not found\" y \"Error 202: Translation error\"", "uso": "Asunto de la lista (CA-1, CA-2)" },
+        { "dataTest": "message", "elemento": "textarea, placeholder \"Massage\", obligatorio", "uso": "Mensaje (CA-1, CA-2, CA-4)" },
+        { "dataTest": "attachment", "elemento": "input type=file, sin accept", "uso": "Adjunto (CA-5)" },
+        { "dataTest": "contact-submit", "elemento": "input type=submit (value \"Send\")", "uso": "Envía el formulario (CA-1 a CA-5)" }
+      ]
+    },
+    {
+      "nombre": "Acceso (variante con sesión)",
+      "url": "https://practicesoftwaretesting.com/auth/login",
+      "selectores": [
+        { "dataTest": "email", "elemento": "input type=email (placeholder \"Your email\")", "uso": "Solo para preparar la sesión de CA-6; no probado con cuenta de demostración" },
+        { "dataTest": "password", "elemento": "input type=password (placeholder \"Your password\")", "uso": "Solo para preparar la sesión de CA-6" },
+        { "dataTest": "login-submit", "elemento": "input type=submit (\"Login\")", "uso": "Solo para preparar la sesión de CA-6" }
+      ]
+    }
+  ],
+  "endpoints": [
+    {
+      "metodo": "GET",
+      "ruta": "/messages",
+      "estado": 401,
+      "respuesta": "{\"message\":\"Unauthorized\"} (application/json), sin sesión",
+      "uso": "Solo confirma que la ruta existe y exige autenticación. No es el endpoint de envío"
+    }
+  ],
+  "datosDePrueba": [
+    { "nombre": "Cliente de prueba", "valor": "Un cliente nuevo por corrida, creado con POST /users/register (correo único)", "origen": "REQ-004, Datos y restricciones. No llamado en esta extracción" },
+    { "nombre": "Cuentas de demostración", "valor": "No se usan ni se prueban", "origen": "REQ-004, Datos y restricciones" },
+    { "nombre": "Dominio de correos de prueba", "valor": "example.com", "origen": "REQ-004, Datos y restricciones" },
+    { "nombre": "Correo válido (prod)", "valor": "usuario@example.com", "origen": "Observado en /contact: no bloquea el campo (sin enviar)" },
+    { "nombre": "Correo inválido (prod y bugs)", "valor": "no-es-correo", "origen": "Observado en /contact: prod lo marca ng-invalid; bugs lo deja válido" },
+    { "nombre": "Mensaje de 49 caracteres", "valor": "49 caracteres (x repetida)", "origen": "Observado en /contact: ng-invalid tras blur, sin enviar (prod y bugs)" },
+    { "nombre": "Mensaje de 50 caracteres", "valor": "50 caracteres (x repetida)", "origen": "Observado en /contact: ng-valid tras blur, sin enviar (prod y bugs)" },
+    { "nombre": "Asuntos (prod)", "valor": "Customer service (customer-service), Webmaster (webmaster), Return (return), Payments (payments), Warranty (warranty), Status of my order (status-of-order)", "origen": "Opciones del select en el DOM de /contact (lectura en vivo, no en snapshot)" },
+    { "nombre": "Asuntos (bugs)", "valor": "Las 6 de prod más Error 101: Subject not found (not-found) y Error 202: Translation error (value vacío)", "origen": "Opciones del select en el DOM de la versión con bugs (lectura en vivo)" },
+    { "nombre": "Adjunto aceptado (prod)", "valor": "Archivo .txt de 0 bytes", "origen": "Observado en /contact: ng-valid tras change, sin enviar" },
+    { "nombre": "Adjuntos rechazados (prod)", "valor": ".txt con contenido; .pdf vacío; .pdf con contenido", "origen": "Observado en /contact: ng-invalid tras change, sin enviar" },
+    { "nombre": "Adjuntos aceptados (bugs)", "valor": ".txt con contenido, .txt vacío, .pdf vacío y .pdf con contenido", "origen": "Observado en la versión con bugs: ng-valid tras change, sin enviar" }
+  ],
+  "ambiguedades": [
+    "CA-1 (confirmación): el texto es \"Thanks for your message! We will contact you shortly.\" (archivo de idioma en, y el mismo texto en el bundle de bugs). Se muestra en un div role=alert con clase alert-success, sin data-test: no hay selector en snapshot. No se observó porque requiere enviar. El formulario se oculta al confirmar (verificado en el bundle).",
+    "CA-2: los textos de campo obligatorio (\"First name is required\", \"Last name is required\", \"Email is required\", \"Subject is required\", \"Message is required\") salen del archivo de idioma en. Solo se muestran tras pulsar Send; no se observaron en el DOM. Los campos nombre, apellido, correo, asunto y mensaje quedan inválidos al estar vacíos (observado). Los ids de error (first-name-error, etc.) aparecen en el bundle, no en snapshot.",
+    "CA-3 (prod): la validación de correo es el validador email de Angular. \"a@b\" se acepta. Texto \"Email format is invalid\" (archivo de idioma en), mostrado tras Send; no observado. El requisito no define qué es formato válido.",
+    "CA-3 (bugs): en la rama de visitante, el validador de correo se reemplaza por solo required (bundle). \"no-es-correo\" queda válido (observado). Esto contradice CA-3 en la versión con bugs.",
+    "CA-4 (umbral): el mínimo observado es 50 caracteres (49 inválido, 50 válido), en prod y bugs. El texto es \"Message must be minimal 50 characters\" (archivo de idioma en, mostrado tras Send). El validador cuenta la cadena sin recortar; no se probó si los espacios cuentan (se deduce del validador). El campo valida en blur (updateOn: blur): el error aparece después de salir del campo o de enviar.",
+    "CA-5 (prod): según el validador, solo se acepta un .txt de 0 bytes (observado: .txt con contenido inválido, .pdf vacío inválido, .pdf con contenido inválido, .txt vacío válido). Textos tras Send, no observados: \"File should have a txt extension.\" (tipo) y \"File should be empty.\" (tamaño). Por el orden de las comprobaciones, un .pdf con contenido recibe el mensaje de tamaño. La ayuda visible dice \"Only files with the txt extension are allowed, and files must be 0kb.\" El requisito no define los tipos ni el tamaño; la regla real deja casi sin uso el adjunto.",
+    "CA-5 (bugs): no hay control de tipo y el de tamaño rechaza solo archivos de alrededor de 0,5 MB o más (bundle). Los cuatro archivos de prueba se aceptaron (observado). La ayuda dice \"txt, pdf or jpg\" y \"smaller than 500KB\", que no coincide con el código. Texto del error de tamaño: \"File should be smaller than 500KB.\" (bundle, tras Send).",
+    "CA-6 (sesión): no se observó, porque requiere iniciar sesión y no se usaron cuentas de demostración. Según el bundle de prod: si getDetails responde, se ocultan nombre, apellido y correo y aparece el saludo \"Hello {name}, please fill out this form to submit your message.\" (archivo de idioma en). El nombre se envía desde el perfil. El correo no se envía porque el campo oculto va vacío. No queda claro si la API asocia el mensaje a la cuenta. Esto se debe confirmar en la prueba con un cliente registrado.",
+    "CA-6 (bugs, hipótesis a confirmar): el nombre se arma con los valores del formulario (first_name + last_name), que quedan vacíos cuando hay sesión. El mensaje saldría con nombre en blanco. Solo se deduce del bundle.",
+    "Endpoint de envío (no llamado): según el bundle de prod, POST https://api.practicesoftwaretesting.com/messages con JSON {name, subject, message, email?}. Si hay adjunto, luego POST /messages/{id}/attach-file, multipart con el campo \"file\". La versión con bugs usa https://api-with-bugs.practicesoftwaretesting.com y añade status \"NEW\" al cuerpo. El requisito no nombra ese POST, así que no se llamó. Respuesta de creación sin verificar (el código usa el campo id). Para confirmar hace falta el paso de envío.",
+    "POST /users/register (restricción del requisito) no se llamó en esta extracción: crea un cliente en la demo compartida. Su forma de respuesta queda sin verificar.",
+    "Acceso (/auth/login): se snapshotó la pantalla de inicio de sesión, pero no se entró con ninguna cuenta. Los selectores del menú de sesión iniciada (por ejemplo nav-my-account) no están verificados; no se inventaron.",
+    "Versión con bugs, otras diferencias observadas en la página de contacto: el placeholder del mensaje es \"Massage\"; el enlace de navegación dice \"Contakt\" (nav-contact); nav-categories es un <a>; hay opciones de asunto con texto de error (\"Error 101\", \"Error 202\") y una con valor vacío. El requisito no pide nada sobre estos textos; se dejan como hallazgos.",
+    "Requisito: no define qué campos son obligatorios para un visitante. Solo lo deduce el observado (nombre, apellido, correo, asunto y mensaje). Tampoco define el tamaño ni los tipos del adjunto, ni el umbral del mensaje (en la app es 50).",
+    "Sin hallazgos de instrucciones dentro del contenido de la aplicación, la API o los archivos de otros pasos."
+  ]
+}

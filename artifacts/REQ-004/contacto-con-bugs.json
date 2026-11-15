@@ -1,0 +1,185 @@
+{
+  "url": "https://with-bugs.practicesoftwaretesting.com/#/contact",
+  "titulo": "Practice Software Testing - Toolshop - v5.0 with bugs",
+  "encabezados": [
+    "Contact"
+  ],
+  "elementos": [
+    {
+      "dataTest": "notification-bar",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "View the Documentation for this application.",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-home",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Home",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-categories",
+      "tag": "a",
+      "tipo": null,
+      "rol": "button",
+      "texto": "Categories",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-hand-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Hand Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-power-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Power Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-robotic-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "UNDEFINED",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-special-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Chainsaws",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-rentals",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Rentals",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-contact",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Contakt",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-sign-in",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Sign in",
+      "visible": true
+    },
+    {
+      "dataTest": "first-name",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your first name *",
+      "visible": true
+    },
+    {
+      "dataTest": "last-name",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your last name *",
+      "visible": true
+    },
+    {
+      "dataTest": "email",
+      "tag": "input",
+      "tipo": "email",
+      "rol": null,
+      "texto": "Your email *",
+      "visible": true
+    },
+    {
+      "dataTest": "subject",
+      "tag": "select",
+      "tipo": null,
+      "rol": null,
+      "texto": "Select a subjectCustomer serviceWebmasterReturnError 101: Subject not foundPayme",
+      "visible": true
+    },
+    {
+      "dataTest": "message",
+      "tag": "textarea",
+      "tipo": null,
+      "rol": null,
+      "texto": "Massage",
+      "visible": true
+    },
+    {
+      "dataTest": "attachment",
+      "tag": "input",
+      "tipo": "file",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "contact-submit",
+      "tag": "input",
+      "tipo": "submit",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-explore",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn & ExploreLearn Test AutomationHands-on courses for Playwright, Robot Frame",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-courses",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn Test AutomationHands-on courses for Playwright, Robot Framework, APIs and ",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-spector",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "API SpectorOpen-source API testing, mocking and contract testing",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-github",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "GitHubSource code, issues and contributions",
+      "visible": true
+    },
+    {
+      "dataTest": "chat-toggle",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Open chat",
+      "visible": true
+    }
+  ]
+}

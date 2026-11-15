@@ -9,7 +9,7 @@
 
 **[Abrir el panel →](https://arturdev98.github.io/ai-automatization/)**
 
-![Panel del flujo: tres requisitos como líneas de metro y cada agente como una estación](docs/panel.png)
+![Panel del flujo: cada requisito como una línea de metro y cada agente como una estación](docs/panel.png)
 
 Un requisito entra por `requirements/` y sale probado: plan de pruebas, pruebas automatizadas en
 Playwright, reporte, bugs y una matriz que demuestra que ningún criterio de aceptación se quedó sin
@@ -88,6 +88,7 @@ puede lanzar a mano con cualquiera de los dos destinos.
 | [REQ-001](requirements/REQ-001-acceso-de-clientes.md) | Inicio de sesión, registro y cierre de sesión | Interfaz |
 | [REQ-002](requirements/REQ-002-catalogo-carrito-y-compra.md) | Búsqueda, filtros, carrito y compra | Interfaz |
 | [REQ-003](requirements/REQ-003-api-de-productos-y-carrito.md) | Productos, sesión y carrito | API |
+| [REQ-004](requirements/REQ-004-formulario-de-contacto.md) | Formulario de contacto: validaciones, adjunto y envío con sesión | Interfaz y API |
 
 ## Correrlo
 
@@ -105,8 +106,8 @@ npm run test:panel       # comprueba el panel generado
 ```
 
 Para llevar un requisito nuevo por el flujo, con [Claude Code](https://claude.com/claude-code):
-escribe `requirements/REQ-004-lo-que-sea.md` con sus criterios de aceptación y ejecuta
-`/qa-flow REQ-004`.
+escribe `requirements/REQ-005-lo-que-sea.md` con sus criterios de aceptación y ejecuta
+`/qa-flow REQ-005`.
 
 ## Estructura
 

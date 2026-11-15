@@ -1,0 +1,257 @@
+{
+  "url": "https://practicesoftwaretesting.com/contact",
+  "titulo": "Contact Us - Practice Software Testing - Toolshop - v5.0",
+  "encabezados": [
+    "Contact"
+  ],
+  "elementos": [
+    {
+      "dataTest": "notification-bar",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "View the Documentation for this application.",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-home",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Home",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-categories",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Categories",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-hand-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Hand Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-power-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Power Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-other",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Other",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-special-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Special Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-rentals",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Rentals",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-contact",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Contact",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-sign-in",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Sign in",
+      "visible": true
+    },
+    {
+      "dataTest": "language-select",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Select language",
+      "visible": true
+    },
+    {
+      "dataTest": "lang-de",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "DE",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-el",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "EL",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-en",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "EN",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-es",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "ES",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-fr",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "FR",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-nl",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "NL",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-tr",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "TR",
+      "visible": false
+    },
+    {
+      "dataTest": "first-name",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your first name *",
+      "visible": true
+    },
+    {
+      "dataTest": "last-name",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your last name *",
+      "visible": true
+    },
+    {
+      "dataTest": "email",
+      "tag": "input",
+      "tipo": "email",
+      "rol": null,
+      "texto": "Your email *",
+      "visible": true
+    },
+    {
+      "dataTest": "subject",
+      "tag": "select",
+      "tipo": null,
+      "rol": null,
+      "texto": "Select a subject *Customer serviceWebmasterReturnPaymentsWarrantyStatus of my or",
+      "visible": true
+    },
+    {
+      "dataTest": "message",
+      "tag": "textarea",
+      "tipo": null,
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "attachment",
+      "tag": "input",
+      "tipo": "file",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "contact-submit",
+      "tag": "input",
+      "tipo": "submit",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-explore",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn & ExploreLearn Test AutomationHands-on courses for Playwright, Robot Frame",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-courses",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn Test AutomationHands-on courses for Playwright, Robot Framework, APIs and ",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-spector",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "API SpectorOpen-source API testing, mocking and contract testing",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-github",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "GitHubSource code, issues and contributions",
+      "visible": true
+    },
+    {
+      "dataTest": "chat-toggle",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Open chat",
+      "visible": true
+    },
+    {
+      "dataTest": "live-activity-toggle",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Show live shop activity",
+      "visible": true
+    }
+  ]
+}
