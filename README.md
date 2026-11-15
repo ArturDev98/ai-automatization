@@ -96,6 +96,7 @@ npm test                 # interfaz y API
 npm run test:bugs        # la suite de interfaz contra la versión con bugs
 npm run trazabilidad     # matriz en docs/trazabilidad.md; falla si falta cobertura
 npm run panel            # panel estático en site/dist
+npm run test:panel       # comprueba el panel generado
 ```
 
 Para llevar un requisito nuevo por el flujo, con [Claude Code](https://claude.com/claude-code):

@@ -32,7 +32,7 @@
 <a class="salto" href="#mapa" data-i18n="n.salto"></a>
 
 <header class="barra">
-  <a class="marca-sitio" href="#top"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>Arturo Isaza</a>
+  <a class="marca-sitio" href="#inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>Arturo Isaza</a>
   <nav aria-label="Secciones">
     <a href="#mapa" data-i18n="n.mapa"></a>
     <a href="#estaciones" data-i18n="n.estaciones"></a>
@@ -47,8 +47,20 @@
   </div>
 </header>
 
+<nav class="riel" id="riel" aria-label="Secciones de la página">
+  <ol>
+    <li><a href="#inicio" data-i18n="n.inicio"></a></li>
+    <li><a href="#mapa" data-i18n="n.mapa"></a></li>
+    <li><a href="#estaciones" data-i18n="n.estaciones"></a></li>
+    <li><a href="#lineas" data-i18n="n.lineas"></a></li>
+    <li><a href="#incidencias" data-i18n="n.incidencias"></a></li>
+    <li><a href="#servicio" data-i18n="n.servicio"></a></li>
+    <li><a href="#reparto" data-i18n="n.reparto"></a></li>
+  </ol>
+</nav>
+
 <main id="top">
-  <section class="portada">
+  <section class="portada" id="inicio">
     <h1 data-i18n="h.titulo"></h1>
     <p class="entrada" data-i18n="h.entrada"></p>
     <p class="acciones">
@@ -122,8 +134,10 @@
   <p data-i18n="f.rol"></p>
   <p class="pie-enlaces"><a href="https://www.linkedin.com/in/arturo-isaza-qa/" rel="me noopener">LinkedIn</a><a href="https://github.com/ArturDev98" rel="me noopener">GitHub</a><a href="{{REPO}}" rel="noopener" data-i18n="f.repo"></a></p>
   <p class="pie-nota" data-i18n="f.nota"></p>
+  <p class="acciones"><a class="boton sec arriba" href="#inicio"><svg aria-hidden="true"><use href="#i-flecha"/></svg><span data-i18n="f.arriba"></span></a></p>
 </footer>
 
+<script type="application/json" id="textos">"__TEXTOS__"</script>
 <script type="application/json" id="datos">"__DATOS__"</script>
 <script>/*JS*/</script>
 </body>

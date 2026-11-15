@@ -20,6 +20,7 @@ Las leen las personas y los agentes antes de escribir código o artefactos.
 | `npx playwright test -g "@REQ-001.*@TC-004"` | Un caso (los ids de caso se repiten entre requisitos) |
 | `npm run trazabilidad` | Cruza plan y resultados; falla si hay criterios sin cubrir |
 | `npm run panel` | Genera el panel estático en `site/dist` |
+| `npm run test:panel` | Abre el panel generado y comprueba que funciona (antes, `npm run panel`) |
 | `npm run snapshot -- <url> [artifacts/…/salida.json]` | Vuelca los `data-test` de una pantalla |
 | `npm run lint`, `npm run typecheck`, `npm run test:unit` | Calidad del propio código |
 

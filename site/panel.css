@@ -99,6 +99,25 @@ main > section { padding-block: clamp(3rem, 7vw, 5.5rem) 0; }
 .acciones { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
 .acciones:empty { display: none; }
 
+/* Riel lateral: una línea con paradas que marca la sección en la que estás */
+.riel { display: none; }
+@media (min-width: 1100px) {
+  body { padding-left: 13rem; }
+  .barra nav { display: none; }
+  .controles { margin-left: auto; }
+  .riel { display: block; position: fixed; left: 2rem; top: 50%; transform: translateY(-50%); z-index: 5; }
+  .riel ol { list-style: none; margin: 0; padding: 0; position: relative; display: grid; gap: 1.15rem; }
+  .riel ol::before { content: ''; position: absolute; left: 7px; top: 0.7rem; bottom: 0.7rem; width: 4px; border-radius: 2px; background: var(--tinta); }
+  .riel a { position: relative; display: flex; align-items: center; gap: 0.75rem; padding-block: 0.15rem; text-decoration: none; font-size: 0.95rem; font-weight: 600; color: var(--tinta-2); }
+  .riel a::before { content: ''; flex: none; width: 18px; height: 18px; border-radius: 50%; border: 4px solid var(--tinta); background: var(--papel); transition: background 0.2s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+  .riel a:hover { color: var(--tinta); }
+  .riel a[aria-current] { color: var(--tinta); font-weight: 900; }
+  .riel a[aria-current]::before { background: var(--tinta); transform: scale(1.3); }
+}
+.barra nav a[aria-current] { border-bottom-color: var(--tinta); }
+.boton.arriba svg { transform: rotate(-90deg); }
+.boton.arriba:hover svg { transform: rotate(-90deg) translateX(4px); }
+
 /* Portada */
 main > .portada { padding-top: clamp(1.75rem, 3.5vw, 2.75rem); }
 h1 { font-size: clamp(2.5rem, 5vw, 4.25rem); font-weight: 900; line-height: 1; letter-spacing: -0.035em; max-width: 26ch; }
@@ -143,6 +162,13 @@ main > .mapa { padding-top: clamp(1.5rem, 3vw, 2.5rem); }
   .parada-cuerpo { animation: llegar 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes llegar { from { opacity: 0.2; transform: translateY(6px); } }
 }
+
+/* Aparición al hacer scroll: la clase la pone el script, así sin él todo se ve */
+.revelar { opacity: 0; transform: translateY(20px); transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+.revelar.visto { opacity: 1; transform: none; }
+/* La franja de color de cada línea llega como un tren: de izquierda a derecha */
+.linea.revelar header { clip-path: inset(0 100% 0 0); transition: clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s; }
+.linea.revelar.visto header { clip-path: inset(0); }
 
 /* Parada: el letrero de la estación elegida */
 .parada { margin-top: 1rem; min-height: 9rem; }

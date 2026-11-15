@@ -4,9 +4,9 @@ const UI_URL = process.env.UI_URL ?? 'https://practicesoftwaretesting.com';
 const API_URL = process.env.API_URL ?? 'https://api.practicesoftwaretesting.com';
 const UI_BUGS_URL = process.env.UI_BUGS_URL ?? 'https://with-bugs.practicesoftwaretesting.com';
 
-// La corrida contra la versión con bugs guarda su resultado aparte para no pisar el de la suite.
-const soloBugs = process.argv.some((a) => a.includes('ui-bugs'));
-const sufijo = soloBugs ? '-bugs' : '';
+// Cada corrida aparte guarda su resultado con sufijo para no pisar el de la suite.
+const aparte = ['ui-bugs', 'panel'].find((p) => process.argv.some((a) => a.includes(`--project=${p}`)));
+const sufijo = aparte ? `-${aparte.replace('ui-', '')}` : '';
 
 export default defineConfig({
   testDir: './tests',
@@ -33,5 +33,7 @@ export default defineConfig({
     { name: 'api', testDir: './tests/api', use: { baseURL: API_URL } },
     // Misma suite contra la versión con bugs sembrados; no corre por defecto.
     { name: 'ui-bugs', testDir: './tests/ui', use: { ...devices['Desktop Chrome'], baseURL: UI_BUGS_URL } },
+    // El panel generado, abierto como archivo: no corre por defecto.
+    { name: 'panel', testDir: './tests/panel', use: { ...devices['Desktop Chrome'] } },
   ],
 });

@@ -40,7 +40,9 @@ const BLOB = `https://github.com/${REPO}/blob/main/`;
 const ETAPAS: ClaveEtapa[] = ['extractor', 'planner', 'revision', 'automator', 'reporter'];
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const leer = (ruta: string) => (existsSync(join(RAIZ, ruta)) ? readFileSync(join(RAIZ, ruta), 'utf8') : null);
+// Todo se lee con saltos LF: el navegador los normaliza y el hash de la CSP tiene que coincidir.
+const texto = (ruta: string) => readFileSync(ruta, 'utf8').replace(/\r\n/g, '\n');
+const leer = (ruta: string) => (existsSync(join(RAIZ, ruta)) ? texto(join(RAIZ, ruta)) : null);
 
 // Cabecera de artefacto: "> Generado por: planner (Claude Fable 5.2) · 2026-11-14 · ..."
 function firmaDe(md: string | null): string {
@@ -61,7 +63,7 @@ export function leerLineas(traza: Trazabilidad | null, bugs: Bug[]): Linea[] {
     .sort()
     .map((archivoReq) => {
       const req = archivoReq.match(/^REQ-\d+/)![0];
-      const reqMd = readFileSync(join(dirReq, archivoReq), 'utf8');
+      const reqMd = texto(join(dirReq, archivoReq));
       const titulo = (reqMd.match(/^#\s*REQ-\d+\s*·\s*(.+)$/m)?.[1] ?? req).trim();
       const historia = [...reqMd.matchAll(/^\*\*(Como|quiero|para)\*\*\s*(.+)$/gm)].map((m) => `${m[1]} ${m[2]}`).join(' ');
       const dir = `artifacts/${req}`;
@@ -169,7 +171,7 @@ export function leerBugs(): Bug[] {
     .filter((f) => /^BUG-\d+.*\.md$/.test(f))
     .sort()
     .map((f) => {
-      const md = readFileSync(join(dir, f), 'utf8');
+      const md = texto(join(dir, f));
       const cab = md.match(/^#\s*(BUG-\d+)\s*·\s*(.+)$/m);
       return { id: cab?.[1] ?? f.slice(0, 7), titulo: cab?.[2].trim() ?? f, archivo: `bugs/${f}`, campos: vinetas(md) };
     });
@@ -322,16 +324,21 @@ function main() {
     lineas: lineas.slice(0, MAX_LINEAS).map((l) => ({ req: l.req, titulo: l.titulo, etapas: l.etapas })),
   };
 
-  const html = readFileSync(join(RAIZ, 'site', 'panel.html'), 'utf8')
-    .replace('/*CSS*/', () => readFileSync(join(RAIZ, 'site', 'panel.css'), 'utf8'))
-    .replace('/*JS*/', () => readFileSync(join(RAIZ, 'site', 'panel.js'), 'utf8'))
+  const textos = JSON.parse(texto(join(RAIZ, 'site', 'textos.json'))) as Record<string, Record<string, string>>;
+  const armado = texto(join(RAIZ, 'site', 'panel.html'))
+    .replace('/*CSS*/', () => texto(join(RAIZ, 'site', 'panel.css')))
+    .replace('/*JS*/', () => texto(join(RAIZ, 'site', 'panel.js')))
     .replace('<!--MAPA-->', () => mapa(lineas, false) + mapa(lineas, true))
     .replace('<!--LINEAS-->', () => lineas.map(lineaHtml).join('\n'))
     .replace('<!--BUGS-->', () => bugsHtml(bugs))
     .replace('<!--CORRIDA-->', () => resumenCorrida(traza))
     .replace('<!--REPORTES-->', () => enlaces)
     .replaceAll('{{REPO}}', `https://github.com/${REPO}`)
-    .replace('"__DATOS__"', () => JSON.stringify(datos).replace(/</g, '\\u003c'));
+    .replace('"__DATOS__"', () => JSON.stringify(datos).replace(/</g, '\\u003c'))
+    .replace('"__TEXTOS__"', () => JSON.stringify(textos).replace(/</g, '\\u003c'));
+
+  // El español queda escrito en el HTML: la página se lee aunque el script no llegue a correr.
+  const html = armado.replace(/(data-i18n="([^"]+)"[^>]*>)(?=<\/)/g, (_, apertura: string, clave: string) => apertura + esc(textos.es[clave] ?? ''));
 
   // CSP con el hash de cada script en línea: nada más puede ejecutarse en la página.
   const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => `'sha256-${createHash('sha256').update(m[1]).digest('base64')}'`);

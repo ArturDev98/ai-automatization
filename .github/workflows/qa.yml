@@ -57,6 +57,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run panel
 
+      - name: Pruebas del panel generado
+        if: ${{ !cancelled() }}
+        run: npm run test:panel
+
       - name: Trazas y capturas de los fallos
         if: ${{ failure() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

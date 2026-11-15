@@ -41,8 +41,17 @@ El tema sigue al sistema y se puede forzar con el botón; la elección se guarda
 
 ## Movimiento
 
-Un solo momento: las líneas se trazan de izquierda a derecha al cargar (1,3 s, salida exponencial).
-Con `prefers-reduced-motion` no hay animación y todo está visible desde el inicio.
+- Al cargar, las líneas del mapa se trazan de izquierda a derecha (1,3 s, salida exponencial).
+- Al bajar, cada bloque que empezó fuera de pantalla aparece subiendo 20 px; la franja de color de cada
+  línea entra de izquierda a derecha, como un tren que llega.
+- La clase que oculta la pone el script: sin JavaScript o con `prefers-reduced-motion` todo está visible.
+
+## Navegación
+
+- Desde 1100 px hay un riel fijo a la izquierda: una línea con una parada por sección. La parada
+  actual se rellena y crece; la sección actual es la que cruza una franja a un tercio de la pantalla.
+- Entre 900 y 1100 px las secciones van en la barra superior, con la actual subrayada.
+- Al final de la página, un botón vuelve al inicio.
 
 ## Adaptación
 
