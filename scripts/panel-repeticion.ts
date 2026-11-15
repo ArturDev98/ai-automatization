@@ -96,12 +96,13 @@ export function repeticionHtml(r: Repeticion | null): string {
         <ol class="accion-bitacora"></ol>
       </div>
     </div>
-    <div class="accion-estatico">
+    <details class="accion-estatico" open>
+      <summary data-i18n="a.verTodo"></summary>
       <h3 data-i18n="a.momentos"></h3>
       <ol class="accion-control">${control}</ol>
       <h3 data-i18n="a.resumen"></h3>
       ${resumenHtml(r, inicio)}
-    </div>
+    </details>
     <p class="nota"><span data-i18n="a.fuente"></span> <a href="{{REPO}}/blob/main/site/repeticiones/${esc(r.req)}.json" rel="noopener" data-i18n="a.json"></a></p>
   </section>`;
 }

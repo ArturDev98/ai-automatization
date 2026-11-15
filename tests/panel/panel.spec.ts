@@ -1,6 +1,9 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { comprimir } from '../../scripts/panel-repeticion';
+import { CONTROL, type Repeticion } from '../../scripts/repeticion';
 
 // Se prueba el archivo generado tal cual se publica; antes hay que correr `npm run panel`.
 const PANEL = pathToFileURL(resolve('site/dist/index.html')).href;
@@ -151,6 +154,86 @@ test.describe('Panel generado', () => {
       await expect(page.getByRole('heading', { level: 1 })).toContainText('requisito');
       await expect(page.getByRole('heading', { name: 'Qué pasa en cada estación' })).toBeVisible();
       await expect(page.locator('.linea').first()).toBeVisible();
+    });
+
+    test('la repetición se ve como lista estática', async ({ page }) => {
+      await page.goto(PANEL);
+      await expect(page.locator('#accion .accion-control li').first()).toBeVisible();
+      await expect(page.locator('#accion .accion')).toBeHidden();
+    });
+  });
+
+  test.describe('En acción', () => {
+    const rep = JSON.parse(readFileSync(resolve('site/repeticiones/REQ-004.json'), 'utf8')) as Repeticion;
+    const eventos = comprimir(rep.eventos);
+    const textos = JSON.parse(readFileSync(resolve('site/textos.json'), 'utf8')) as Record<string, Record<string, string>>;
+    const hhmm = (t: number) => new Date(Date.parse(rep.inicio) + t * 1000).toISOString().slice(11, 16);
+    const barra = (page: Page) => page.locator('#accion-barra');
+
+    test('lista los mismos momentos de control que el JSON', async ({ page }) => {
+      await page.goto(PANEL);
+      await expect(page.locator('#accion ol.accion-control li')).toHaveCount(rep.eventos.filter((e) => CONTROL.includes(e.tipo)).length);
+    });
+
+    test('la barra al final muestra la hora del último evento y deja la reproducción en pausa', async ({ page }) => {
+      await page.goto(PANEL);
+      await barra(page).fill('1000');
+      await expect(page.locator('.accion-reloj time')).toHaveText(hhmm(rep.eventos.at(-1)!.t));
+      await expect(page.locator('#accion-play')).toHaveAttribute('aria-pressed', 'false');
+    });
+
+    test('volver atrás con la barra no acumula contadores', async ({ page }) => {
+      await page.goto(PANEL);
+      await barra(page).fill('1000');
+      await barra(page).fill('0');
+      await expect(page.locator('[data-cifra="lecturas"]')).toHaveText('0');
+      await expect(page.locator('.accion-bitacora li')).toHaveCount(1);
+      await expect(page.locator('.accion-quien strong')).toHaveText('Extractor');
+    });
+
+    test('el botón de reproducir funciona con teclado', async ({ page }) => {
+      await page.goto(PANEL);
+      await barra(page).fill('0');
+      const play = page.locator('#accion-play');
+      await expect(play).toHaveAttribute('aria-pressed', 'false');
+      await play.focus();
+      await page.keyboard.press('Enter');
+      await expect(play).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    test('cambiar de idioma a mitad de la repetición repinta sin reiniciar', async ({ page }) => {
+      await page.goto(PANEL);
+      await barra(page).fill('500');
+      const reloj = await page.locator('.accion-reloj time').textContent();
+      const ultimo = eventos.filter((e) => e.v <= 0.5).at(-1)!;
+
+      await page.locator('#idioma').click();
+
+      await expect(page.locator('.accion-reloj time')).toHaveText(reloj!);
+      await expect(page.locator('.accion-bitacora li').first()).toContainText(textos.en[`a.${ultimo.tipo}`]);
+      await expect(barra(page)).toHaveValue('500');
+    });
+
+    test.describe('con movimiento reducido', () => {
+      test.use({ reducedMotion: 'reduce' });
+
+      test('se ve la versión estática y no hay controles', async ({ page }) => {
+        await page.goto(PANEL);
+        await expect(page.locator('#accion')).toHaveClass(/quieta/);
+        await expect(page.locator('#accion .accion-control li').first()).toBeVisible();
+        await expect(page.locator('#accion-play')).toBeHidden();
+      });
+    });
+
+    test.describe('a 360 px', () => {
+      test.use({ viewport: { width: 360, height: 800 } });
+
+      test('no hay desplazamiento horizontal', async ({ page }) => {
+        await page.goto(PANEL);
+        await page.locator('#accion').scrollIntoViewIfNeeded();
+        await expect(page.locator('#accion .accion')).toBeVisible();
+        expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+      });
     });
   });
 });

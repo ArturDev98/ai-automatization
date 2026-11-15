@@ -214,6 +214,86 @@ main > .mapa { padding-top: clamp(1.5rem, 3vw, 2.5rem); }
 .firma { color: var(--tinta-2); font-size: 0.95rem; }
 .parada-info a { font-weight: 800; align-self: flex-start; }
 
+/* En acción: la repetición de la corrida real */
+.accion-ficha { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin-top: 1rem; color: var(--tinta-2); font-weight: 600; }
+.accion-ficha code, .accion-ficha b { color: var(--tinta); }
+.accion-ficha b { font-weight: 900; }
+.accion { margin-top: 1.5rem; background: var(--superficie); border: 2px solid var(--tinta); border-radius: 14px; padding: clamp(1rem, 2.5vw, 1.75rem); }
+.accion[hidden] { display: none; }
+.accion-cabeza { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.accion-reloj { display: flex; align-items: baseline; gap: 0.5rem; }
+.accion-reloj time { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.accion-reloj span { font-weight: 800; color: var(--tinta-2); }
+.accion-ctrl { display: flex; gap: 0.5rem; }
+#accion-play[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
+.accion-via { display: block; width: 100%; height: auto; margin-top: 1.25rem; stroke: none; }
+.accion-via .via { stroke-dasharray: none; animation: none; }
+.a-est .aro { fill: var(--superficie); stroke: var(--tinta); stroke-width: 5; transition: fill 0.3s; }
+.a-est.hecha .aro { fill: var(--tinta); }
+.a-est.aqui .aro { stroke-width: 7; }
+.a-est .rotulo { font-size: 18px; }
+.tren { transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+.tren rect { fill: var(--l4); stroke: var(--tinta); stroke-width: 3; }
+.tren circle { fill: var(--sobre-linea); }
+.accion-barra-caja { position: relative; margin-top: 0.5rem; }
+#accion-barra { position: relative; z-index: 1; display: block; width: 100%; height: 2rem; margin: 0; background: none; cursor: pointer; -webkit-appearance: none; appearance: none; }
+#accion-barra::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--raya); }
+#accion-barra::-moz-range-track { height: 6px; border-radius: 3px; background: var(--raya); }
+#accion-barra::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%; border: 4px solid var(--tinta); background: var(--superficie); }
+#accion-barra::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; border: 4px solid var(--tinta); background: var(--superficie); }
+.accion-marcas { position: absolute; top: 50%; left: 11px; right: 11px; pointer-events: none; }
+.accion-marcas i { position: absolute; top: -10px; width: 3px; height: 20px; margin-left: -1.5px; border-radius: 2px; background: var(--tinta-2); }
+.accion-marcas i.no-pasa { background: var(--l1); }
+.accion-letrero { min-height: 4.5rem; margin-top: 0.75rem; display: flex; align-items: center; }
+.aviso-ctl { display: flex; align-items: center; gap: 0.85rem; width: 100%; padding: 0.75rem 1.1rem; border: 2px solid var(--tinta); border-radius: 14px; font-weight: 600; line-height: 1.35; }
+.aviso-ctl svg { width: 1.5rem; height: 1.5rem; flex: none; stroke-width: 2.4; }
+.aviso-ctl.no-pasa { border-color: var(--l1); }
+.aviso-ctl.no-pasa svg { color: var(--l1); }
+.aviso-ctl.pasado { border-color: var(--raya); color: var(--tinta-2); animation: none; }
+.aviso-ctl.pasado svg { color: inherit; }
+.accion-tablero { display: grid; grid-template-columns: minmax(11rem, 0.8fr) minmax(0, 1.2fr) minmax(0, 2fr); margin-top: 0.75rem; border: 2px solid var(--tinta); border-radius: 14px; overflow: hidden; }
+.accion-quien strong { font-size: 1.6rem; }
+.accion-tablero .parada-info { border-right: 1px solid var(--raya); }
+.accion-cifras { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.accion-bitacora { list-style: none; margin: 0; padding: 1rem 1.25rem; font-size: 0.9rem; min-height: 11.5rem; }
+.accion-bitacora li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 0.5rem; padding-block: 0.15rem; color: var(--tinta-2); }
+.accion-bitacora li:first-child { color: var(--tinta); font-weight: 600; }
+.accion-bitacora li > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.accion-bitacora time { font-variant-numeric: tabular-nums; font-weight: 800; }
+.accion-bitacora code { font-size: 0.85rem; font-weight: 500; }
+details.accion-estatico { padding: 0; margin-top: 1.25rem; }
+.accion-estatico summary { margin-left: 1.1rem; }
+.accion-estatico h3 { margin-top: 1.25rem; }
+.accion-control { list-style: none; padding: 0; margin: 0.75rem 0 0; border: 2px solid var(--tinta); border-radius: 14px; background: var(--superficie); overflow: hidden; }
+.accion-control li { display: grid; grid-template-columns: 3.25rem 1.25rem minmax(0, 1fr); gap: 0.75rem; align-items: start; padding: 0.75rem 1.25rem; }
+.accion-control li + li { border-top: 1px solid var(--raya); }
+.accion-control time { font-weight: 800; font-variant-numeric: tabular-nums; }
+.accion-control svg { width: 1.25rem; height: 1.25rem; margin-top: 0.1rem; }
+.accion-control .no-pasa svg { color: var(--l1); }
+.ctl-cuerpo b { margin-right: 0.35rem; }
+.accion-resumen td { font-variant-numeric: tabular-nums; }
+.accion-resumen td:nth-child(n + 4) { font-weight: 800; }
+@media (prefers-reduced-motion: no-preference) {
+  .aviso-ctl { animation: llegar 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+}
+@media (max-width: 900px) {
+  .accion-tablero { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .accion-bitacora { grid-column: 1 / -1; border-top: 1px solid var(--raya); }
+  .accion-tablero .parada-info { border-right: 0; }
+}
+@media (max-width: 640px) {
+  .accion-tablero { grid-template-columns: minmax(0, 1fr); }
+  .a-est .rotulo { display: none; }
+  .accion-via { margin-top: 0.75rem; }
+  .accion-control li { padding-inline: 1rem; }
+  .accion-resumen { min-width: 36rem; }
+}
+/* A 360 px el botón «Contactar» empujaba la barra 10 px fuera de la pantalla */
+@media (max-width: 400px) {
+  .barra { gap: 0.6rem; }
+  .controles { gap: 0.35rem; }
+}
+
 /* Tablas */
 .tabla-scroll { overflow-x: auto; margin-top: 1.75rem; border: 2px solid var(--tinta); border-radius: 14px; background: var(--superficie); }
 table { border-collapse: collapse; width: 100%; font-size: 1rem; }

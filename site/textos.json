@@ -157,7 +157,8 @@
     "a.devuelve": "devuelve el trabajo al",
     "a.detiene": "detiene al",
     "a.ci": "revisa el CI",
-    "a.commit": "hace commit"
+    "a.commit": "hace commit",
+    "a.sinControl": "Todavía no hay revisiones: el tren se detiene en cada una"
   },
   "en": {
     "n.salto": "Skip to the map",
@@ -317,6 +318,7 @@
     "a.devuelve": "sends the work back to the",
     "a.detiene": "stops the",
     "a.ci": "checks CI",
-    "a.commit": "commits"
+    "a.commit": "commits",
+    "a.sinControl": "No checks yet: the train stops at each one"
   }
 }
