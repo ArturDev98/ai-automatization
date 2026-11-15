@@ -1,0 +1,40 @@
+# Toolshop en contenedores para CI, con las imágenes oficiales de Testsmith (solo uso privado y no comercial).
+# Basado en su docker-compose.prod.yml; sin cron ni phpMyAdmin, que las pruebas no usan.
+name: toolshop
+services:
+  laravel-api:
+    image: testsmith/practice-software-testing-${SPRINT:?falta SPRINT}-api:2.5
+    environment:
+      - PHP_OPCACHE_VALIDATE_TIMESTAMPS=1
+      - DB_PORT=3306
+      - DB_HOST=mariadb
+      - host=localhost
+      - DISABLE_LOGGING=true
+    volumes:
+      - codigo-api:/var/www
+    depends_on:
+      - mariadb
+
+  angular-ui:
+    image: testsmith/practice-software-testing-${SPRINT:?falta SPRINT}-ui:2.5
+    ports:
+      - 4200:4200
+    command: bash -c "ng serve --host 0.0.0.0 --port 4200"
+
+  web:
+    image: testsmith/practice-software-testing-web:latest
+    ports:
+      - 8091:80
+    depends_on:
+      - laravel-api
+
+  mariadb:
+    image: yobasystems/alpine-mariadb:10.6.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: toolshop
+
+volumes:
+  codigo-api:

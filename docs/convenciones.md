@@ -9,6 +9,9 @@ Las leen las personas y los agentes antes de escribir código o artefactos.
   - Interfaz: `https://practicesoftwaretesting.com`
   - API: `https://api.practicesoftwaretesting.com`
   - Versión con bugs: `https://with-bugs.practicesoftwaretesting.com` (con su propia API y sus propios clientes)
+- En CI, push y PR corren contra Toolshop en contenedores (`ci/toolshop.sh`): interfaz en
+  `http://localhost:4200` y API en `http://localhost:8091`, por `UI_URL`, `API_URL`,
+  `UI_BUGS_URL` y `API_BUGS_URL`. La corrida diaria usa la demo pública.
 
 ## Comandos
 

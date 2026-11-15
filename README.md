@@ -78,6 +78,11 @@ skill [`qa-flow`](.claude/skills/qa-flow/SKILL.md).
 practicar pruebas: interfaz en Angular, API REST y una [versión con bugs](https://with-bugs.practicesoftwaretesting.com).
 No es mía ni tengo relación con sus autores.
 
+En CI, cada push y cada PR levantan Toolshop en contenedores con las imágenes oficiales de sus
+autores (`ci/toolshop.sh`, versión 2.5): primero la tienda y luego la versión con bugs, con la base
+recién sembrada. La corrida diaria va contra la demo pública para notar si cambió. Desde Actions se
+puede lanzar a mano con cualquiera de los dos destinos.
+
 | Requisito | Qué cubre | Tipo |
 |---|---|---|
 | [REQ-001](requirements/REQ-001-acceso-de-clientes.md) | Inicio de sesión, registro y cierre de sesión | Interfaz |
@@ -115,15 +120,19 @@ tests/ui  tests/api  pruebas de Playwright
 src/                 page objects, fixtures, clientes de API y datos
 scripts/             snapshot, trazabilidad y generador del panel
 site/                plantilla del panel
+ci/                  Toolshop en contenedores para el CI
 ```
 
 ## Límites
 
 - La aplicación es de terceros: se regenera cada cierto tiempo y puede responder con errores
   durante unos minutos. En CI las pruebas se reintentan dos veces; en local, ninguna.
-- La tienda está detrás de Cloudflare, que a veces pide a los runners de GitHub verificar que son
-  humanos. No se esquiva: la prueba que recibe ese reto queda **omitida** con el motivo, y una que
-  falla por cualquier otra razón sigue en rojo. En local el reto no aparece.
+- La demo pública está detrás de Cloudflare, que a veces pide a los runners de GitHub verificar
+  que son humanos. No se esquiva: en la corrida diaria, la prueba que recibe ese reto queda
+  **omitida** con el motivo, y una que falla por cualquier otra razón sigue en rojo. Por eso push y
+  PR corren contra contenedores.
+- La licencia de Toolshop permite correrla en privado y sin fines comerciales, no publicar copias:
+  los contenedores viven solo dentro del runner y este repo no incluye su código.
 - Las pruebas registran sus propios clientes en cada corrida y no usan las cuentas de demostración
   compartidas, que otras personas bloquean. Sus trazas pueden contener la clave de esos clientes
   desechables, por eso los reportes de Playwright no se publican.
