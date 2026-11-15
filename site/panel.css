@@ -7,6 +7,8 @@
   --l1: #d1002b;
   --l2: #0054b4;
   --l3: #007a3d;
+  --l4: #6a1fa8;
+  --l5: #a84300;
   --sobre-linea: #ffffff;
   --aviso: #9a4a00;
   --foco: #0054b4;
@@ -22,6 +24,8 @@
     --l1: #ff5a75;
     --l2: #5aa5ff;
     --l3: #3fd184;
+    --l4: #c29bff;
+    --l5: #ff9d57;
     --sobre-linea: #0f1418;
     --aviso: #ffb454;
     --foco: #5aa5ff;
@@ -37,6 +41,8 @@
   --l1: #ff5a75;
   --l2: #5aa5ff;
   --l3: #3fd184;
+  --l4: #c29bff;
+  --l5: #ff9d57;
   --sobre-linea: #0f1418;
   --aviso: #ffb454;
   --foco: #5aa5ff;
@@ -107,9 +113,13 @@ main > .mapa { padding-top: clamp(1.5rem, 3vw, 2.5rem); }
 .via.l1, .est.l1 .halo { stroke: var(--l1); }
 .via.l2, .est.l2 .halo { stroke: var(--l2); }
 .via.l3, .est.l3 .halo { stroke: var(--l3); }
+.via.l4, .est.l4 .halo { stroke: var(--l4); }
+.via.l5, .est.l5 .halo { stroke: var(--l5); }
 .tope.l1, .placa.l1 { fill: var(--l1); }
 .tope.l2, .placa.l2 { fill: var(--l2); }
 .tope.l3, .placa.l3 { fill: var(--l3); }
+.tope.l4, .placa.l4 { fill: var(--l4); }
+.tope.l5, .placa.l5 { fill: var(--l5); }
 .placa-t { fill: var(--sobre-linea); font: 800 16px Overpass, sans-serif; letter-spacing: 0.02em; }
 .transbordo { fill: var(--superficie); stroke: var(--tinta); stroke-width: 5; }
 .rotulo { fill: var(--tinta); font: 800 19px Overpass, sans-serif; }
@@ -141,6 +151,8 @@ main > .mapa { padding-top: clamp(1.5rem, 3vw, 2.5rem); }
 .letrero.l1 { background: var(--l1); }
 .letrero.l2 { background: var(--l2); }
 .letrero.l3 { background: var(--l3); }
+.letrero.l4 { background: var(--l4); }
+.letrero.l5 { background: var(--l5); }
 .letrero code { font-size: 0.95rem; }
 .letrero strong { font-size: 1.75rem; font-weight: 900; line-height: 1.05; letter-spacing: -0.02em; }
 .letrero span { font-weight: 600; font-size: 0.95rem; }
@@ -176,6 +188,8 @@ tbody th { font-weight: 800; white-space: nowrap; }
 .linea.l1 header { background: var(--l1); }
 .linea.l2 header { background: var(--l2); }
 .linea.l3 header { background: var(--l3); }
+.linea.l4 header { background: var(--l4); }
+.linea.l5 header { background: var(--l5); }
 .placa-h { font: 700 0.95rem "Overpass Mono", monospace; border: 2px solid currentColor; border-radius: 6px; padding: 0.15rem 0.5rem; white-space: nowrap; }
 .historia { padding: 1.25rem 1.5rem 0; max-width: 72ch; }
 details { padding: 0 1.5rem 1.25rem; }
@@ -187,7 +201,7 @@ summary .cuenta { font-weight: 400; color: var(--tinta-2); margin-left: 0.5rem; 
 .casos li { display: grid; grid-template-columns: 4.2rem 1fr auto; gap: 0.25rem 1rem; align-items: start; padding-block: 0.4rem; }
 .caso-t small { display: block; color: var(--tinta-2); font-size: 0.875rem; }
 .caso-e { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: flex-end; }
-.est-chip { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.875rem; font-weight: 600; border: 1.5px solid currentColor; border-radius: 999px; padding: 0.1rem 0.6rem; white-space: nowrap; }
+.est-chip { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.875rem; font-weight: 600; border: 1.5px solid currentColor; border-radius: 999px; padding: 0.25rem 0.7rem; line-height: 1.2; white-space: nowrap; }
 .est-chip i { font: 500 0.8rem "Overpass Mono", monospace; font-style: normal; color: var(--tinta-2); }
 .est-chip.falla { color: var(--l1); }
 .est-chip.bug, .est-chip.inestable { color: var(--aviso); }

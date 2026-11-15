@@ -172,20 +172,27 @@ export function leerBugs(): Bug[] {
     });
 }
 
-// Geometría del mapa: las tres líneas se juntan en la cápsula de transbordo (revisión humana).
-function mapa(lineas: Linea[], vertical: boolean): string {
+// Geometría del mapa: las líneas se juntan en la cápsula de transbordo (revisión humana).
+const MAX_LINEAS = 5;
+
+function mapa(todas: Linea[], vertical: boolean): string {
+  const lineas = todas.slice(0, MAX_LINEAS);
+  const n = lineas.length;
   const largo = vertical ? [150, 270, 420, 560, 660] : [250, 440, 640, 850, 1050];
-  const ancho = vertical ? [50, 110, 170] : [110, 190, 270];
-  const junto = vertical ? [80, 110, 140] : [160, 190, 220];
+  const ancho = lineas.map((_, i) => (vertical ? 50 + 60 * i : 110 + 80 * i));
+  const centro = (ancho[0] + ancho[n - 1]) / 2;
+  const junto = lineas.map((_, i) => centro + (i - (n - 1) / 2) * 30);
   const piezas: string[] = [];
 
-  lineas.slice(0, 3).forEach((l, i) => {
+  lineas.forEach((l, i) => {
     const a = ancho[i];
     const j = junto[i];
-    const d = vertical
-      ? `M${a},84 V340 L${j},370 V470 L${a},500 V690`
-      : `M128,${a} H540 L590,${j} H690 L740,${a} H1150`;
-    piezas.push(`<path class="via l${i + 1}" pathLength="1" d="${d}"/>`);
+    // El quiebre avanza lo mismo que se desvía, para que quede a 45 grados.
+    const d = Math.abs(a - j);
+    const camino = vertical
+      ? `M${a},84 V${370 - d} L${j},370 V470 L${a},${470 + d} V690`
+      : `M128,${a} H${590 - d} L590,${j} H690 L${690 + d},${a} H1150`;
+    piezas.push(`<path class="via l${i + 1}" pathLength="1" d="${camino}"/>`);
     piezas.push(
       vertical
         ? `<rect class="tope l${i + 1}" x="${a - 12}" y="686" width="24" height="8" rx="2"/>`
@@ -199,20 +206,22 @@ function mapa(lineas: Linea[], vertical: boolean): string {
     );
   });
 
+  const tramo = (n - 1) * 30 + 36;
   piezas.push(
     vertical
-      ? `<rect class="transbordo" x="62" y="402" width="96" height="36" rx="18"/>`
-      : `<rect class="transbordo" x="622" y="140" width="36" height="100" rx="18"/>`,
+      ? `<rect class="transbordo" x="${junto[0] - 18}" y="402" width="${tramo}" height="36" rx="18"/>`
+      : `<rect class="transbordo" x="622" y="${junto[0] - 18}" width="36" height="${tramo}" rx="18"/>`,
   );
 
+  const rotuloX = ancho[n - 1] + 35;
   ETAPAS.forEach((clave, e) => {
     const p = largo[e];
     piezas.push(
       vertical
-        ? `<text class="rotulo" x="205" y="${p - 2}" data-i18n="e.${clave}"></text><text class="rotulo-2" x="205" y="${p + 17}" data-i18n="m.${clave}"></text>`
+        ? `<text class="rotulo" x="${rotuloX}" y="${p - 2}" data-i18n="e.${clave}"></text><text class="rotulo-2" x="${rotuloX}" y="${p + 17}" data-i18n="m.${clave}"></text>`
         : `<text class="rotulo" x="${p}" y="38" text-anchor="middle" data-i18n="e.${clave}"></text><text class="rotulo-2" x="${p}" y="58" text-anchor="middle" data-i18n="m.${clave}"></text>`,
     );
-    lineas.slice(0, 3).forEach((l, i) => {
+    lineas.forEach((l, i) => {
       const lado = clave === 'revision' ? junto[i] : ancho[i];
       const [x, y] = vertical ? [lado, p] : [p, lado];
       const etapa = l.etapas[e];
@@ -232,7 +241,7 @@ function mapa(lineas: Linea[], vertical: boolean): string {
     });
   });
 
-  const caja = vertical ? '0 0 360 720' : '0 0 1200 330';
+  const caja = vertical ? `0 0 ${rotuloX + 155} 720` : `0 0 1200 ${ancho[n - 1] + 60}`;
   return `<svg class="mapa-svg ${vertical ? 'v' : 'h'}" viewBox="${caja}" role="group" aria-labelledby="mapa-titulo">${piezas.join('')}</svg>`;
 }
 
@@ -253,7 +262,7 @@ function lineaHtml(l: Linea, i: number): string {
   const criterios = l.criterios
     .map((cr) => `<div class="criterio"><p><b>${cr.id}</b> ${esc(cr.texto)}</p><ul class="casos">${cr.casos.map(casoHtml).join('')}</ul></div>`)
     .join('');
-  return `<article class="linea l${i + 1}" id="${l.req}">
+  return `<article class="linea l${(i % MAX_LINEAS) + 1}" id="${l.req}">
   <header><span class="placa-h">${l.req}</span><h3>${esc(l.titulo)}</h3></header>
   <p class="historia">${esc(l.historia)}</p>
   <details${i === 0 ? ' open' : ''}><summary><span data-i18n="l.ver"></span> <span class="cuenta">${l.criterios.length} <span data-i18n="l.criterios"></span>, ${l.casos.length} <span data-i18n="l.casos"></span>, ${auto} <span data-i18n="l.auto"></span></span></summary>${criterios || `<p class="vacio" data-i18n="l.sinPlan"></p>`}</details>
@@ -316,7 +325,7 @@ function main() {
 
   const datos = {
     blob: BLOB,
-    lineas: lineas.map((l) => ({ req: l.req, titulo: l.titulo, etapas: l.etapas })),
+    lineas: lineas.slice(0, MAX_LINEAS).map((l) => ({ req: l.req, titulo: l.titulo, etapas: l.etapas })),
   };
 
   const html = readFileSync(join(RAIZ, 'site', 'panel.html'), 'utf8')
