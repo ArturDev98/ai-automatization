@@ -12,6 +12,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # typescript-eslint aún no admite TypeScript 7; quitar cuando lo soporte.
+    ignore:
+      - dependency-name: typescript
+        versions: ['>=7']
     groups:
       desarrollo:
         dependency-type: development
