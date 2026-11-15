@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { leerCasos, type Caso, type Estado, type Trazabilidad } from './trazabilidad';
 
@@ -352,6 +352,7 @@ function main() {
     "form-action 'none'",
   ].join('; ');
   writeFileSync(join(salida, 'index.html'), html.replace('<!--CSP-->', `<meta http-equiv="Content-Security-Policy" content="${csp}">`));
+  for (const icono of ['favicon.svg', 'apple-touch-icon.png']) copyFileSync(join(RAIZ, 'site', icono), join(salida, icono));
   console.log(`Panel generado: site/dist/index.html (${lineas.length} líneas, ${bugs.length} bugs)`);
 }
 

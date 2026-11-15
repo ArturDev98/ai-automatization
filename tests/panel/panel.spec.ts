@@ -25,6 +25,18 @@ test.describe('Panel generado', () => {
     expect(errores).toEqual([]);
   });
 
+  test('el favicon se publica junto a la página y carga', async ({ page }) => {
+    await page.goto(PANEL);
+    const href = await page.locator('link[rel="icon"]').getAttribute('href');
+    const ancho = await page.evaluate(async (ruta) => {
+      const img = new Image();
+      img.src = ruta;
+      await img.decode();
+      return img.naturalWidth;
+    }, href!);
+    expect(ancho).toBeGreaterThan(0);
+  });
+
   test('elegir una estación muestra su parada', async ({ page }) => {
     await page.goto(PANEL);
 
@@ -53,7 +65,8 @@ test.describe('Panel generado', () => {
 
     await page.evaluate(async () => {
       for (let y = 0; y <= document.body.scrollHeight; y += 300) {
-        window.scrollTo(0, y);
+        // Instantáneo: con el scroll suave de la página, cada paso cortaría la animación del anterior.
+        window.scrollTo({ top: y, behavior: 'instant' });
         await new Promise((listo) => requestAnimationFrame(() => requestAnimationFrame(listo)));
       }
     });
@@ -81,6 +94,43 @@ test.describe('Panel generado', () => {
 
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(80);
     await expect(page.locator('.riel a[aria-current]')).toHaveText('Inicio');
+  });
+
+  test.describe('en el celular', () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test('la guía dice qué sección sigue y lleva a ella', async ({ page }) => {
+      await page.goto(PANEL);
+      const sigue = page.locator('#guia-sig');
+      await expect(page.locator('.riel')).toBeHidden();
+      await expect(sigue).toBeVisible();
+      await expect(sigue).toContainText('Mapa');
+
+      await sigue.click();
+
+      await expect(sigue).toContainText('Estaciones');
+      await expect(page.locator('#guia-paradas i.paso')).toHaveCount(2);
+    });
+
+    test('el botón flotante aparece al bajar y vuelve al inicio', async ({ page }) => {
+      await page.goto(PANEL);
+      const arriba = page.locator('#guia-arriba');
+      await expect(arriba).toBeHidden();
+
+      await page.locator('#incidencias').scrollIntoViewIfNeeded();
+      await expect(arriba).toBeVisible();
+      await arriba.click();
+
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(80);
+      await expect(arriba).toBeHidden();
+    });
+
+    test('al final de la página ya no anuncia otra sección', async ({ page }) => {
+      await page.goto(PANEL);
+      await page.locator('.pie').scrollIntoViewIfNeeded();
+      await expect(page.locator('#guia-sig')).toBeHidden();
+      await expect(page.locator('#guia-arriba')).toBeVisible();
+    });
   });
 
   test.describe('con movimiento reducido', () => {

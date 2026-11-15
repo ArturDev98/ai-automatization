@@ -110,7 +110,8 @@
     "n.inicio": "Inicio",
     "n.reparto": "Quién hizo qué",
     "n.riel": "Secciones de la página",
-    "f.arriba": "Volver al inicio"
+    "f.arriba": "Volver al inicio",
+    "g.sigue": "Sigue"
   },
   "en": {
     "n.salto": "Skip to the map",
@@ -223,6 +224,7 @@
     "n.inicio": "Start",
     "n.reparto": "Who did what",
     "n.riel": "Page sections",
-    "f.arriba": "Back to top"
+    "f.arriba": "Back to top",
+    "g.sigue": "Next"
   }
 }

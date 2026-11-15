@@ -43,6 +43,28 @@
     document.getElementById('riel').setAttribute('aria-label', t('n.riel'));
     document.title = idioma === 'es' ? 'Arturo Isaza · Flujo de QA con agentes' : 'Arturo Isaza · QA workflow with agents';
     pintarParada();
+    pintarGuia();
+  }
+
+  // Guía móvil: las secciones son las paradas del riel, en el mismo orden.
+  const secciones = Array.from(document.querySelectorAll('.riel a')).map((a) => a.getAttribute('href').slice(1));
+  const guia = document.getElementById('guia');
+  const guiaSig = document.getElementById('guia-sig');
+  const guiaArriba = document.getElementById('guia-arriba');
+  document.getElementById('guia-paradas').innerHTML = secciones.map(() => '<i></i>').join('');
+  let actual = secciones[0];
+
+  function pintarGuia() {
+    const i = Math.max(0, secciones.indexOf(actual));
+    const siguiente = secciones[i + 1];
+    const alFinal = innerHeight + scrollY >= document.documentElement.scrollHeight - 40;
+    guiaSig.classList.toggle('fuera', !siguiente || alFinal);
+    if (siguiente) {
+      guiaSig.href = '#' + siguiente;
+      document.getElementById('guia-nombre').textContent = t('n.' + siguiente);
+    }
+    document.querySelectorAll('#guia-paradas i').forEach((p, k) => p.classList.toggle('paso', k <= i));
+    guiaArriba.classList.toggle('fuera', scrollY < innerHeight * 0.6);
   }
 
   function elegir(i, e) {
@@ -84,7 +106,16 @@
       if (a.getAttribute('href') === '#' + id) a.setAttribute('aria-current', 'true');
       else a.removeAttribute('aria-current');
     });
+    actual = id;
+    pintarGuia();
   };
+  let pendiente = false;
+  addEventListener('scroll', () => {
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(() => { pendiente = false; pintarGuia(); });
+  }, { passive: true });
+  guia.hidden = false;
   if ('IntersectionObserver' in window) {
     const espia = new IntersectionObserver(
       (entradas) => {
