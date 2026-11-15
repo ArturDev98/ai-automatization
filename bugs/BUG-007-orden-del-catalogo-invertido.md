@@ -31,4 +31,4 @@ En el select de esa versión, cada etiqueta tiene el valor del sentido opuesto (
 - ![TC-004: Name (Z - A) con la lista en A-Z](evidencia/REQ-002-TC-004-2.png)
 - ![TC-005: Price (Low - High) con la lista de mayor a menor](evidencia/REQ-002-TC-005.png)
 - ![TC-005: Price (High - Low) con la lista de menor a mayor](evidencia/REQ-002-TC-005-2.png)
-- Trazas: `results/req002-bugs-orden/catalogo-Catálogo-búsqueda-c2344-ja-los-nombres-en-ese-orden-ui-bugs/trace.zip`, `…-640fe-…-ui-bugs/trace.zip`, `…-5858d-…-ui-bugs/trace.zip` y `…-58249-…-ui-bugs/trace.zip` (en `results/req002-bugs-orden/`).
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-002" --trace=on`.

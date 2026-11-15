@@ -28,4 +28,4 @@ No aparece `email-error` (`element(s) not found`). Sale `POST /users/login` con 
 ## Evidencia
 
 - ![TC-005: correo sin arroba](evidencia/REQ-001-TC-005.png)
-- Traza: `test-results/<prueba>-ui-bugs/trace.zip` (comando de BUG-001 con `--trace=on`).
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-001" --trace=on`.

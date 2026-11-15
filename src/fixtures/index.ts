@@ -12,7 +12,7 @@ export interface CarritosDeLaPrueba {
 interface Fixtures {
   /** Contexto contra la API, independiente del baseURL del proyecto (sirve también en `ui`). */
   api: APIRequestContext;
-  /** Cliente recién registrado en esta prueba; su clave nunca se escribe en reportes. */
+  /** Cliente desechable de esta prueba. Su clave puede quedar en trazas y reportes locales. */
   cliente: Cliente;
   /** Token de `POST /users/login` del `cliente`. */
   token: string;

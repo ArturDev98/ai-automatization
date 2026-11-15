@@ -29,4 +29,4 @@ Datos comprobados en vivo el 2026-11-14 durante la revisión, fuera de la suite:
 ## Evidencia
 
 - ![Catálogo de la tienda real con Price (High - Low) y el rango 1–100 aplicado](evidencia/REQ-002-H01.png)
-- Trazas de la corrida en `ui` (petición con `between=price,1,100`): `results/req002-evidencia-ui/catalogo-Catálogo-búsqueda-640fe-ja-los-nombres-en-ese-orden-ui/trace.zip` y `results/req002-evidencia-ui/catalogo-Catálogo-búsqueda-58249-s-precios-en-orden-numérico-ui/trace.zip`.
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui -g "@REQ-002" --trace=on`.

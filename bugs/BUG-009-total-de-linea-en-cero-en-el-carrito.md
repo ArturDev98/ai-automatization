@@ -30,4 +30,4 @@ TC-009 falla en la misma verificación, porque el plan la usa como precondición
 
 - ![TC-008: total de línea en $00.00](evidencia/REQ-002-TC-008.png)
 - ![TC-009: total de línea en $00.00 antes del cambio de cantidad](evidencia/REQ-002-TC-009.png)
-- Trazas: `results/req002-evidencia-bugs/compra-carrito-Carrito-can-a027a-tal-general-igual-a-la-suma-ui-bugs/` (TC-008) y `results/req002-evidencia-bugs/compra-carrito-Carrito-can-93af9-la-línea-y-el-total-general-ui-bugs/` (TC-009), con `test-failed-1.png` y `trace.zip`.
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-002" --trace=on`.

@@ -30,4 +30,4 @@ El registro no se acepta: la URL sigue en `/auth/register`, el campo clave muest
 ## Evidencia
 
 - ![TC-008: clave sin mayúscula aceptada](evidencia/REQ-001-TC-008.png)
-- Traza: `test-results/<prueba>-ui-bugs/trace.zip` (red: `POST /users/register 201`). La captura de la exploración manual sin minúscula, número y símbolo: sin dato en el repositorio.
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-001" --trace=on`. En la traza, `POST /users/register` responde 201.

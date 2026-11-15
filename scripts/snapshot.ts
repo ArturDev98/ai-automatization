@@ -1,6 +1,6 @@
 import { chromium } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, relative, resolve } from 'node:path';
 
 export interface ElementoSnapshot {
   dataTest: string;
@@ -56,6 +56,15 @@ async function main() {
   const [url, salida] = process.argv.slice(2);
   if (!url) {
     console.error('Uso: tsx scripts/snapshot.ts <url> [salida.json]');
+    process.exit(1);
+  }
+  if (!/^https:\/\//.test(url)) {
+    console.error('Solo se aceptan URLs https.');
+    process.exit(1);
+  }
+  // La salida no puede escaparse de la carpeta de artefactos.
+  if (salida && relative(resolve('artifacts'), resolve(salida)).startsWith('..')) {
+    console.error('La salida tiene que quedar dentro de artifacts/.');
     process.exit(1);
   }
   const json = JSON.stringify(await tomarSnapshot(url), null, 2);

@@ -27,4 +27,4 @@ No aparece `email-error` (`element(s) not found`). Sale `POST /users/login` con 
 ## Evidencia
 
 - ![TC-004: correo y clave vacíos](evidencia/REQ-001-TC-004.png)
-- Traza: `test-results/<prueba>-ui-bugs/trace.zip` (mismo comando que BUG-001 con `--trace=on`). Dato de la red: `POST /users/login 401` según la traza de la ejecución.
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-001" --trace=on`. En la traza, `POST /users/login` responde 401.

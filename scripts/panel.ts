@@ -1,4 +1,5 @@
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { leerCasos, type Caso, type Estado, type Trazabilidad } from './trazabilidad';
 
@@ -75,7 +76,9 @@ export function leerLineas(traza: Trazabilidad | null, bugs: Bug[]): Linea[] {
       const filas = traza?.filas.filter((f) => f.req === req) ?? [];
       const estadosDe = (id: string) => filas.flatMap((f) => f.casos).find((c) => c.id === id)?.estados ?? {};
       const casos: CasoPanel[] = (planMd ? leerCasos(planMd) : []).map((c) => ({ ...c, estados: estadosDe(c.id) }));
-      const criterios = ((ext?.criterios ?? []) as { id: string; texto: string }[]).map((cr) => ({
+      const criterios = ((ext?.criterios ?? []) as { id: string; texto: string }[])
+        .filter((cr) => /^CA-\d+$/.test(cr.id))
+        .map((cr) => ({
         ...cr,
         casos: casos.filter((c) => c.criterios.includes(cr.id)),
       }));
@@ -260,7 +263,7 @@ function casoHtml(c: CasoPanel): string {
 function lineaHtml(l: Linea, i: number): string {
   const auto = l.casos.filter((c) => c.tipo === 'automatizado').length;
   const criterios = l.criterios
-    .map((cr) => `<div class="criterio"><p><b>${cr.id}</b> ${esc(cr.texto)}</p><ul class="casos">${cr.casos.map(casoHtml).join('')}</ul></div>`)
+    .map((cr) => `<div class="criterio"><p><b>${esc(cr.id)}</b> ${esc(cr.texto)}</p><ul class="casos">${cr.casos.map(casoHtml).join('')}</ul></div>`)
     .join('');
   return `<article class="linea l${(i % MAX_LINEAS) + 1}" id="${l.req}">
   <header><span class="placa-h">${l.req}</span><h3>${esc(l.titulo)}</h3></header>
@@ -290,14 +293,14 @@ function resumenCorrida(traza: Trazabilidad | null): string {
     .map((p) => `<tr><th scope="row"><code>${esc(p)}</code><small data-i18n="p.${esc(p)}"></small></th>${celda(p, 'pasa')}${celda(p, 'bug-conocido')}${celda(p, 'falla')}${celda(p, 'inestable')}</tr>`)
     .join('');
   return `<div class="tabla-scroll"><table class="corrida"><thead><tr><th scope="col" data-i18n="c.proyecto"></th><th scope="col" data-i18n="s.pasa"></th><th scope="col" data-i18n="s.bug-conocido"></th><th scope="col" data-i18n="s.falla"></th><th scope="col" data-i18n="s.inestable"></th></tr></thead><tbody>${filas}</tbody></table></div>
-  <p class="nota"><span data-i18n="c.generado"></span> <time datetime="${traza.generado}">${traza.generado.slice(0, 16).replace('T', ' ')} UTC</time>.</p>`;
+  <p class="nota"><span data-i18n="c.generado"></span> <time datetime="${esc(traza.generado)}">${esc(traza.generado.slice(0, 16).replace('T', ' '))} UTC</time>.</p>`;
 }
 
 function bugsHtml(bugs: Bug[]): string {
   if (!bugs.length) return `<p class="vacio" data-i18n="b.vacio"></p>`;
   return `<ul class="avisos">${bugs
     .map(
-      (b) => `<li><a href="${BLOB}${b.archivo}"><code>${b.id}</code><span class="aviso-t">${esc(b.titulo)}</span>
+      (b) => `<li><a href="${esc(BLOB + encodeURI(b.archivo))}"><code>${esc(b.id)}</code><span class="aviso-t">${esc(b.titulo)}</span>
       <span class="aviso-m">${esc(b.campos['requisito'] ?? '')} / ${esc(b.campos['casos'] ?? '')} / <span data-i18n="b.severidad"></span> ${esc(b.campos['severidad'] ?? '')}</span></a></li>`,
     )
     .join('')}</ul>`;
@@ -311,17 +314,8 @@ function main() {
   const salida = join(RAIZ, 'site', 'dist');
   mkdirSync(salida, { recursive: true });
 
-  const reportes: [string, string][] = [
-    ['playwright-report', 'reporte'],
-    ['playwright-report-bugs', 'reporte-bugs'],
-  ];
-  const enlaces = reportes
-    .filter(([origen]) => existsSync(join(RAIZ, origen, 'index.html')))
-    .map(([origen, destino]) => {
-      cpSync(join(RAIZ, origen), join(salida, destino), { recursive: true });
-      return `<a class="boton sec" href="${destino}/index.html" data-i18n="c.${destino}"></a>`;
-    })
-    .join('');
+  // Los reportes de Playwright no se publican: sus trazas guardan claves de clientes de prueba.
+  const enlaces = `<a class="boton sec" href="https://github.com/${REPO}/actions/workflows/qa.yml" rel="noopener" data-i18n="c.corridas"></a>`;
 
   const datos = {
     blob: BLOB,
@@ -339,7 +333,18 @@ function main() {
     .replaceAll('{{REPO}}', `https://github.com/${REPO}`)
     .replace('"__DATOS__"', () => JSON.stringify(datos).replace(/</g, '\\u003c'));
 
-  writeFileSync(join(salida, 'index.html'), html);
+  // CSP con el hash de cada script en línea: nada más puede ejecutarse en la página.
+  const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => `'sha256-${createHash('sha256').update(m[1]).digest('base64')}'`);
+  const csp = [
+    "default-src 'none'",
+    `script-src ${hashes.join(' ')}`,
+    "style-src 'unsafe-inline' https://fonts.googleapis.com",
+    'font-src https://fonts.gstatic.com',
+    "img-src 'self' data:",
+    "base-uri 'none'",
+    "form-action 'none'",
+  ].join('; ');
+  writeFileSync(join(salida, 'index.html'), html.replace('<!--CSP-->', `<meta http-equiv="Content-Security-Policy" content="${csp}">`));
   console.log(`Panel generado: site/dist/index.html (${lineas.length} líneas, ${bugs.length} bugs)`);
 }
 

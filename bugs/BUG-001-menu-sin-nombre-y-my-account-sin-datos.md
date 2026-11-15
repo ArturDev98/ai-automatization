@@ -30,4 +30,4 @@ La URL llega a `/#/account` y la página es "My account", pero `nav-user-menu` m
 
 - ![TC-001: My account con User Data not found](evidencia/REQ-001-TC-001.png)
 - ![TC-006: My account con User Data not found tras registro e inicio de sesión](evidencia/REQ-001-TC-006.png)
-- Traza: `test-results/<prueba>-ui-bugs/trace.zip` (se genera con `npx playwright test --project=ui-bugs -g "@REQ-001" --trace=on`). La ruta exacta de la traza de esta corrida: sin dato en el repositorio.
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-001" --trace=on`.

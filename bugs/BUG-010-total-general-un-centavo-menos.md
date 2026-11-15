@@ -28,4 +28,4 @@ Es la precondición de TC-010, así que el paso de quitar un producto no se lleg
 ## Evidencia
 
 - ![TC-010: total general en $76.70 en lugar de $76.71](evidencia/REQ-002-TC-010.png)
-- Traza: `results/req002-evidencia-bugs/compra-carrito-Carrito-can-e8e4e--lista-y-actualiza-el-total-ui-bugs/trace.zip`
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-002" --trace=on`.

@@ -28,4 +28,4 @@ La URL se queda en `/#/auth/register` con el mensaje `Password must be minimal 1
 ## Evidencia
 
 - ![TC-009: clave de 8 caracteres rechazada con mensaje de 10](evidencia/REQ-001-TC-009.png)
-- Traza: `test-results/<prueba>-ui-bugs/trace.zip` (comando de BUG-001 con `--trace=on`).
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-001" --trace=on`.

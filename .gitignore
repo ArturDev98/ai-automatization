@@ -5,6 +5,4 @@ results/
 site/dist/
 .env
 *.log
-.impeccable/mocks/
-.impeccable/decision-payload.json
-.impeccable/review/
+.impeccable/

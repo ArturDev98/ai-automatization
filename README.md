@@ -120,8 +120,9 @@ site/                plantilla del panel
 
 - La aplicación es de terceros: se regenera cada cierto tiempo y puede responder con errores
   durante unos minutos. En CI las pruebas se reintentan dos veces; en local, ninguna.
-- Cada corrida registra sus propios clientes de prueba; las cuentas de demostración compartidas no
-  se usan porque otras personas las bloquean.
+- Las pruebas registran sus propios clientes en cada corrida y no usan las cuentas de demostración
+  compartidas, que otras personas bloquean. Sus trazas pueden contener la clave de esos clientes
+  desechables, por eso los reportes de Playwright no se publican.
 - Los agentes proponen; qué es un bug y qué entra al plan lo decide una persona.
 - Los casos marcados como manuales en los planes están diseñados, no ejecutados.
 

@@ -27,4 +27,4 @@ Tras un clic en `increase-quantity`, `quantity` pasa de 1 a 2.
 ## Evidencia
 
 - ![TC-007: quantity sigue en 1 tras pulsar increase-quantity](evidencia/REQ-002-TC-007.png)
-- Traza: `results/req002-evidencia-bugs/compra-carrito-Carrito-can-5bc35-uctos-distintos-y-no-líneas-ui-bugs/trace.zip`
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-002" --trace=on`.

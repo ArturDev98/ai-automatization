@@ -30,4 +30,4 @@ En la traza, `POST https://api-with-bugs.practicesoftwaretesting.com/invoices` r
 ## Evidencia
 
 - ![TC-012: pago exitoso sin número de factura](evidencia/REQ-002-TC-012.png)
-- Traza (pestaña Network con el 500 de `/invoices`): `results/req002-evidencia-bugs/compra-pago-Compra-con-ses-f3ed5-exitoso-y-número-de-factura-ui-bugs/trace.zip`
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-002" --trace=on`. En la traza, `POST /invoices` responde 500.

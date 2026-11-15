@@ -26,4 +26,4 @@ Las tarjetas quedan en cero, pero el mensaje no aparece: `expect(locator).toBeVi
 ## Evidencia
 
 - ![TC-002: búsqueda sin coincidencias sin mensaje](evidencia/REQ-002-TC-002.png)
-- Traza: `results/req002-evidencia-bugs/catalogo-Catálogo-búsqueda-65ffa-l-mensaje-y-ningún-producto-ui-bugs/trace.zip`
+- Traza: no versionada. Se regenera con `npx playwright test --project=ui-bugs -g "@REQ-002" --trace=on`.
