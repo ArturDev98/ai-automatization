@@ -14,7 +14,8 @@
     "panel": "tsx scripts/panel.ts",
     "test:unit": "node --import tsx --test scripts/*.test.ts",
     "test:panel": "playwright test --project=panel",
-    "repeticion": "tsx scripts/repeticion.ts"
+    "repeticion": "tsx scripts/repeticion.ts",
+    "gif": "tsx scripts/gif.ts"
   },
   "license": "MIT",
   "devDependencies": {

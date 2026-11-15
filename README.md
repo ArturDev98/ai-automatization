@@ -11,6 +11,17 @@
 
 ![Panel del flujo: cada requisito como una línea de metro y cada agente como una estación](docs/panel.png)
 
+### Los agentes en acción
+
+![Repetición de la corrida real de REQ-004: el tren pasa por cada agente y se detiene en cada revisión](docs/repeticion.gif)
+
+La corrida real de `/qa-flow REQ-004` del 2026-11-15: 102 minutos condensados en el GIF. Se ve
+qué hizo cada agente y dónde se frenó el trabajo: una puerta que no pasó, la aprobación del plan,
+un caso nuevo que pedí a mitad de camino y una prueba inestable que el CI destapó. Los datos
+salen del registro de Claude Code con [`scripts/repeticion.ts`](scripts/repeticion.ts): horas,
+herramientas, archivos y cifras, sin prompts ni salidas.
+[Verla en el panel, con pausa y barra →](https://arturdev98.github.io/ai-automatization/#accion)
+
 Un requisito entra por `requirements/` y sale probado: plan de pruebas, pruebas automatizadas en
 Playwright, reporte, bugs y una matriz que demuestra que ningún criterio de aceptación se quedó sin
 cubrir. Cada etapa la hace un agente distinto y deja un artefacto versionado que dice qué modelo lo
@@ -103,6 +114,9 @@ npm run test:bugs        # la suite de interfaz contra la versión con bugs
 npm run trazabilidad     # matriz en docs/trazabilidad.md; falla si falta cobertura
 npm run panel            # panel estático en site/dist
 npm run test:panel       # comprueba el panel generado
+
+npm run repeticion -- <sesion.jsonl> REQ-00X   # repetición desde el registro local de Claude Code
+npm run gif              # docs/repeticion.gif desde el panel; necesita ffmpeg en el PATH
 ```
 
 Para llevar un requisito nuevo por el flujo, con [Claude Code](https://claude.com/claude-code):
@@ -120,7 +134,7 @@ bugs/                defectos encontrados, con pasos y evidencia
 tests/ui  tests/api  pruebas de Playwright
 src/                 page objects, fixtures, clientes de API y datos
 scripts/             snapshot, trazabilidad y generador del panel
-site/                plantilla del panel
+site/                plantilla del panel y repeticiones/, la corrida grabada
 ci/                  Toolshop en contenedores para el CI
 ```
 
