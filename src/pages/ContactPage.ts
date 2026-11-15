@@ -62,11 +62,21 @@ export class ContactPage {
 
   /** Abre la pantalla y espera a que aplique el resultado de la comprobación de sesión. */
   async abrir(): Promise<void> {
-    const sesion = this.page.waitForResponse((r) => esComprobacionDeSesion(r.request()));
     await abrirLimpio(this.page, this.variante, '/contact');
-    // Sin sesión, nombre, apellido y correo solo pasan a obligatorios tras el 401 de GET /users/me (H-1).
-    if ((await sesion).ok()) await expect(this.nombre).toBeHidden();
-    else await expect(this.nombre).toHaveClass(/\bng-invalid\b/);
+    await expect(this.enviar).toBeVisible();
+    // Con sesión el nombre se oculta; sin ella pasa a obligatorio tras el 401 de GET /users/me (H-1).
+    // Visible y sin `ng-invalid` es el estado intermedio, en el que el formulario envía sin esos datos.
+    await expect.poll(() => this.estadoDeSesion(), { message: 'la pantalla no aplicó la comprobación de sesión' })
+      .not.toBe('pendiente');
+  }
+
+  // Sin espera propia: `evaluateAll` lee el DOM tal como está y `expect.poll` reintenta.
+  private estadoDeSesion(): Promise<'con sesión' | 'sin sesión' | 'pendiente'> {
+    return this.nombre.evaluateAll((campos) => {
+      const visibles = campos.filter((c) => c.checkVisibility());
+      if (visibles.length === 0) return 'con sesión';
+      return visibles.every((c) => c.classList.contains('ng-invalid')) ? 'sin sesión' : 'pendiente';
+    });
   }
 
   /** Abre la pantalla sin esperar la comprobación de sesión; para el envío temprano de TC-014. */

@@ -37,7 +37,21 @@ Pruebas:
 
 ## Resultados
 
-Corridas con el código final, con TC-014 incluido y en este orden:
+Corridas con el código final, tras el arreglo de la inestabilidad de TC-009 en CI (ver Decisiones
+técnicas), en este orden:
+
+- `npx playwright test --project=ui --project=ui-bugs -g "@REQ-004" --repeat-each=5 --workers=4`: **120 de
+  120 como se esperaba** (12 pruebas de interfaz × 2 proyectos × 5; `unexpected: 0`), 4,2 min. TC-009 y
+  TC-010 (con sesión) dieron lo esperado las 5 veces en cada proyecto.
+- `npm test` completo: **57 de 57 como se esperaba** (`unexpected: 0`, `flaky: 0`), 1,4 min.
+- `npm run -s test:bugs` completo: **37 de 37 como se esperaba** (`unexpected: 0`, `flaky: 0`).
+- `npm run -s lint` y `npm run -s typecheck`: limpios.
+
+En local no hay reintentos (`retries: 0`), así que una inestabilidad habría salido como `unexpected`. Los
+contenedores 2.5, donde apareció la inestabilidad, no se pudieron correr aquí (no hay Docker): queda
+confirmarlo en la próxima corrida de CI.
+
+Corrida anterior, con TC-014 recién agregado y la espera que luego salió inestable en CI:
 
 - `npx playwright test --project=ui --project=api -g "@REQ-004" --repeat-each=3`: **42 de 42 como se
   esperaba** (14 pruebas × 3; `unexpected: 0`, `flaky: 0`). Por repetición pasan 11 y 3 son fallos
@@ -90,7 +104,8 @@ y una línea con lo esperado y lo obtenido.
 | H-2 | TC-011 (CA-2, CA-4) | Tras corregir correo, asunto y mensaje, un clic en `contact-submit` envía una vez y muestra la confirmación | El primer clic se pierde. El mensaje valida al perder el foco: con el `mousedown` desaparece el error del mensaje, `contact-submit` sube 66 px (de y=490 a y=424) y el `mouseup` cae fuera del botón. No sale `POST /messages` ni hay confirmación; hace falta un segundo clic. Con un `mouse.down`/`mouse.up` manual en las mismas coordenadas pasa lo mismo, así que un usuario con ratón también lo sufre | Caja del botón antes y después del `mousedown`; red. Si se sale antes del campo con Tab, el primer clic sí envía |
 | H-3 | TC-012 (CA-4) | `POST /messages` con un mensaje de 49 caracteres no responde 2xx y señala `message` | 200 y el mensaje se guarda con `id`. La regla del mínimo vive solo en el formulario. El correo inválido sí se rechaza: 422 `{"email":["The email field must be a valid email address."]}`. El plan lo deja para la revisión humana (pregunta 8) | Respuesta de la API |
 
-Sobre H-1: TC-002 y TC-003 esperan la respuesta de `GET /users/me` y prueban el formulario estable. La
+Sobre H-1: TC-002 y TC-003 esperan a que la pantalla aplique la comprobación de sesión y prueban el
+formulario estable. La
 ventana anterior la cubre **TC-014**, agregado al plan por la revisión humana (historial 2). Retiene esa
 respuesta, envía con nombre, apellido y correo vacíos, y queda con `test.fail` en `ui` y `ui-bugs`. En
 las dos versiones se obtiene lo mismo: no aparece `first-name-error`, sale `POST /messages` → 200 con
@@ -145,22 +160,33 @@ No hay `test.skip`.
 
 ## Decisiones técnicas
 
-- **Espera de la comprobación de sesión en `ContactPage.abrir()` (H-1).** Antes de navegar se registra
-  `waitForResponse` sobre `GET /users/me`, filtrado por método y ruta, no por host. Después se espera, con un
-  assert web-first, el estado que la app aplica tras esa respuesta:
-  - Sin sesión (401): `first-name` vacío pasa a `ng-invalid` (`toHaveClass(/\bng-invalid\b/)`). Es la señal
-    de que nombre, apellido y correo ya son obligatorios. Antes del 401 el campo está `ng-valid`, porque nace
-    sin validadores.
-  - Con sesión (200): `first-name` deja de mostrarse.
+- **Espera de la comprobación de sesión en `ContactPage.abrir()` (H-1).** Tras navegar, `abrir()` espera a
+  que `contact-submit` sea visible. Después, con `expect.poll`, espera a que `first-name` salga del estado
+  intermedio y llegue a uno de estos dos:
+  - **Con sesión:** `first-name` no se ve, porque la app ocultó los campos tras el 200.
+  - **Sin sesión:** `first-name` se ve y tiene `ng-invalid`. Es la señal de que la app, tras el 401, ya
+    convirtió en obligatorios nombre, apellido y correo.
 
-  La clase de Angular solo se lee en un assert sobre un locator por `data-test`, no se usa como selector. Es
-  el único dato del DOM que marca el cambio sin sesión. `GET /users/me` sale varias veces (menú, chat,
-  contacto) y no se sabe cuál es la de contacto. Por eso la respuesta solo dice qué estado esperar, y es el
-  assert el que sincroniza.
+  El estado intermedio es `first-name` visible y `ng-valid`: el campo nace sin validadores, y en ese
+  momento el formulario envía sin esos datos. Ese estado no se acepta.
 
-  Sin esta espera, TC-003 falla en 5 de 6 intentos por H-1. La primera versión esperaba `networkidle` y se
-  descartó: con todas las suites en paralelo agotaba el tiempo. La corrección se comprobó sin sesión
-  (TC-001 a TC-008 y TC-011), con sesión (TC-009 y TC-010) y en la variante `bugs`.
+  El estado se lee con `evaluateAll`, que no espera por su cuenta, y `expect.poll` reintenta. No depende de
+  qué respuesta de `GET /users/me` llegue primero ni de cuántas salgan (menú, chat, contacto). La clase de
+  Angular solo se lee sobre un locator por `data-test`; no se usa como selector. Es el único dato del DOM
+  que marca el cambio sin sesión.
+
+  Sin esta espera, TC-003 falla en 5 de 6 intentos por H-1. Historia de la espera:
+  1. **`networkidle`.** Se descartó porque, con todas las suites en paralelo, agotaba los 45 s.
+  2. **Rama según la primera respuesta.** Se registraba `waitForResponse` sobre `GET /users/me` y, según
+     fuera `ok()` o no, se esperaba el nombre oculto o con `ng-invalid`. **Salió inestable en CI**
+     (contenedores 2.5, `ui-bugs`): TC-009 falló al primer intento y pasó en el reintento. Con sesión
+     iniciada, la primera `GET /users/me` atrapada no fue `ok()` (no se sabe cuál de las varias era).
+     `abrir()` tomó la rama sin sesión y esperó `ng-invalid` en un `first-name` que la app ya había
+     ocultado (`element(s) not found`).
+  3. **Estado actual, descrito arriba.** No decide la rama de antemano: acepta cualquiera de los dos
+     estados finales.
+
+  `abrirSinEsperarSesion()` y la retención de TC-014 no cambiaron.
 - **TC-014: cómo se fija el momento.** Antes de navegar, `retenerSesion()` registra `page.route` sobre la
   ruta `/users/me` (solo `GET`, por ruta y no por host; lo demás sigue con `fallback()`) y deja **todas**
   esas peticiones sin responder. No se inventa ninguna respuesta. Después de los asserts, `soltar()` quita
