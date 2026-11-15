@@ -108,7 +108,7 @@ test.describe('Panel generado', () => {
 
       await sigue.click();
 
-      await expect(sigue).toContainText('Estaciones');
+      await expect(sigue).toContainText('En acción');
       await expect(page.locator('#guia-paradas i.paso')).toHaveCount(2);
     });
 

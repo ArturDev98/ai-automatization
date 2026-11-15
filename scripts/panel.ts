@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { comprimir, esc, repeticionHtml } from './panel-repeticion';
+import type { Repeticion } from './repeticion';
 import { leerCasos, type Caso, type Estado, type Trazabilidad } from './trazabilidad';
 
 type ClaveEtapa = 'extractor' | 'planner' | 'revision' | 'automator' | 'reporter';
@@ -39,7 +41,6 @@ const REPO = process.env.GITHUB_REPOSITORY ?? 'ArturDev98/ai-automatization';
 const BLOB = `https://github.com/${REPO}/blob/main/`;
 const ETAPAS: ClaveEtapa[] = ['extractor', 'planner', 'revision', 'automator', 'reporter'];
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // Todo se lee con saltos LF: el navegador los normaliza y el hash de la CSP tiene que coincidir.
 const texto = (ruta: string) => readFileSync(ruta, 'utf8').replace(/\r\n/g, '\n');
 const leer = (ruta: string) => (existsSync(join(RAIZ, ruta)) ? texto(join(RAIZ, ruta)) : null);
@@ -308,6 +309,14 @@ function bugsHtml(bugs: Bug[]): string {
     .join('')}</ul>`;
 }
 
+// La repetición la genera `npm run repeticion` en local y queda versionada; las notas no se publican.
+export function leerRepeticion(): Repeticion | null {
+  const dir = join(RAIZ, 'site', 'repeticiones');
+  if (!existsSync(dir)) return null;
+  const archivo = readdirSync(dir).filter((f) => /^REQ-\d+\.json$/.test(f)).sort()[0];
+  return archivo ? JSON.parse(texto(join(dir, archivo))) : null;
+}
+
 function main() {
   const trazaJson = leer('results/trazabilidad.json');
   const traza: Trazabilidad | null = trazaJson ? JSON.parse(trazaJson) : null;
@@ -319,16 +328,28 @@ function main() {
   // Los reportes de Playwright no se publican: sus trazas guardan claves de clientes de prueba.
   const enlaces = `<a class="boton sec" href="https://github.com/${REPO}/actions/workflows/qa.yml" rel="noopener" data-i18n="c.corridas"></a>`;
 
+  const rep = leerRepeticion();
   const datos = {
     blob: BLOB,
     lineas: lineas.slice(0, MAX_LINEAS).map((l) => ({ req: l.req, titulo: l.titulo, etapas: l.etapas })),
+    repeticion: rep && {
+      req: rep.req,
+      inicio: rep.inicio,
+      fin: rep.fin,
+      actores: rep.actores,
+      eventos: comprimir(rep.eventos),
+    },
   };
+  const navAccion = rep ? '<a href="#accion" data-i18n="n.accion"></a>' : '';
 
   const textos = JSON.parse(texto(join(RAIZ, 'site', 'textos.json'))) as Record<string, Record<string, string>>;
   const armado = texto(join(RAIZ, 'site', 'panel.html'))
     .replace('/*CSS*/', () => texto(join(RAIZ, 'site', 'panel.css')))
     .replace('/*JS*/', () => texto(join(RAIZ, 'site', 'panel.js')))
     .replace('<!--MAPA-->', () => mapa(lineas, false) + mapa(lineas, true))
+    .replace('<!--ACCION-->', () => repeticionHtml(rep))
+    .replace('<!--NAV-ACCION-->', () => navAccion)
+    .replace('<!--RIEL-ACCION-->', () => (navAccion ? `<li>${navAccion}</li>` : ''))
     .replace('<!--LINEAS-->', () => lineas.map(lineaHtml).join('\n'))
     .replace('<!--BUGS-->', () => bugsHtml(bugs))
     .replace('<!--CORRIDA-->', () => resumenCorrida(traza))
