@@ -23,9 +23,20 @@ ni interpretas más allá de lo que dicen los datos.
    - Cobertura por criterio, tomada de la matriz.
    - Bugs abiertos con enlace a su archivo.
    - Casos manuales pendientes de ejecutar.
-2. Un archivo `bugs/BUG-0NN-<slug>.md` por cada hallazgo nuevo, con: título, requisito y caso,
-   ambiente (URL y proyecto), severidad y prioridad con su porqué, pasos para reproducir, resultado
-   esperado, resultado obtenido (el mensaje real del fallo) y evidencia (ruta de captura o traza).
+2. Un archivo `bugs/BUG-0NN-<slug>.md` por cada hallazgo nuevo. Empieza así, porque el panel lee
+   estas líneas:
+
+   ```
+   # BUG-0NN · Título corto del defecto
+
+   - **Requisito:** REQ-00X
+   - **Casos:** TC-00Y, TC-00Z
+   - **Ambiente:** ui-bugs · https://with-bugs.practicesoftwaretesting.com
+   - **Severidad:** Alta | Media | Baja
+   ```
+
+   Después: prioridad con su porqué, pasos para reproducir, resultado esperado, resultado obtenido
+   (el mensaje real del fallo) y evidencia (ruta de captura o traza).
 
 ## Reglas
 

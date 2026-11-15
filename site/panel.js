@@ -1,0 +1,160 @@
+(() => {
+  const T = {
+    es: {
+      'n.salto': 'Saltar al mapa', 'n.mapa': 'Mapa', 'n.estaciones': 'Estaciones', 'n.lineas': 'Líneas', 'n.incidencias': 'Incidencias', 'n.servicio': 'Servicio', 'n.contacto': 'Contactar',
+      'h.titulo': 'De un requisito a pruebas automatizadas, estación por estación.',
+      'h.entrada': 'Este es mi flujo de QA con agentes de IA. Cada requisito recorre cuatro estaciones y en cada una un modelo distinto deja un artefacto firmado. Antes de automatizar, el plan lo reviso yo.',
+      'h.recorrer': 'Recorrer el mapa', 'h.repo': 'Ver el repositorio',
+      'm.titulo': 'Mapa del flujo', 'm.ayuda': 'Cada línea es un requisito. Elige una estación para ver qué dejó ahí su agente.',
+      'e.extractor': 'Extractor', 'e.planner': 'Planner', 'e.revision': 'Revisión humana', 'e.automator': 'Automator', 'e.reporter': 'Reporter',
+      'm.extractor': 'Lee con Haiku', 'm.planner': 'Diseña con Fable', 'm.revision': 'Aprueba una persona', 'm.automator': 'Automatiza con Opus', 'm.reporter': 'Reporta con Haiku',
+      'o.hecho': 'Completada', 'o.pendiente': 'Aún sin recorrer', 'o.falla': 'Con fallos',
+      'o.abrir': 'Abrir el artefacto en GitHub', 'o.sinArtefacto': 'Esta estación todavía no dejó artefacto para este requisito.',
+      'd.criterios': 'Criterios de aceptación', 'd.pantallas': 'Pantallas leídas', 'd.endpoints': 'Endpoints consultados', 'd.ambiguedades': 'Ambigüedades anotadas',
+      'd.casos': 'Casos diseñados', 'd.automatizados': 'Automatizados', 'd.manuales': 'Manuales', 'd.prioridadAlta': 'De prioridad alta',
+      'd.reviso': 'Revisó', 'd.decision': 'Decisión', 'd.cambios': 'Cambios pedidos',
+      'd.pruebas': 'Ejecuciones', 'd.pasan': 'Pasan', 'd.fallan': 'Fallan', 'd.bugConocido': 'Fallan por bug reportado',
+      't.estaciones': 'Qué pasa en cada estación', 't.estacionesBajada': 'Cada agente tiene un solo trabajo y una lista de cosas que no puede hacer. El modelo se elige por el tipo de tarea: leer, razonar o escribir código.',
+      'x.estacion': 'Estación', 'x.modelo': 'Quién', 'x.hace': 'Hace', 'x.noPuede': 'No puede', 'x.persona': 'Una persona',
+      'x.extractorHace': 'Lee el requisito y la aplicación real, y deja criterios, selectores y endpoints en un JSON.', 'x.extractorNo': 'Opinar, diseñar casos o usar datos de memoria.',
+      'x.plannerHace': 'Diseña los casos con su técnica, su prioridad por riesgo y qué queda manual.', 'x.plannerNo': 'Escribir código o inventar un resultado esperado que el requisito no da.',
+      'x.revisionHace': 'Lee el plan, pide cambios o lo aprueba. Queda registrado quién y cuándo.', 'x.revisionNo': 'Saltarse: sin aprobación no se automatiza.',
+      'x.automatorHace': 'Convierte los casos en pruebas de Playwright, las corre y las estabiliza.', 'x.automatorNo': 'Debilitar un assert para que pase. Si la aplicación falla, lo reporta.',
+      'x.reporterHace': 'Lee los resultados y redacta el reporte y los bugs con sus pasos.', 'x.reporterNo': 'Cambiar pruebas o dar una cifra que no esté en los resultados.',
+      't.lineas': 'Las líneas, criterio por criterio', 't.lineasBajada': 'La trazabilidad completa: cada criterio de aceptación, los casos que lo cubren y cómo le fue a cada uno en la última corrida.',
+      'l.ver': 'Criterios y casos', 'l.criterios': 'criterios', 'l.casos': 'casos', 'l.auto': 'automatizados', 'l.sinPlan': 'Este requisito todavía no tiene plan de pruebas.',
+      's.pasa': 'Pasa', 's.falla': 'Falla', 's.bug-conocido': 'Bug reportado', 's.inestable': 'Inestable', 's.omitido': 'Omitido', 's.manual': 'Manual', 's.pendiente': 'Sin ejecutar',
+      't.incidencias': 'Incidencias', 't.incidenciasBajada': 'La misma suite corre contra una versión de la tienda con defectos sembrados. Lo que encuentra queda reportado aquí.',
+      'b.vacio': 'Todavía no hay incidencias registradas. Aparecen cuando la suite corre contra la versión con bugs sembrados.', 'b.severidad': 'severidad',
+      't.servicio': 'Estado del servicio', 't.servicioBajada': 'Resultado de la última corrida, por proyecto. Estas cifras las calcula un script a partir del reporte de Playwright.',
+      'c.sinCorrida': 'Todavía no hay una corrida registrada. Este cuadro se llena solo cuando corre la suite.', 'c.proyecto': 'Proyecto', 'c.generado': 'Matriz generada el',
+      'c.reporte': 'Abrir el reporte de Playwright', 'c.reporte-bugs': 'Reporte de la versión con bugs',
+      'p.ui': 'Interfaz de la tienda', 'p.api': 'API de la tienda', 'p.ui-bugs': 'Interfaz de la versión con bugs',
+      't.reparto': 'Quién hizo qué',
+      'r.ia': 'Los agentes', 'r.ia1': 'Extrajeron criterios, selectores y endpoints de la aplicación real.', 'r.ia2': 'Diseñaron los casos de prueba y su prioridad.', 'r.ia3': 'Escribieron y estabilizaron las pruebas de Playwright.', 'r.ia4': 'Redactaron los reportes y los bugs.',
+      'r.yo': 'Yo', 'r.yo1': 'Escribí los requisitos y elegí la aplicación bajo prueba.', 'r.yo2': 'Definí el flujo, las reglas de cada agente y qué modelo usa.', 'r.yo3': 'Revisé y aprobé cada plan antes de automatizar.', 'r.yo4': 'Revisé el código y los hallazgos antes de publicarlos.',
+      'r.script': 'Un script, no un modelo', 'r.script1': 'Calcula la matriz de trazabilidad.', 'r.script2': 'Falla el pipeline si un criterio queda sin caso o un caso sin prueba.', 'r.script3': 'Genera esta página con los resultados reales.',
+      'f.rol': 'QA y automatización de pruebas con Playwright y agentes de IA.', 'f.repo': 'Código de este proyecto',
+      'f.nota': 'La aplicación bajo prueba es Toolshop, una demo pública de practicesoftwaretesting.com. No es mía ni tengo relación con sus autores.',
+    },
+    en: {
+      'n.salto': 'Skip to the map', 'n.mapa': 'Map', 'n.estaciones': 'Stations', 'n.lineas': 'Lines', 'n.incidencias': 'Incidents', 'n.servicio': 'Service', 'n.contacto': 'Contact',
+      'h.titulo': 'From a requirement to automated tests, one station at a time.',
+      'h.entrada': 'This is my QA workflow with AI agents. Each requirement travels through four stations, and at each one a different model leaves a signed artifact. Before anything is automated, I review the plan myself.',
+      'h.recorrer': 'Ride the map', 'h.repo': 'View the repository',
+      'm.titulo': 'Workflow map', 'm.ayuda': 'Each line is a requirement. Pick a station to see what its agent left there.',
+      'e.extractor': 'Extractor', 'e.planner': 'Planner', 'e.revision': 'Human review', 'e.automator': 'Automator', 'e.reporter': 'Reporter',
+      'm.extractor': 'Reads with Haiku', 'm.planner': 'Designs with Fable', 'm.revision': 'A person approves', 'm.automator': 'Automates with Opus', 'm.reporter': 'Reports with Haiku',
+      'o.hecho': 'Completed', 'o.pendiente': 'Not reached yet', 'o.falla': 'Has failures',
+      'o.abrir': 'Open the artifact on GitHub', 'o.sinArtefacto': 'This station has not left an artifact for this requirement yet.',
+      'd.criterios': 'Acceptance criteria', 'd.pantallas': 'Screens read', 'd.endpoints': 'Endpoints queried', 'd.ambiguedades': 'Ambiguities noted',
+      'd.casos': 'Cases designed', 'd.automatizados': 'Automated', 'd.manuales': 'Manual', 'd.prioridadAlta': 'High priority',
+      'd.reviso': 'Reviewed by', 'd.decision': 'Decision', 'd.cambios': 'Changes requested',
+      'd.pruebas': 'Executions', 'd.pasan': 'Passing', 'd.fallan': 'Failing', 'd.bugConocido': 'Failing on a reported bug',
+      't.estaciones': 'What happens at each station', 't.estacionesBajada': 'Each agent has one job and a list of things it may not do. The model is chosen by the kind of task: reading, reasoning or writing code.',
+      'x.estacion': 'Station', 'x.modelo': 'Who', 'x.hace': 'Does', 'x.noPuede': 'May not', 'x.persona': 'A person',
+      'x.extractorHace': 'Reads the requirement and the real application, and records criteria, selectors and endpoints as JSON.', 'x.extractorNo': 'Give opinions, design cases or use facts from memory.',
+      'x.plannerHace': 'Designs the cases with their technique, risk-based priority and what stays manual.', 'x.plannerNo': 'Write code or invent an expected result the requirement does not give.',
+      'x.revisionHace': 'Reads the plan, asks for changes or approves it. Who and when is recorded.', 'x.revisionNo': 'Be skipped: nothing is automated without approval.',
+      'x.automatorHace': 'Turns the cases into Playwright tests, runs them and makes them stable.', 'x.automatorNo': 'Weaken an assertion to make it pass. If the application fails, it reports it.',
+      'x.reporterHace': 'Reads the results and writes the report and the bugs with their steps.', 'x.reporterNo': 'Change tests or state a figure that is not in the results.',
+      't.lineas': 'The lines, criterion by criterion', 't.lineasBajada': 'Full traceability: each acceptance criterion, the cases that cover it and how each one did in the last run. Cases and criteria are written in Spanish.',
+      'l.ver': 'Criteria and cases', 'l.criterios': 'criteria', 'l.casos': 'cases', 'l.auto': 'automated', 'l.sinPlan': 'This requirement has no test plan yet.',
+      's.pasa': 'Passing', 's.falla': 'Failing', 's.bug-conocido': 'Reported bug', 's.inestable': 'Flaky', 's.omitido': 'Skipped', 's.manual': 'Manual', 's.pendiente': 'Not run',
+      't.incidencias': 'Incidents', 't.incidenciasBajada': 'The same suite runs against a version of the shop with seeded defects. What it finds is reported here.',
+      'b.vacio': 'No incidents recorded yet. They appear once the suite runs against the version with seeded bugs.', 'b.severidad': 'severity',
+      't.servicio': 'Service status', 't.servicioBajada': 'Result of the last run, by project. A script computes these figures from the Playwright report.',
+      'c.sinCorrida': 'No run recorded yet. This table fills itself in when the suite runs.', 'c.proyecto': 'Project', 'c.generado': 'Matrix generated on',
+      'c.reporte': 'Open the Playwright report', 'c.reporte-bugs': 'Report for the version with bugs',
+      'p.ui': 'Shop interface', 'p.api': 'Shop API', 'p.ui-bugs': 'Interface of the version with bugs',
+      't.reparto': 'Who did what',
+      'r.ia': 'The agents', 'r.ia1': 'Extracted criteria, selectors and endpoints from the real application.', 'r.ia2': 'Designed the test cases and their priority.', 'r.ia3': 'Wrote and stabilised the Playwright tests.', 'r.ia4': 'Wrote the reports and the bugs.',
+      'r.yo': 'Me', 'r.yo1': 'Wrote the requirements and chose the application under test.', 'r.yo2': 'Defined the workflow, each agent’s rules and which model it uses.', 'r.yo3': 'Reviewed and approved every plan before automation.', 'r.yo4': 'Reviewed the code and the findings before publishing them.',
+      'r.script': 'A script, not a model', 'r.script1': 'Computes the traceability matrix.', 'r.script2': 'Fails the pipeline if a criterion has no case or a case has no test.', 'r.script3': 'Generates this page from the real results.',
+      'f.rol': 'QA and test automation with Playwright and AI agents.', 'f.repo': 'Source of this project',
+      'f.nota': 'The application under test is Toolshop, a public demo from practicesoftwaretesting.com. It is not mine and I am not affiliated with its authors.',
+    },
+  };
+
+  const datos = JSON.parse(document.getElementById('datos').textContent);
+  const raiz = document.documentElement;
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* almacenamiento bloqueado */ } };
+  const leer = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+
+  let idioma = leer('idioma') || ((navigator.language || 'es').toLowerCase().startsWith('es') ? 'es' : 'en');
+  const t = (k) => T[idioma][k] ?? k;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  let elegida = null;
+
+  function pintarParada() {
+    const caja = document.getElementById('parada');
+    if (!elegida) return;
+    const [i, e] = elegida;
+    const linea = datos.lineas[i];
+    const etapa = linea.etapas[e];
+    const hechos = etapa.datos
+      .map(([k, v]) => `<div><dt>${esc(t(k))}</dt><dd${/^\d+$/.test(v) ? '' : ' class="texto"'}>${esc(v)}</dd></div>`)
+      .join('');
+    caja.innerHTML = `<div class="parada-cuerpo">
+      <div class="letrero l${i + 1}"><code>${esc(linea.req)}</code><strong>${esc(t('e.' + etapa.clave))}</strong><span>${esc(t('o.' + etapa.estado))}</span></div>
+      <div class="parada-info">
+        ${hechos ? `<dl>${hechos}</dl>` : ''}
+        ${etapa.firma ? `<p class="firma">${esc(etapa.firma)}</p>` : ''}
+        ${etapa.archivo ? `<a href="${esc(datos.blob + etapa.archivo)}" rel="noopener">${esc(t('o.abrir'))}</a>` : `<p class="firma">${esc(t('o.sinArtefacto'))}</p>`}
+      </div></div>`;
+  }
+
+  function aplicarIdioma() {
+    raiz.lang = idioma;
+    document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('.est').forEach((g) => {
+      const l = datos.lineas[+g.dataset.linea];
+      const et = l.etapas[+g.dataset.etapa];
+      g.setAttribute('aria-label', `${l.req}, ${t('e.' + et.clave)}: ${t('o.' + et.estado)}`);
+    });
+    const b = document.getElementById('idioma');
+    b.textContent = idioma === 'es' ? 'EN' : 'ES';
+    b.setAttribute('aria-label', idioma === 'es' ? 'Switch to English' : 'Cambiar a español');
+    document.title = idioma === 'es' ? 'Arturo Isaza · Flujo de QA con agentes' : 'Arturo Isaza · QA workflow with agents';
+    pintarParada();
+  }
+
+  function elegir(i, e) {
+    elegida = [i, e];
+    document.querySelectorAll('.est').forEach((g) => {
+      g.setAttribute('aria-pressed', String(+g.dataset.linea === i && +g.dataset.etapa === e));
+    });
+    pintarParada();
+  }
+
+  document.querySelectorAll('.est').forEach((g) => {
+    const ir = () => elegir(+g.dataset.linea, +g.dataset.etapa);
+    g.addEventListener('click', ir);
+    g.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ir(); }
+    });
+  });
+
+  document.getElementById('idioma').addEventListener('click', () => {
+    idioma = idioma === 'es' ? 'en' : 'es';
+    guardar('idioma', idioma);
+    aplicarIdioma();
+  });
+
+  const botonTema = document.getElementById('tema');
+  const oscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
+  const pintarTema = () => botonTema.querySelector('use').setAttribute('href', oscuro() ? '#i-sol' : '#i-luna');
+  botonTema.addEventListener('click', () => {
+    raiz.dataset.theme = oscuro() ? 'light' : 'dark';
+    guardar('tema', raiz.dataset.theme);
+    pintarTema();
+  });
+  pintarTema();
+
+  // Parada inicial: la última estación recorrida del primer requisito.
+  const primeras = datos.lineas[0] ? datos.lineas[0].etapas : [];
+  let ultima = 0;
+  primeras.forEach((et, k) => { if (et.estado !== 'pendiente') ultima = k; });
+  aplicarIdioma();
+  if (datos.lineas.length) elegir(0, ultima);
+})();

@@ -26,7 +26,9 @@ de una etapa.
 2. **Plan.** Lanza `planner`. Comprueba que cada `CA-n` aparece en la columna Criterios.
 3. **Revisión humana.** Muestra el alcance, la tabla de casos y las preguntas abiertas, y pide
    aprobación antes de automatizar. Los cambios que pida la persona vuelven al `planner`. Solo se
-   salta esta pausa si la persona lo pidió (`--sin-pausa`).
+   salta esta pausa si la persona lo pidió (`--sin-pausa`). Deja la decisión en
+   `artifacts/REQ-00X/02-revision.md` con tres viñetas: `- **Revisó:**`, `- **Decisión:**` y
+   `- **Cambios pedidos:**`, bajo la cabecera `> Revisión humana · AAAA-MM-DD · Requisito: REQ-00X`.
 4. **Automatización.** Lanza `automator`. Al volver, corre tú mismo
    `npx playwright test --project=ui --project=api -g "@REQ-00X"` para confirmar el verde, y revisa
    con `git diff` que no haya asserts debilitados ni `test.skip` sin motivo.

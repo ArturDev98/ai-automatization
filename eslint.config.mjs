@@ -14,5 +14,6 @@ export default tseslint.config(
   },
   // node:test devuelve una promesa por cada test() y no hay que esperarla.
   { files: ['scripts/**/*.test.ts'], rules: { '@typescript-eslint/no-floating-promises': 'off' } },
-  { files: ['**/*.mjs'], ...tseslint.configs.disableTypeChecked },
+  { files: ['**/*.mjs', 'site/**/*.js'], ...tseslint.configs.disableTypeChecked },
+  { files: ['site/**/*.js'], languageOptions: { globals: { document: 'readonly', navigator: 'readonly', localStorage: 'readonly', matchMedia: 'readonly' } }, rules: { '@typescript-eslint/no-unused-vars': ['error', { caughtErrors: 'none' }] } },
 );
