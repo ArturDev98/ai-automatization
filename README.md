@@ -121,6 +121,9 @@ site/                plantilla del panel
 
 - La aplicación es de terceros: se regenera cada cierto tiempo y puede responder con errores
   durante unos minutos. En CI las pruebas se reintentan dos veces; en local, ninguna.
+- La tienda está detrás de Cloudflare, que a veces pide a los runners de GitHub verificar que son
+  humanos. No se esquiva: la prueba que recibe ese reto queda **omitida** con el motivo, y una que
+  falla por cualquier otra razón sigue en rojo. En local el reto no aparece.
 - Las pruebas registran sus propios clientes en cada corrida y no usan las cuentas de demostración
   compartidas, que otras personas bloquean. Sus trazas pueden contener la clave de esos clientes
   desechables, por eso los reportes de Playwright no se publican.

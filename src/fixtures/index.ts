@@ -24,6 +24,20 @@ interface ClienteInterno {
 }
 
 export const test = base.extend<Fixtures & ClienteInterno>({
+  page: async ({ page }, use, testInfo) => {
+    let retada = false;
+    page.on('response', (r) => {
+      if (r.request().isNavigationRequest() && r.headers()['cf-mitigated'] === 'challenge') retada = true;
+    });
+    await use(page);
+    // Cloudflare pide verificar que es humano a las IPs de datacenter (runners de CI).
+    // La prueba no llegó a ver la app: queda omitida con el motivo, no en rojo ni en verde.
+    if (retada && testInfo.status !== 'passed' && testInfo.status !== 'skipped') {
+      testInfo.annotations.push({ type: 'omitido', description: 'Cloudflare pidió verificación anti-bots' });
+      testInfo.status = 'skipped';
+    }
+  },
+
   // eslint-disable-next-line no-empty-pattern
   api: async ({}, use, testInfo) => {
     const api = await crearContextoApi(apiUrlDe(testInfo.project.name));
