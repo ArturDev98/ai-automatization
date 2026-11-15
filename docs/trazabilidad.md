@@ -14,7 +14,7 @@ _Generada por `npm run trazabilidad` a partir del plan y de los resultados de Pl
 | REQ-001 | **CA-6** Al cerrar sesión el cliente vuelve a ser visitante: el menú muestra "Sign in" y la página "My account" deja de estar disponible. | TC-010 ✅ ui-bugs ✅ ui<br>TC-012 ✅ ui-bugs ✅ ui |
 | REQ-002 | **CA-1** Al buscar un texto, el catálogo muestra solo productos cuyo nombre lo contiene. Si no hay coincidencias, muestra un mensaje que lo dice. | TC-001 ✅ ui-bugs ✅ ui<br>TC-002 🐞 ui-bugs ✅ ui |
 | REQ-002 | **CA-2** Al marcar una categoría, el catálogo muestra solo productos de esa categoría. | TC-003 ✅ ui-bugs ✅ ui |
-| REQ-002 | **CA-3** El catálogo se puede ordenar por nombre (A-Z, Z-A) y por precio (menor a mayor, mayor a menor), y el orden mostrado corresponde al elegido. | TC-004 🐞 ui-bugs 🐞 ui<br>TC-005 🐞 ui-bugs 🐞 ui |
+| REQ-002 | **CA-3** El catálogo se puede ordenar por nombre (A-Z, Z-A) y por precio (menor a mayor, mayor a menor), y el orden mostrado corresponde al elegido. | TC-004 🐞 ui-bugs ✅ ui<br>TC-005 🐞 ui-bugs ✅ ui |
 | REQ-002 | **CA-4** Desde el detalle se puede elegir una cantidad y agregar el producto al carrito. El ícono del carrito muestra el total de unidades. | TC-006 ✅ ui-bugs ✅ ui<br>TC-007 🐞 ui-bugs ✅ ui |
 | REQ-002 | **CA-5** En el carrito, el total de cada línea es precio por cantidad y el total general es la suma de las líneas. Al cambiar una cantidad, ambos se recalculan. | TC-008 🐞 ui-bugs ✅ ui<br>TC-009 🐞 ui-bugs ✅ ui |
 | REQ-002 | **CA-6** Al quitar un producto del carrito, desaparece de la lista y el total se actualiza. | TC-010 🐞 ui-bugs ✅ ui |

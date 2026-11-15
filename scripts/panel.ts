@@ -53,7 +53,7 @@ function vinetas(md: string): Record<string, string> {
   return campos;
 }
 
-export function leerLineas(traza: Trazabilidad | null): Linea[] {
+export function leerLineas(traza: Trazabilidad | null, bugs: Bug[]): Linea[] {
   const dirReq = join(RAIZ, 'requirements');
   return readdirSync(dirReq)
     .filter((f) => /^REQ-\d+.*\.md$/.test(f))
@@ -147,7 +147,12 @@ export function leerLineas(traza: Trazabilidad | null): Linea[] {
           estado: repMd ? 'hecho' : 'pendiente',
           firma: firmaDe(repMd),
           archivo: repMd ? `${dir}/04-reporte.md` : null,
-          datos: [],
+          datos: repMd
+            ? [
+                ['d.bugs', String(bugs.filter((b) => b.campos['requisito'] === req).length)],
+                ['d.manualesPendientes', String(casos.length - auto)],
+              ]
+            : [],
         },
       ];
       return { req, titulo, historia, etapas, criterios, casos };
@@ -292,8 +297,8 @@ function bugsHtml(bugs: Bug[]): string {
 function main() {
   const trazaJson = leer('results/trazabilidad.json');
   const traza: Trazabilidad | null = trazaJson ? JSON.parse(trazaJson) : null;
-  const lineas = leerLineas(traza);
   const bugs = leerBugs();
+  const lineas = leerLineas(traza, bugs);
   const salida = join(RAIZ, 'site', 'dist');
   mkdirSync(salida, { recursive: true });
 

@@ -1,3 +1,4 @@
+import type { APIRequestContext } from '@playwright/test';
 import { test, expect } from '../../src/fixtures';
 import { CatalogPage } from '../../src/pages/CatalogPage';
 import {
@@ -11,8 +12,10 @@ import {
   compararNombres,
   idDeCategoria,
   leerOraculo,
+  oraculoDeLoMostrado,
   ordenadosSegun,
   type OrdenPorNombre,
+  type ProductoDelOraculo,
 } from '../../src/data/compra';
 
 const ESPERA = { timeout: 10_000 };
@@ -33,17 +36,31 @@ async function nombresDeTodasLasPaginas(catalogo: CatalogPage): Promise<string[]
 
 interface Criterio<T> {
   leer: (catalogo: CatalogPage) => Promise<T[]>;
+  delOraculo: (producto: ProductoDelOraculo) => T;
   comparar: (a: T, b: T) => number;
   /** Precios: el primero de un sentido debe quedar del lado correcto del otro, no solo ser distinto. */
   cruceEstricto: boolean;
 }
 
-const POR_NOMBRE: Criterio<string> = { leer: (c) => c.leerNombres(), comparar: compararNombres, cruceEstricto: false };
-const POR_PRECIO: Criterio<number> = { leer: (c) => c.leerPrecios(), comparar: (a, b) => a - b, cruceEstricto: true };
+const POR_NOMBRE: Criterio<string> = {
+  leer: (c) => c.leerNombres(),
+  delOraculo: (p) => p.nombre,
+  comparar: compararNombres,
+  cruceEstricto: false,
+};
+const POR_PRECIO: Criterio<number> = {
+  leer: (c) => c.leerPrecios(),
+  delOraculo: (p) => p.centavos,
+  comparar: (a, b) => a - b,
+  cruceEstricto: true,
+};
 
-async function comprobarOrden<T>(catalogo: CatalogPage, fila: OrdenPorNombre, criterio: Criterio<T>, extremo: T) {
+async function comprobarOrden<T>(catalogo: CatalogPage, fila: OrdenPorNombre, criterio: Criterio<T>, api: APIRequestContext) {
   const inverso = (fila.sentido * -1) as 1 | -1;
+  const oraculo = await leerOraculo(api);
   await catalogo.abrir();
+  const rango = await catalogo.leerRangoDePrecio();
+  const esperado = ordenadosSegun(oraculoDeLoMostrado(oraculo, rango).map(criterio.delOraculo), criterio.comparar, fila.sentido);
   await catalogo.ordenarPor(fila.etiqueta);
 
   let pagina1: T[] = [];
@@ -54,13 +71,20 @@ async function comprobarOrden<T>(catalogo: CatalogPage, fila: OrdenPorNombre, cr
   }).toPass(ESPERA);
 
   await catalogo.paginaSiguiente.click();
+  let pagina2: T[] = [];
   await expect(async () => {
-    const pagina2 = await criterio.leer(catalogo);
+    pagina2 = await criterio.leer(catalogo);
     expect(pagina2, 'la página 2 se cargó').not.toEqual(pagina1);
     expect(pagina2, `página 2 con "${fila.etiqueta}"`).toEqual(ordenadosSegun(pagina2, criterio.comparar, fila.sentido));
     const frontera = criterio.comparar(pagina1[pagina1.length - 1], pagina2[0]) * fila.sentido;
     expect(frontera, `último de la página 1 (${pagina1.at(-1)}) frente al primero de la 2 (${pagina2[0]})`).toBeLessThanOrEqual(0);
   }).toPass(ESPERA);
+
+  const mostrados = [...pagina1, ...pagina2];
+  const rotulo = rango ? `${rango.minimo}-${rango.maximo} centavos` : 'sin control de rango';
+  expect(mostrados, `páginas 1 y 2 con "${fila.etiqueta}" frente al oráculo de lo mostrado (${rotulo})`).toEqual(
+    esperado.slice(0, mostrados.length),
+  );
 
   await catalogo.ordenarPor(fila.opuesta);
   let primeroOpuesto = pagina1[0];
@@ -74,20 +98,10 @@ async function comprobarOrden<T>(catalogo: CatalogPage, fila: OrdenPorNombre, cr
   if (criterio.cruceEstricto) {
     expect(criterio.comparar(pagina1[0], primeroOpuesto) * fila.sentido).toBeLessThan(0);
   }
-
-  // Al final: el resto del orden queda verificado aunque el extremo global no coincida.
-  expect<unknown>(pagina1[0], `primero con "${fila.etiqueta}" frente al extremo de todo el catálogo`).toEqual(extremo);
 }
-
-// H-01: con el rango de precio 1-100 que la UI trae por defecto, estos sentidos no llegan al extremo del catálogo.
-const EXTREMO_FUERA_DEL_RANGO = new Set(['Name (Z - A)', 'Price (High - Low)']);
 
 function marcarHallazgosDeOrden(fila: OrdenPorNombre, proyecto: string): void {
   test.fail(proyecto === 'ui-bugs', `H-03: se esperaba "${fila.etiqueta}"; la versión con bugs ordena en el sentido contrario`);
-  test.fail(
-    proyecto !== 'ui-bugs' && EXTREMO_FUERA_DEL_RANGO.has(fila.etiqueta),
-    'H-01: se esperaba como primero el extremo de GET /products; la UI muestra el del rango de precio 1-100 que aplica por defecto',
-  );
 }
 
 test.describe('Catálogo: búsqueda, filtro y orden', () => {
@@ -161,9 +175,7 @@ test.describe('Catálogo: búsqueda, filtro y orden', () => {
       tag: ['@REQ-002', '@TC-004'],
     }, async ({ page, api }, testInfo) => {
       marcarHallazgosDeOrden(fila, testInfo.project.name);
-      const nombres = (await leerOraculo(api)).map((p) => p.nombre);
-      const extremo = ordenadosSegun(nombres, compararNombres, fila.sentido)[0];
-      await comprobarOrden(new CatalogPage(page), fila, POR_NOMBRE, extremo);
+      await comprobarOrden(new CatalogPage(page), fila, POR_NOMBRE, api);
     });
   }
 
@@ -172,9 +184,7 @@ test.describe('Catálogo: búsqueda, filtro y orden', () => {
       tag: ['@REQ-002', '@TC-005'],
     }, async ({ page, api }, testInfo) => {
       marcarHallazgosDeOrden(fila, testInfo.project.name);
-      const precios = (await leerOraculo(api)).map((p) => p.centavos);
-      const extremo = ordenadosSegun(precios, (a, b) => a - b, fila.sentido)[0];
-      await comprobarOrden(new CatalogPage(page), fila, POR_PRECIO, extremo);
+      await comprobarOrden(new CatalogPage(page), fila, POR_PRECIO, api);
     });
   }
 });

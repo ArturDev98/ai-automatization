@@ -17,11 +17,21 @@ Todos son nuevos; no se tocó nada de `src/fixtures/`, `src/api/`, `src/data/cli
 | `tests/ui/compra-carrito.spec.ts` | TC-006 a TC-011. |
 | `tests/ui/compra-pago.spec.ts` | TC-012. |
 
+**Ajuste del 2026-11-14 (nuevo esperado de TC-004 y TC-005, `02-plan.md` › Cambios).** Solo se tocaron estos tres archivos y solo en lo que afecta a esos dos casos:
+
+| Archivo | Cambio |
+|---|---|
+| `src/data/compra.ts` | `ProductoDelOraculo.alquiler` (de `is_rental`), tipo `RangoDePrecio` y `oraculoDeLoMostrado(oraculo, rango)`. |
+| `src/pages/CatalogPage.ts` | Locators `rangoMinimo` / `rangoMaximo` (rol `slider`) y `leerRangoDePrecio()`, que devuelve `null` si la página no tiene el control. |
+| `tests/ui/catalogo.spec.ts` | TC-004 y TC-005 comparan páginas 1 y 2 con el oráculo de lo mostrado; se retiraron la marca H-01 y `EXTREMO_FUERA_DEL_RANGO`. TC-001 a TC-003 sin cambios. |
+
 Se reutilizan: fixtures `api` y `cliente` (`src/fixtures`), `leerTodas` y `buscarCategoria` (`src/api/productos.ts`), `login` (`src/api/usuarios.ts`), `nuevoCliente` (`src/data/clientes.ts`), y del automator de REQ-001: `LoginPage` (`src/pages/LoginPage.ts`) y `cuerpoDeRegistro`, `varianteDe`, `rutaDe` (`src/data/acceso.ts`).
 
 ## Casos, pruebas y resultados
 
-Verificación: `--project=ui --repeat-each=3` dio 42 de 42 con el resultado esperado (0 inesperados, 0 inestables); `--project=ui-bugs` dio 14 de 14 con el resultado esperado; `npm run -s lint` y `npm run -s typecheck` quedaron limpios.
+Verificación tras el ajuste: `--project=ui -g "@REQ-002" --repeat-each=3` dio 42 de 42 en verde, sin ningún fallo esperado (en `ui` ya no queda ninguna marca `test.fail`); `--project=ui-bugs -g "@REQ-002"` dio 14 de 14 con el resultado esperado (4 pasan y 10 fallos esperados, 0 inesperados); `npm run -s lint` y `npm run -s typecheck` quedaron limpios.
+
+Cifras: 14 pruebas automatizadas para 12 casos. En `ui`, 14 pasan. En `ui-bugs`, 4 pasan y 10 fallan como se espera. Hallazgos abiertos: 6 (H-02 a H-07, todos de `ui-bugs`). Resuelto por cambio de plan: 1 (H-01).
 
 | Caso | Prueba | `ui` | `ui-bugs` |
 |---|---|---|---|
@@ -29,9 +39,9 @@ Verificación: `--project=ui --repeat-each=3` dio 42 de 42 con el resultado espe
 | TC-002 | `catalogo.spec.ts` › TC-002 buscar un texto sin coincidencias… | Pasa | Falla esperada (H-02) |
 | TC-003 | `catalogo.spec.ts` › TC-003 marcar una categoría… | Pasa | Pasa |
 | TC-004 | `catalogo.spec.ts` › TC-004 ordenar por Name (A - Z)… | Pasa | Falla esperada (H-03) |
-| TC-004 | `catalogo.spec.ts` › TC-004 ordenar por Name (Z - A)… | Falla esperada (H-01) | Falla esperada (H-03) |
+| TC-004 | `catalogo.spec.ts` › TC-004 ordenar por Name (Z - A)… | Pasa | Falla esperada (H-03) |
 | TC-005 | `catalogo.spec.ts` › TC-005 ordenar por Price (Low - High)… | Pasa | Falla esperada (H-03) |
-| TC-005 | `catalogo.spec.ts` › TC-005 ordenar por Price (High - Low)… | Falla esperada (H-01) | Falla esperada (H-03) |
+| TC-005 | `catalogo.spec.ts` › TC-005 ordenar por Price (High - Low)… | Pasa | Falla esperada (H-03) |
 | TC-006 | `compra-carrito.spec.ts` › TC-006 agregar un producto con cantidad 3… | Pasa | Pasa |
 | TC-007 | `compra-carrito.spec.ts` › TC-007 el contador suma unidades… | Pasa | Falla esperada (H-04) |
 | TC-008 | `compra-carrito.spec.ts` › TC-008 total de línea… | Pasa | Falla esperada (H-05) |
@@ -45,14 +55,6 @@ Verificación: `--project=ui --repeat-each=3` dio 42 de 42 con el resultado espe
 
 Las marcas son `test.fail(...)` dentro de la prueba. H-02 a H-07 son condicionales a `ui-bugs`, así que en `ui` la prueba sigue siendo estricta. Cada uno se confirmó con la captura y, cuando hizo falta, con la traza (red). Las capturas vienen de la corrida sin marcas (`--trace=on`), guardada fuera de `test-results/` (ver Decisiones técnicas, punto 9).
 
-### H-01 · `ui` · TC-004 (Z - A) y TC-005 (High - Low): el primero no es el extremo del catálogo completo
-
-- **Esperado (plan)**: con `Name (Z - A)` el primer nombre es el mayor de todo el oráculo (`GET /products`, todas las páginas); con `Price (High - Low)` el primer precio es el máximo del oráculo.
-- **Obtenido**: `primero con "Name (Z - A)" frente al extremo de todo el catálogo — Expected: "Workbench with Drawers", Received: "Wood Saw"`. `primero con "Price (High - Low)" frente al extremo de todo el catálogo — Expected: 17820, Received: 8955`.
-- **Causa observada**: el catálogo trae por defecto el filtro "Price Range" en 1–100 (los dos sliders `ngx-slider` en 1 y 100) y pide `/products` con `between=price,1,100` e `is_rental=false`. Muestra 45 de los 50 productos y oculta los 5 de más de $100 (Workbench with Drawers, Wooden Workbench, Cordless Drill 20V y 18V, Random Orbit Sander). El resto del orden sí es correcto en las dos filas: páginas 1 y 2 ordenadas, frontera entre páginas y cruce con el sentido opuesto.
-- **Para decidir**: puede ser un defecto (el cliente que ordena de mayor a menor no ve los productos más caros) o una premisa del plan que no contempló ese filtro por defecto (pregunta abierta 5). No cambié el oráculo del plan. La marca depende de los datos: si la demo deja de tener productos de más de $100, la prueba pasará y la marca dará "unexpected pass".
-- **Evidencia**: `results/req002-evidencia-ui/catalogo-Catálogo-búsqueda-640fe-ja-los-nombres-en-ese-orden-ui/trace.zip` (Z - A) y `results/req002-evidencia-ui/catalogo-Catálogo-búsqueda-58249-s-precios-en-orden-numérico-ui/trace.zip` (High - Low), con su `error-context.md`.
-
 ### H-02 · `ui-bugs` · TC-002: una búsqueda sin coincidencias no muestra ningún mensaje
 
 - **Esperado**: cero tarjetas y un mensaje visible de que no hay productos (en `ui`: `no-results`, "There are no products found.").
@@ -65,6 +67,14 @@ Las marcas son `test.fail(...)` dentro de la prueba. H-02 a H-07 son condicional
 - **Obtenido**: `página 1 con "Name (A - Z)" — expect(received).toEqual(expected)`, porque la lista llega en orden Z-A (Wood Saw, Thor Hammer, Slip Joint Pliers…). Lo mismo ocurre en las otras tres filas: "Name (Z - A)" llega A-Z y "Price (Low - High)" llega de mayor a menor (12523, 11924, 10079…); "Price (High - Low)" llega de menor a mayor (492, 917, 1114…). En el select de esa versión cada etiqueta tiene el valor del sentido opuesto (`Name (A - Z)` = `name,desc`, `Price (High - Low)` = `price,asc`…).
 - **Evidencia**: `results/req002-evidencia-bugs/catalogo-Catálogo-búsqueda-c2344-ja-los-nombres-en-ese-orden-ui-bugs/test-failed-1.png` (A-Z, se ve "Name (A - Z)" elegido y Wood Saw primero), `…-640fe-ja-los-nombres-en-ese-orden-ui-bugs/` (Z-A), `…-5858d-s-precios-en-orden-numérico-ui-bugs/` (Low-High), `…-58249-s-precios-en-orden-numérico-ui-bugs/` (High-Low), todas bajo `results/req002-evidencia-bugs/`.
 - **Nota**: en esa versión el catálogo tampoco muestra `pagination-next` (la API tiene 26 productos en 3 páginas y la UI muestra 9). Las pruebas no llegan a ese paso porque H-03 las detiene antes; no lo reporto como hallazgo aparte (ver Observaciones).
+- **Revalidado el 2026-11-14 con el nuevo esperado**: la versión con bugs tiene el control de rango (sliders en 1 y 100), así que su oráculo de lo mostrado usa ese rango. Las 4 filas siguen fallando en el primer assert, `página 1 con "<opción>"` (orden interno de la página 1), antes de la comparación con el oráculo. Las capturas lo confirman: con "Name (A - Z)" elegido, la página 1 empieza por Wood Saw, Thor Hammer, Slip Joint Pliers; con "Price (Low - High)" empieza por $125.23, $119.24, $100.79. Evidencia: `results/req002-bugs-orden/capturas/orden-1.png` a `orden-4.png` (A-Z, Z-A, Low-High, High-Low) y `results/req002-bugs-orden/*/trace.zip`.
+
+## Hallazgos resueltos por cambio de plan
+
+### H-01 · `ui` · TC-004 (Z - A) y TC-005 (High - Low): el primero no era el extremo del catálogo completo
+
+- **Qué se decidió**: la revisión humana (`02-revision.md`, Historial, punto 2) resolvió que CA-3 solo exige el orden de lo que el catálogo muestra; TC-004 y TC-005 ahora comparan páginas 1 y 2 con el oráculo de lo mostrado (sin alquileres y dentro del rango leído del control de la página) y pasan en `ui` sin marca. El filtro de precio por defecto (1–100) que oculta 5 de los 50 productos (Workbench with Drawers, Wooden Workbench, Cordless Drill 20V y 18V, Random Orbit Sander) se reporta como bug aparte, de severidad baja, contra la tienda real (proyecto `ui`, `https://practicesoftwaretesting.com`): **el reporter debe abrirlo**. Ninguna prueba lo afirma.
+- **Evidencia del comportamiento original**: `results/req002-evidencia-ui/catalogo-Catálogo-búsqueda-640fe-ja-los-nombres-en-ese-orden-ui/trace.zip` (Z - A) y `results/req002-evidencia-ui/catalogo-Catálogo-búsqueda-58249-s-precios-en-orden-numérico-ui/trace.zip` (High - Low). En la traza, la petición a `/products` lleva `between=price,1,100` e `is_rental=false`.
 
 ### H-04 · `ui-bugs` · TC-007: `increase-quantity` no sube la cantidad
 
@@ -101,6 +111,7 @@ Las vi explorando la versión con bugs. Quedan fuera de los asserts porque un de
 - **Dirección**: en el paso de dirección de la versión con bugs, el código postal aparece con el texto "missing value" aunque el cliente se registró con 110111; la app deja avanzar.
 - **Aviso al agregar**: en la versión con bugs, al agregar al carrito sale "Oeps, something went wrong." aunque el producto sí se agrega y el contador sube.
 - **Menú y sesión**: en la versión con bugs, `nav-home` lleva a `#/contact` y, con sesión iniciada, el menú del usuario dice "User Data not found". Está fuera del alcance de REQ-002.
+- **Tope del rango de precio**: en la versión con bugs el control marca 1–100, pero la petición es `between=price,1` (sin tope) y el catálogo muestra productos de más de $100 (Random Orbit Sander $100.79, Cordless Drill 20V $125.23). TC-004 y TC-005 no llegan a compararlo con el oráculo porque H-03 las detiene antes.
 - **Mensaje de éxito**: en la versión con bugs, el mensaje "Payment was successful" no tiene `data-test` (en `ui` es `payment-success-message`).
 
 ## Casos no automatizados y pruebas saltadas
@@ -114,7 +125,7 @@ Las vi explorando la versión con bugs. Quedan fuera de los asserts porque un de
 2. **Registro del cliente en `ui-bugs` (TC-012)**: el fixture compartido `cliente` registra con dirección anidada, y la API de la versión con bugs la rechaza (`422 {"address":["The address field must be a string."],…}`). En `compra-pago.spec.ts` se sobrescribe el fixture interno `sesionCliente` con `test.extend`: genera el cliente con `nuevoCliente` y lo registra con `cuerpoDeRegistro(cliente, varianteDe(proyecto))`. En `ui` el cuerpo es el mismo que el del fixture original. No se editó `src/fixtures/`. Si conviene, el fixture común podría adoptar esa variante.
 3. **Dependencia del otro automator**: uso `LoginPage.intentar`, `cuerpoDeRegistro`, `varianteDe` y `rutaDe`, que vienen de archivos de REQ-001 aún sin commit. Si cambian de nombre, `typecheck` lo detecta.
 4. **Sincronización sin esperas fijas**: los cambios de lista (búsqueda, filtro, orden, paginación) se esperan con `expect(async () => …).toPass({ timeout: 10_000 })` sobre el mismo assert de negocio (la lista ordenada, todos de la categoría, todos contienen el texto). Los importes del carrito se esperan con `expect.poll` en centavos. Antes de salir del detalle, `ProductPage.agregarAlCarrito` espera el aviso emergente (`role=alert`). Así no se navega antes de que el carrito registre el producto. La versión con bugs no llama a `/carts`, así que no se puede esperar una respuesta de red.
-5. **TC-004/TC-005**: las verificaciones van en este orden: página 1 ordenada, página 2 ordenada y frontera entre páginas, cruce con la opción opuesta y, al final, el extremo del oráculo. Así H-01 no oculta el resto del orden, que queda verificado. El orden por nombre compara en minúsculas por código de carácter (espacio y guion antes que letras), coherente con lo que devuelve la base. Para nombres, el cruce exige primeros distintos, como dice el plan. Para precios exige que el primero de Low-High sea menor que el de High-Low.
+5. **TC-004/TC-005**: las verificaciones van en este orden: página 1 ordenada, página 2 ordenada y frontera entre páginas, páginas 1 y 2 concatenadas iguales al prefijo del oráculo de lo mostrado ordenado según la opción, y cruce con la opción opuesta. El rango se lee al cargar, antes de ordenar, del `aria-valuenow` de los dos sliders (rol `slider`, nombres `ngx-slider` y `ngx-slider-max`; no tienen `data-test`), con los extremos incluidos. Si la página no tiene el control, el oráculo es el catálogo sin alquileres; en `ui` eso haría fallar Z-A y High-Low, así que una lectura fallida no pasa en silencio. TC-005 compara la secuencia de precios en centavos, no nombres. Alquiler se toma de `is_rental` (hoy `GET /products` no devuelve ninguno en los dos entornos). El orden por nombre compara en minúsculas por código de carácter (espacio y guion antes que letras), coherente con lo que devuelve la base. Para nombres, el cruce exige primeros distintos, como dice el plan. Para precios exige que el primero de Low-High sea menor que el de High-Low.
 6. **Selectores sin `data-test`**: las tarjetas se ubican por rol (`link` que contiene el `heading` del nombre). Las páginas, por `button` con nombre `Page-N`. El mensaje de pago exitoso y la confirmación con factura, por texto, porque la versión con bugs no tiene `data-test` en el mensaje y la confirmación no tiene ninguno. El botón de quitar no tiene `data-test` ni nombre accesible; se toma como `getByRole('cell').last().locator('a')` dentro de la fila. Es un selector por etiqueta, no por clase ni XPath.
 7. **Número de factura "no vacío"**: se exige `invoice number is` seguido de un token alfanumérico (`/invoice number is\s+[A-Z0-9][A-Z0-9-]*/i`) para que un punto suelto no cuente como factura.
 8. **Pasos de checkout**: el método de pago es "Cash on Delivery", que en `ui` no pide datos. En la versión con bugs la pantalla pide titular y número de cuenta con cualquier método; `elegirPago` llena solo los campos visibles. En `ui`, el paso de dirección exige `house_number`, que el registro no trae; `confirmarDireccion` lo llena solo si viene vacío. "No se vuelve a pedir sesión" se verifica con el saludo "you are already logged in" y con el campo de correo oculto en el paso 2 y en la confirmación.

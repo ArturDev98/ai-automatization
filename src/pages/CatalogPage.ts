@@ -1,5 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
-import { aCentavos } from '../data/compra';
+import { aCentavos, type RangoDePrecio } from '../data/compra';
 
 export class CatalogPage {
   readonly textoDeBusqueda: Locator;
@@ -64,6 +64,22 @@ export class CatalogPage {
   async precioEnTarjeta(nombre: string): Promise<number> {
     const tarjeta = await this.mostrarTarjeta(nombre);
     return aCentavos(await tarjeta.getByTestId('product-price').innerText());
+  }
+
+  /** Los dos tiradores del filtro "Price Range"; su nombre accesible viene de `aria-label`. */
+  get rangoMinimo(): Locator {
+    return this.page.getByRole('slider', { name: 'ngx-slider', exact: true });
+  }
+
+  get rangoMaximo(): Locator {
+    return this.page.getByRole('slider', { name: 'ngx-slider-max', exact: true });
+  }
+
+  /** Rango de precio aplicado, en centavos; `null` si la página no tiene ese control. */
+  async leerRangoDePrecio(): Promise<RangoDePrecio | null> {
+    if ((await this.rangoMinimo.count()) === 0 || (await this.rangoMaximo.count()) === 0) return null;
+    const valor = async (tirador: Locator) => aCentavos((await tirador.getAttribute('aria-valuenow')) ?? '');
+    return { minimo: await valor(this.rangoMinimo), maximo: await valor(this.rangoMaximo) };
   }
 
   async leerNombres(): Promise<string[]> {

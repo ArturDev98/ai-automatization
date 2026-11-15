@@ -38,6 +38,13 @@ export interface ProductoDelOraculo {
   centavos: number;
   conExistencias: boolean;
   categoria: string | undefined;
+  alquiler: boolean;
+}
+
+/** Extremos del filtro de precio en centavos, incluidos. */
+export interface RangoDePrecio {
+  minimo: number;
+  maximo: number;
 }
 
 /** `$1,234.56` o `14.15` a centavos enteros; falla si el texto no es un importe. */
@@ -72,7 +79,15 @@ export async function leerOraculo(api: APIRequestContext): Promise<ProductoDelOr
       // La API de la versión con bugs no trae in_stock, sino la cantidad en stock.
       conExistencias: typeof p.in_stock === 'boolean' ? p.in_stock : Number(p.stock) > 0,
       categoria: p.category?.name,
+      alquiler: p.is_rental === true,
     })),
+  );
+}
+
+/** Lo que el catálogo presenta por defecto: sin alquileres y, si la página tiene rango, dentro de él. */
+export function oraculoDeLoMostrado(oraculo: ProductoDelOraculo[], rango: RangoDePrecio | null): ProductoDelOraculo[] {
+  return oraculo.filter(
+    (p) => !p.alquiler && (!rango || (p.centavos >= rango.minimo && p.centavos <= rango.maximo)),
   );
 }
 

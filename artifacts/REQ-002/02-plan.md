@@ -21,10 +21,12 @@
 ## Riesgos
 
 1. **Totales mal calculados en el carrito (CA-5, CA-6).** Es el riesgo de mayor impacto: el cliente paga otra cifra. TC-008, TC-009 y TC-010 recalculan en la prueba, en centavos, cada total de línea y el total general a partir del precio unitario y la cantidad mostrados, con dos productos de precios distintos y cantidades distintas para que un total "de una sola línea" o una suma sin multiplicar no pase por casualidad.
-2. **Orden o filtro que no corresponde a lo elegido (CA-1, CA-2, CA-3).** Un orden por precio hecho como texto ("9.17" después de "14.15"), un orden aplicado solo a la página visible, una dirección invertida o un filtro que deja pasar productos ajenos. TC-001, TC-003, TC-004 y TC-005 comparan lo mostrado contra un oráculo calculado desde la API (conjunto exacto de nombres, extremo global del orden) y verifican el orden numérico entre páginas.
+2. **Orden o filtro que no corresponde a lo elegido (CA-1, CA-2, CA-3).** Un orden por precio hecho como texto ("9.17" después de "14.15"), un orden aplicado solo a la página visible, una dirección invertida o un filtro que deja pasar productos ajenos. TC-001 y TC-003 comparan lo mostrado contra un oráculo calculado desde la API (conjunto exacto de nombres). TC-004 y TC-005 comparan la lista mostrada contra el oráculo de lo mostrado (el mismo conjunto que la interfaz presenta por defecto, ordenado según la opción) y verifican el orden entre páginas.
 3. **Contador del carrito que cuenta líneas y no unidades (CA-4).** TC-006 usa cantidad 3 en un solo producto (líneas = 1, unidades = 3) y TC-007 dos productos con 2 y 1 unidades (líneas = 2, unidades = 3): en ambos el valor correcto difiere del conteo de líneas.
 4. **Producto sin existencias que se puede comprar (CA-7).** TC-011 verifica el rótulo en tarjeta y detalle y, sobre todo, que tras intentar agregarlo el carrito sigue sin unidades; también que un producto con existencias no lleva el rótulo.
 5. **Dependencia de datos y pantallas no observadas (CA-8 y entorno).** La cuenta compartida está bloqueada (HTTP 423) y `/checkout` no tiene selectores capturados. El plan registra un cliente propio por corrida con `POST /users/register`, no fija precios ni ids en el código y deja como preguntas abiertas los pasos de pago; el automator debe tomar snapshots de `/checkout` con carrito y con sesión antes de escribir TC-008 a TC-012.
+
+**Constancia (H-01).** El catálogo carga con un filtro de rango de precio ya aplicado que oculta productos (en la primera ejecución, 5 de 50: los de precio superior al tope del rango), de modo que quien ordena de mayor a menor no ve los más caros. Eso se reporta como bug aparte, de severidad baja, contra la tienda real; no se afirma ni se marca dentro de TC-004 ni de TC-005, que verifican solo el orden de lo que el catálogo muestra.
 
 ## Casos de prueba
 
@@ -50,6 +52,7 @@ Convenciones comunes a todos los casos:
 
 - Cada prueba arranca con un contexto de navegador nuevo (carrito vacío, sin sesión), salvo TC-012 que inicia sesión.
 - **Oráculo de catálogo**: lista completa de productos obtenida recorriendo `GET /products?page={n}` hasta `last_page` en la API del mismo entorno que se prueba (`id`, `name`, `price`, `in_stock`, `category`). Los productos se eligen del oráculo por nombre o por condición, nunca por id ni precio fijos.
+- **Oráculo de lo mostrado** (solo TC-004 y TC-005): el subconjunto del oráculo de catálogo que la interfaz presenta por defecto, es decir, los productos que no son de alquiler y cuyo precio cae dentro del rango de precio que la interfaz tiene aplicado al cargar. Los dos extremos del rango se leen del control de rango de precio de la página en cada corrida; no son constantes del plan ni del código. Ese subconjunto se ordena en la prueba según la opción elegida.
 - Los importes se comparan en centavos enteros (texto `$14.15` → 1415) para no arrastrar errores de coma flotante.
 - "Nombres mostrados" es el texto de `product-name` de cada tarjeta; "precios mostrados" el de `product-price`.
 
@@ -89,27 +92,31 @@ Convenciones comunes a todos los casos:
 
 ### TC-004 · Ordenar por nombre A-Z y Z-A deja los nombres en el orden elegido
 
-- **Precondiciones**: catálogo en `/` sin filtros. Oráculo de catálogo cargado.
+- **Precondiciones**: catálogo en `/` recién cargado, sin tocar ningún filtro (queda el rango de precio que la interfaz aplica por defecto). Oráculo de lo mostrado construido con el rango leído de la página.
 - **Datos**: opciones `Name (A - Z)` y `Name (Z - A)` del select `sort`. Una prueba parametrizada con las dos filas.
 - **Pasos** (por cada opción):
-  1. Elegir la opción en `sort` y esperar a que el listado cambie.
-  2. Leer los nombres mostrados de la página 1 y, tras `pagination-next`, los de la página 2.
+  1. Leer del control de rango de precio los dos extremos aplicados al cargar y construir el oráculo de lo mostrado.
+  2. Elegir la opción en `sort` y esperar a que el listado cambie.
+  3. Leer los nombres mostrados de la página 1 y, tras `pagination-next`, los de la página 2.
 - **Resultado esperado**:
-  - A-Z: los nombres de la página 1 están en orden alfabético no decreciente (comparación sin distinguir mayúsculas); el primero es el menor nombre de todo el oráculo; el primero de la página 2 no es menor que el último de la página 1.
-  - Z-A: lo mismo en sentido inverso; el primero es el mayor nombre de todo el oráculo.
+  - A-Z: los nombres de la página 1 seguidos de los de la página 2 son, en ese mismo orden, los primeros nombres del oráculo de lo mostrado ordenado de forma ascendente (comparación sin distinguir mayúsculas). En particular, la página 1 queda en orden no decreciente y el primero de la página 2 no es menor que el último de la página 1.
+  - Z-A: lo mismo contra el oráculo de lo mostrado ordenado de forma descendente; el primero de la página 2 no es mayor que el último de la página 1.
   - El primer nombre de A-Z y el de Z-A son distintos (delata un orden que ignora la dirección).
+  - No se compara contra el extremo del catálogo completo: que el filtro por defecto deje productos fuera no hace fallar este caso (ver Riesgos, constancia H-01).
 
 ### TC-005 · Ordenar por precio ascendente y descendente deja los precios en orden numérico
 
-- **Precondiciones**: catálogo en `/` sin filtros. Oráculo de catálogo cargado.
+- **Precondiciones**: catálogo en `/` recién cargado, sin tocar ningún filtro (queda el rango de precio que la interfaz aplica por defecto). Oráculo de lo mostrado construido con el rango leído de la página.
 - **Datos**: opciones `Price (Low - High)` y `Price (High - Low)`. Una prueba parametrizada con las dos filas. El catálogo tiene precios de una y dos cifras enteras (9.17, 14.15, 48.41), así que un orden por texto queda delatado.
 - **Pasos** (por cada opción):
-  1. Elegir la opción en `sort` y esperar a que el listado cambie.
-  2. Leer los precios mostrados de la página 1 y, tras `pagination-next`, los de la página 2.
+  1. Leer del control de rango de precio los dos extremos aplicados al cargar y construir el oráculo de lo mostrado.
+  2. Elegir la opción en `sort` y esperar a que el listado cambie.
+  3. Leer los precios mostrados de la página 1 y, tras `pagination-next`, los de la página 2.
 - **Resultado esperado**:
-  - Low - High: los precios de la página 1, convertidos a número, son no decrecientes; el primero es igual al precio mínimo del oráculo; el primero de la página 2 es mayor o igual que el último de la página 1.
-  - High - Low: no crecientes; el primero es igual al precio máximo del oráculo; el primero de la página 2 es menor o igual que el último de la página 1.
+  - Low - High: los precios de la página 1 seguidos de los de la página 2, en centavos, son en ese mismo orden los primeros precios del oráculo de lo mostrado ordenado de menor a mayor. En particular, la página 1 queda en orden no decreciente y el primero de la página 2 es mayor o igual que el último de la página 1.
+  - High - Low: lo mismo contra el oráculo de lo mostrado ordenado de mayor a menor; la página 1 queda en orden no creciente y el primero de la página 2 es menor o igual que el último de la página 1.
   - El primer precio de Low - High es menor que el primero de High - Low.
+  - La comparación es de precios, no de nombres, para que dos productos con el mismo precio no den un fallo falso. No se compara contra el mínimo ni el máximo del catálogo completo (ver Riesgos, constancia H-01).
 
 ### TC-006 · Agregar un producto con cantidad 3 deja el contador del carrito en 3
 
@@ -222,6 +229,7 @@ Convenciones comunes a todos los casos:
 - **Cliente de la corrida** (TC-012; TC-013 usa uno aparte): se crea una vez por corrida con `POST /users/register` contra la API del entorno bajo prueba. Correo único, por ejemplo `qa.req002.<marca de tiempo>.<aleatorio>@example.com`; clave generada que cumpla la política de la API; dirección completa para que el paso de dirección tenga qué confirmar. No hay limpieza posible desde un cliente: las cuentas quedan en la demo, que se restablece sola; por eso el correo nunca se repite.
 - **Cuenta de demostración** `customer@practicesoftwaretesting.com`: no se usa. La extracción la lista como dato de prueba, pero el requisito actualizado la descarta (compartida, bloqueada con HTTP 423); manda el requisito.
 - **Oráculo de catálogo** (TC-001 a TC-005, TC-011): `GET /products?page={n}` de la página 1 a `last_page` y `GET /categories/tree`, solo lectura, una vez por corrida. No se fija el total (50) ni el tamaño de página (9) en el código.
+- **Oráculo de lo mostrado** (TC-004, TC-005): se deriva del oráculo de catálogo en cada prueba, con el rango de precio leído del control de la página al cargar y sin los productos de alquiler. Solo lectura; no se fijan los extremos del rango ni cuántos productos quedan dentro.
 - **Productos con existencias** (TC-006 a TC-010, TC-012): `Combination Pliers` y `Bolt Cutters`, localizados por nombre y validados con `in_stock = true` en el oráculo; si alguno falta o no tiene existencias, se toman los dos primeros con existencias y precios distintos. Sus precios se leen de la página en cada prueba.
 - **Producto sin existencias** (TC-011): el que el oráculo marque `in_stock = false`. Si no hay ninguno, la prueba se salta con motivo explícito en lugar de fallar por datos.
 - **Categoría** (TC-003): `Pliers`, buscada por nombre en el árbol; alternativa `Hammer`.
@@ -235,7 +243,10 @@ Convenciones comunes a todos los casos:
 2. **Contrato de `POST /users/register`.** El endpoint no está en la extracción (campos obligatorios, política de clave, código de respuesta). Suposición: el automator lo toma de la documentación de la API antes de escribir el fixture; el plan solo exige correo único y dirección completa.
 3. **Texto y selector del mensaje "sin coincidencias" (CA-1).** No capturado. Suposición: TC-002 exige cero tarjetas y un mensaje visible en el área de resultados; el texto exacto se fija tras un snapshot de una búsqueda vacía, no se inventa.
 4. **Mayúsculas y campo de búsqueda (CA-1).** No se sabe si distingue mayúsculas. Suposición: TC-001 busca con la capitalización de los nombres y compara "contiene" sin distinguir mayúsculas; el caso con otra capitalización no se prueba hasta que el requisito lo defina.
-5. **Categoría padre y alcance del filtro y del orden (CA-2, CA-3).** No se aclara si `Hand Tools` incluye sus subcategorías ni si filtro y orden aplican a todo el catálogo. Suposición: TC-003 usa solo una subcategoría hoja; TC-003 a TC-005 asumen que filtro y orden aplican al catálogo completo (por eso comparan con el oráculo global y entre páginas). Si la app ordena solo la página visible, se reporta como hallazgo para decidir.
+5. **Categoría padre y alcance del filtro y del orden (CA-2, CA-3).** No se aclara si `Hand Tools` incluye sus subcategorías ni si filtro y orden aplican a todo el catálogo.
+   - **Alcance del orden: resuelta el 2026-11-14 (revisión humana, tras el hallazgo H-01).** Decisión: CA-3 pide que "el orden mostrado corresponda al elegido", así que TC-004 y TC-005 verifican el orden dentro de lo que el catálogo muestra por defecto, no contra el extremo de todo el catálogo. La suposición anterior (orden sobre el catálogo completo, comparado con el oráculo global) era más fuerte que el requisito y queda retirada para esos dos casos. Que el filtro de precio por defecto oculte productos se reporta como bug aparte, de severidad baja, contra la tienda real.
+   - **Sigue abierto.** Si `Hand Tools` incluye sus subcategorías: TC-003 usa solo una subcategoría hoja. TC-001 y TC-003 no cambian y siguen comparando el conjunto mostrado con el oráculo de catálogo completo; el filtro por defecto también les aplica, y hoy no les afecta porque ningún producto de sus datos queda fuera del rango. Si la app ordena solo la página visible, se reporta como hallazgo para decidir.
+   - **Suposiciones del oráculo de lo mostrado.** Los extremos del rango cuentan como incluidos (el requisito no lo dice; hoy ningún producto cae justo en un extremo) y el rango se lee del control de la página. En la versión con bugs no se ha observado si ese filtro por defecto existe ni con qué valores; se usa el que la página tenga aplicado.
 6. **Opciones reales del select de orden y regla de comparación de nombres.** Las opciones se leyeron del texto del contenedor. Suposición: existen las cuatro etiquetas citadas y se eligen por etiqueta; los nombres se comparan sin distinguir mayúsculas. `CO₂ Rating` queda fuera.
 7. **Mecanismo de "no se puede agregar" (CA-7).** El snapshot muestra `add-to-cart` visible en el producto sin existencias y no captura `disabled`. Suposición: se acepta botón deshabilitado o clic sin efecto; lo que se exige es que el carrito quede sin ese producto.
 8. **Ícono y contador del carrito (CA-4).** Sin `data-test` capturado, probablemente porque solo aparece con el carrito no vacío. Suposición: el automator lo localiza con un snapshot después de agregar un producto; con el carrito vacío no se afirma nada sobre el contador.
@@ -245,3 +256,7 @@ Convenciones comunes a todos los casos:
 12. **Límites de la cantidad (CA-4).** No se definen mínimo, máximo ni qué pasa con 0 o negativos. Suposición: solo se usan cantidades válidas (1, 2, 3, 5); los límites no se prueban hasta que el requisito los fije.
 13. **Versión con bugs sembrados.** No hay snapshots de ese entorno ni se sabe si usa otra API, otros ids o si comparte usuarios. Suposición: mismos `data-test` y textos; oráculo y registro salen de la API configurada para el entorno bajo prueba; los productos se buscan por nombre. Los asserts principales son propiedades de lo que la página muestra (contiene, orden, aritmética), de modo que un oráculo defectuoso no los anula.
 14. **Botón `filters` no visible en escritorio.** Sugiere un panel plegable en pantallas pequeñas. Suposición: la suite corre en tamaño de escritorio, con el panel de filtros visible.
+
+## Cambios
+
+- **2026-11-14 · Esperado de TC-004 y TC-005.** Qué cambió: el resultado esperado deja de comparar el primer elemento con el extremo de todo el catálogo (`GET /products` completo) y pasa a comparar la lista mostrada, páginas 1 y 2, con el oráculo de lo mostrado (mismo conjunto que la interfaz presenta por defecto: rango de precio aplicado al cargar, leído de la página, y sin alquileres). Se añadieron la convención "Oráculo de lo mostrado", la constancia en Riesgos y la resolución de la pregunta abierta 5; la tabla de casos y los demás casos no cambian. Por qué: el hallazgo H-01 de `03-ejecucion.md` mostró que el catálogo carga con un filtro de precio que oculta productos, y la revisión humana (`02-revision.md`, Historial, punto 2) decidió que CA-3 solo exige el orden de lo mostrado y que el filtro por defecto se reporta como bug aparte.
