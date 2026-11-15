@@ -27,7 +27,10 @@ export const test = base.extend<Fixtures & ClienteInterno>({
   page: async ({ page }, use, testInfo) => {
     let retada = false;
     page.on('response', (r) => {
-      if (r.request().isNavigationRequest() && r.headers()['cf-mitigated'] === 'challenge') retada = true;
+      if (!r.request().isNavigationRequest() || r.headers()['cf-mitigated'] !== 'challenge') return;
+      retada = true;
+      // Cerrarla corta la prueba ya: si se agotara el tiempo, Playwright no deja cambiar el estado.
+      void page.close().catch(() => undefined);
     });
     await use(page);
     // Cloudflare pide verificar que es humano a las IPs de datacenter (runners de CI).
