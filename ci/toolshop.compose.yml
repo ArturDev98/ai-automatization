@@ -23,7 +23,7 @@ services:
 
   # La imagen web de Testsmith solo existe para arm64; es nginx con esta misma función.
   web:
-    image: nginx:1.27.5-alpine
+    image: nginx:1.31.7-alpine
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
