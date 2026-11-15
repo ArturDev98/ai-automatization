@@ -64,6 +64,7 @@ jobs:
 
       # Las dos versiones esperan la API en el mismo puerto: se cambia una por la otra.
       - name: Toolshop con bugs en contenedores
+        id: toolshop_bugs
         if: ${{ !cancelled() && env.DESTINO == 'contenedor' }}
         run: |
           ci/toolshop.sh down
@@ -73,7 +74,8 @@ jobs:
 
       - name: Suite contra la versión con bugs sembrados
         id: bugs
-        if: ${{ !cancelled() }}
+        # Si sus contenedores no subieron, no se cae a la demo pública sin avisar.
+        if: ${{ !cancelled() && steps.toolshop_bugs.outcome != 'failure' }}
         run: npm run test:bugs
 
       - name: Trazabilidad
