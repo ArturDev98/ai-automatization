@@ -1,0 +1,124 @@
+{
+  "requisito": "REQ-002",
+  "titulo": "Catálogo, carrito y compra",
+  "generadoPor": "extractor (Claude Haiku 5.5)",
+  "fecha": "2026-11-14",
+  "criterios": [
+    { "id": "CA-1", "texto": "Al buscar un texto, el catálogo muestra solo productos cuyo nombre lo contiene. Si no hay coincidencias, muestra un mensaje que lo dice." },
+    { "id": "CA-2", "texto": "Al marcar una categoría, el catálogo muestra solo productos de esa categoría." },
+    { "id": "CA-3", "texto": "El catálogo se puede ordenar por nombre (A-Z, Z-A) y por precio (menor a mayor, mayor a menor), y el orden mostrado corresponde al elegido." },
+    { "id": "CA-4", "texto": "Desde el detalle se puede elegir una cantidad y agregar el producto al carrito. El ícono del carrito muestra el total de unidades." },
+    { "id": "CA-5", "texto": "En el carrito, el total de cada línea es precio por cantidad y el total general es la suma de las líneas. Al cambiar una cantidad, ambos se recalculan." },
+    { "id": "CA-6", "texto": "Al quitar un producto del carrito, desaparece de la lista y el total se actualiza." },
+    { "id": "CA-7", "texto": "Un producto sin existencias se muestra como \"Out of stock\" y no se puede agregar al carrito." },
+    { "id": "CA-8", "texto": "Un cliente con sesión iniciada puede terminar la compra: confirma su dirección, elige un método de pago, y al confirmar ve el mensaje de pago exitoso y un número de factura." }
+  ],
+  "restricciones": [
+    "Cuenta de demostración: customer@practicesoftwaretesting.com / welcome01.",
+    "Los precios y productos son los de la demo; las pruebas leen el precio que muestra la página o la API en lugar de fijarlo en el código.",
+    "La misma suite debe poder correr contra https://with-bugs.practicesoftwaretesting.com sin cambios."
+  ],
+  "pantallas": [
+    {
+      "nombre": "Catálogo",
+      "url": "https://practicesoftwaretesting.com/",
+      "selectores": [
+        { "dataTest": "search-query", "elemento": "input type=text (placeholder Search)", "uso": "CA-1: escribir el texto a buscar" },
+        { "dataTest": "search-submit", "elemento": "button type=submit", "uso": "CA-1: ejecutar la búsqueda" },
+        { "dataTest": "search-reset", "elemento": "button (texto X)", "uso": "CA-1: limpiar la búsqueda" },
+        { "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3P", "elemento": "input type=checkbox de la categoría Pliers", "uso": "CA-2: marcar una categoría. Patrón general category-<id de categoría>; los ids salen de /categories/tree" },
+        { "dataTest": "sort", "elemento": "select", "uso": "CA-3: elegir el orden. Opciones vistas en el texto del contenedor de filtros: Name (A - Z), Name (Z - A), Price (High - Low), Price (Low - High)" },
+        { "dataTest": "product-01M7EBGKHVHYEWG1TR5KYBPS9V", "elemento": "a (tarjeta de producto Long Nose Pliers)", "uso": "CA-4/CA-7: enlace al detalle. Patrón general product-<id>" },
+        { "dataTest": "product-name", "elemento": "h5 dentro de la tarjeta", "uso": "CA-1/CA-3: nombre mostrado para comparar con el texto buscado y con el orden" },
+        { "dataTest": "product-price", "elemento": "span dentro de la tarjeta", "uso": "CA-3: precio mostrado para verificar el orden por precio" },
+        { "dataTest": "out-of-stock", "elemento": "span dentro de la tarjeta (texto Out of stock)", "uso": "CA-7: indicador de sin existencias" },
+        { "dataTest": "pagination-next", "elemento": "button", "uso": "CA-2/CA-3: pasar de página (el catálogo tiene 6 páginas de 9)" },
+        { "dataTest": "pagination-prev", "elemento": "button", "uso": "CA-2/CA-3: volver de página" },
+        { "dataTest": "nav-sign-in", "elemento": "a (texto Sign in)", "uso": "CA-8: entrar con la cuenta de demostración antes de comprar" }
+      ]
+    },
+    {
+      "nombre": "Detalle de producto",
+      "url": "https://practicesoftwaretesting.com/product/{id}",
+      "selectores": [
+        { "dataTest": "product-name", "elemento": "h1", "uso": "CA-4: nombre del producto" },
+        { "dataTest": "unit-price", "elemento": "span", "uso": "CA-4/CA-5: precio unitario. Ver ambiguedades: en el snapshot su texto es el literal \"unit-price\"" },
+        { "dataTest": "quantity", "elemento": "input type=number", "uso": "CA-4/CA-5: cantidad a agregar" },
+        { "dataTest": "increase-quantity", "elemento": "button", "uso": "CA-4: subir la cantidad" },
+        { "dataTest": "decrease-quantity", "elemento": "button", "uso": "CA-4: bajar la cantidad" },
+        { "dataTest": "add-to-cart", "elemento": "button (texto Add to cart)", "uso": "CA-4: agregar al carrito. En producto sin stock aparece visible; ver ambiguedades" },
+        { "dataTest": "out-of-stock", "elemento": "p (texto Out of stock)", "uso": "CA-7: indicador de sin existencias en el detalle" }
+      ]
+    },
+    {
+      "nombre": "Carrito y pago",
+      "url": "https://practicesoftwaretesting.com/checkout",
+      "selectores": []
+    }
+  ],
+  "endpoints": [
+    {
+      "metodo": "GET",
+      "ruta": "/products?page={n}",
+      "estado": 200,
+      "respuesta": "Objeto { current_page, data[], from, last_page, per_page, to, total }. Cada producto trae id, name, price, in_stock, category{id,name}. total=50, per_page=9, last_page=6",
+      "uso": "Datos de prueba: se recorrieron las 6 páginas para encontrar el único producto con in_stock=false y contar productos por categoría"
+    },
+    {
+      "metodo": "GET",
+      "ruta": "/products/01M7EBGKHVHYEWG1TR5KYBPS9V",
+      "estado": 200,
+      "respuesta": "Producto Long Nose Pliers con in_stock=false y price=14.24",
+      "uso": "Confirmar el producto sin existencias usado en CA-7"
+    },
+    {
+      "metodo": "GET",
+      "ruta": "/categories/tree",
+      "estado": 200,
+      "respuesta": "Array de categorías raíz { id, name, slug, parent_id, sub_categories[] }. Raíces: Hand Tools, Power Tools, Other, Special Tools, Rentals (y otras); Hand Tools tiene subcategorías Hammer, Hand Saw, Wrench, Screwdriver, Pliers, Chisels, Measures",
+      "uso": "Datos de prueba: ids y nombres de categorías para CA-2"
+    }
+  ],
+  "datosDePrueba": [
+    {
+      "nombre": "Cuenta de demostración (cliente)",
+      "valor": "customer@practicesoftwaretesting.com / welcome01",
+      "origen": "REQ-002, sección Datos y restricciones"
+    },
+    {
+      "nombre": "Producto sin existencias",
+      "valor": "Long Nose Pliers, id 01M7EBGKHVHYEWG1TR5KYBPS9V, precio 14.24, in_stock=false",
+      "origen": "GET /products (único in_stock=false de 50) y snapshot detalle-sin-stock.json"
+    },
+    {
+      "nombre": "Producto con existencias",
+      "valor": "Combination Pliers, id 01M7EBGKH5Y5Z6THZ35N71B8MQ, precio 14.15, in_stock=true",
+      "origen": "GET /products y snapshot detalle-producto.json"
+    },
+    {
+      "nombre": "Categoría con productos",
+      "valor": "Pliers (subcategoría de Hand Tools), id 01M7EBGKG2F6EYM9B8KQE8ZW3P, 5 productos en el catálogo. Alternativa: Hammer, id 01M7EBGKG2F6EYM9B8KQE8ZW3J, 7 productos",
+      "origen": "GET /categories/tree y conteo sobre GET /products (6 páginas)"
+    },
+    {
+      "nombre": "Total de productos del catálogo",
+      "valor": "50",
+      "origen": "GET /products total"
+    }
+  ],
+  "ambiguedades": [
+    "Carrito vacío y pasos de sesión, dirección, pago y confirmación no capturados: /checkout en el snapshot no tiene contenido (carrito vacío y no hay sesión). No hay selectores para estos pasos.",
+    "CA-4 pide un ícono del carrito con el total de unidades, pero ningún snapshot (catálogo, detalle, checkout) contiene un data-test del carrito en el encabezado. No hay selector para ese ícono ni para su contador.",
+    "CA-1 pide un mensaje cuando no hay coincidencias. El requisito no dice el texto ni el selector, y no se pudo capturar porque no hay búsqueda sin resultados en el snapshot.",
+    "CA-1 no aclara si la búsqueda distingue mayúsculas o si busca solo en el nombre (el requisito dice nombre). No se probó el comportamiento.",
+    "CA-2 no aclara si marcar una categoría padre (p. ej. Hand Tools) incluye los productos de sus subcategorías. El árbol de categorías tiene ambos niveles con checkbox.",
+    "CA-3 y CA-2 no aclaran si el filtro y el orden aplican al catálogo completo o solo a la página visible, dado que hay 6 páginas. No se interactuó con filtros ni orden; su comportamiento no está verificado.",
+    "CA-3: las opciones de orden se leyeron del texto del contenedor de filtros, no de las opciones del select. El snapshot no lista las opciones individualmente y además aparece una opción CO2 Rating que el requisito no pide.",
+    "CA-4/CA-5: el selector unit-price del detalle tiene como texto el literal \"unit-price\" en el snapshot, no un precio. El requisito dice que las pruebas leen el precio que muestra la página; no está claro qué elemento lo muestra.",
+    "CA-7: el botón add-to-cart aparece visible en el detalle de Long Nose Pliers (sin existencias). El snapshot no captura el atributo disabled, así que no se sabe si el botón está deshabilitado o solo no agrega. El requisito no lo aclara.",
+    "CA-7: el texto \"Out of stock\" aparece en la tarjeta del catálogo (span out-of-stock) y en el detalle (p out-of-stock). Coincide con el requisito.",
+    "El botón de filtros (data-test filters) figura como no visible en el snapshot de escritorio; el panel de orden y filtros sí figura visible. No se sabe si la barra de filtros cambia en otros tamaños de pantalla.",
+    "La misma suite debe correr contra with-bugs.practicesoftwaretesting.com. No se tomaron snapshots de esa URL; no se sabe si los data-test y los textos son iguales en esa versión.",
+    "Los snapshots se tomaron solo con la URL base (practicesoftwaretesting.com) y sin sesión. Los pasos que exigen sesión (CA-8) no se capturaron."
+  ]
+}

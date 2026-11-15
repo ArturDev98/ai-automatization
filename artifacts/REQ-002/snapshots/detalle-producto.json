@@ -1,0 +1,483 @@
+{
+  "url": "https://practicesoftwaretesting.com/product/01M7EBGKH5Y5Z6THZ35N71B8MQ",
+  "titulo": "Combination Pliers - Practice Software Testing - Toolshop - v5.0",
+  "encabezados": [
+    "Combination Pliers",
+    "Specifications",
+    "Related products"
+  ],
+  "elementos": [
+    {
+      "dataTest": "notification-bar",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "View the Documentation for this application.",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-home",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Home",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-categories",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Categories",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-hand-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Hand Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-power-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Power Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-other",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Other",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-special-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Special Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-rentals",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Rentals",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-contact",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Contact",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-sign-in",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Sign in",
+      "visible": true
+    },
+    {
+      "dataTest": "language-select",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Select language",
+      "visible": true
+    },
+    {
+      "dataTest": "lang-de",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "DE",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-el",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "EL",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-en",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "EN",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-es",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "ES",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-fr",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "FR",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-nl",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "NL",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-tr",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "TR",
+      "visible": false
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h1",
+      "tipo": null,
+      "rol": null,
+      "texto": "Combination Pliers",
+      "visible": true
+    },
+    {
+      "dataTest": "unit-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "unit-price",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-description",
+      "tag": "p",
+      "tipo": null,
+      "rol": null,
+      "texto": "Versatile combination pliers designed for gripping, bending, and cutting wire wi",
+      "visible": true
+    },
+    {
+      "dataTest": "decrease-quantity",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Decrease quantity",
+      "visible": true
+    },
+    {
+      "dataTest": "quantity",
+      "tag": "input",
+      "tipo": "number",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "increase-quantity",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Increase quantity",
+      "visible": true
+    },
+    {
+      "dataTest": "add-to-cart",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Add to cart",
+      "visible": true
+    },
+    {
+      "dataTest": "add-to-favorites",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Add to favourites",
+      "visible": true
+    },
+    {
+      "dataTest": "add-to-compare",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "specs-title",
+      "tag": "h3",
+      "tipo": null,
+      "rol": null,
+      "texto": "Specifications",
+      "visible": true
+    },
+    {
+      "dataTest": "product-specs",
+      "tag": "table",
+      "tipo": null,
+      "rol": null,
+      "texto": "Handle MaterialBi-componentLength200mmMaterialChrome Vanadium SteelWarranty2year",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-row",
+      "tag": "tr",
+      "tipo": null,
+      "rol": null,
+      "texto": "Handle MaterialBi-component",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-name",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "Handle Material",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "Bi-component",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value-text",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "Bi-component",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-row",
+      "tag": "tr",
+      "tipo": null,
+      "rol": null,
+      "texto": "Length200mm",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-name",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "Length",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "200mm",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value-text",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "200",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-unit",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "mm",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-row",
+      "tag": "tr",
+      "tipo": null,
+      "rol": null,
+      "texto": "MaterialChrome Vanadium Steel",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-name",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "Material",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "Chrome Vanadium Steel",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value-text",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "Chrome Vanadium Steel",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-row",
+      "tag": "tr",
+      "tipo": null,
+      "rol": null,
+      "texto": "Warranty2years",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-name",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "Warranty",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "2years",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value-text",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "2",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-unit",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "years",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-row",
+      "tag": "tr",
+      "tipo": null,
+      "rol": null,
+      "texto": "Weight340g",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-name",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "Weight",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value",
+      "tag": "td",
+      "tipo": null,
+      "rol": null,
+      "texto": "340g",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-value-text",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "340",
+      "visible": true
+    },
+    {
+      "dataTest": "spec-unit",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "g",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-explore",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn & ExploreLearn Test AutomationHands-on courses for Playwright, Robot Frame",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-courses",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn Test AutomationHands-on courses for Playwright, Robot Framework, APIs and ",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-spector",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "API SpectorOpen-source API testing, mocking and contract testing",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-github",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "GitHubSource code, issues and contributions",
+      "visible": true
+    },
+    {
+      "dataTest": "chat-toggle",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Open chat",
+      "visible": true
+    },
+    {
+      "dataTest": "live-activity-toggle",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Show live shop activity",
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "url": "https://practicesoftwaretesting.com/auth/register",
+  "titulo": "Register - Practice Software Testing - Toolshop - v5.0",
+  "encabezados": [
+    "Customer registration"
+  ],
+  "elementos": [
+    {
+      "dataTest": "notification-bar",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "View the Documentation for this application.",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-home",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Home",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-categories",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Categories",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-hand-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Hand Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-power-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Power Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-other",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Other",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-special-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Special Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-rentals",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Rentals",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-contact",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Contact",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-sign-in",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Sign in",
+      "visible": true
+    },
+    {
+      "dataTest": "language-select",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Select language",
+      "visible": true
+    },
+    {
+      "dataTest": "lang-de",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "DE",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-el",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "EL",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-en",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "EN",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-es",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "ES",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-fr",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "FR",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-nl",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "NL",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-tr",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "TR",
+      "visible": false
+    },
+    {
+      "dataTest": "register-form",
+      "tag": "form",
+      "tipo": null,
+      "rol": null,
+      "texto": "First nameLast nameDate of Birth *CountryYour country *AlbaniaÅland IslandsAlger",
+      "visible": true
+    },
+    {
+      "dataTest": "first-name",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "First name *",
+      "visible": true
+    },
+    {
+      "dataTest": "last-name",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your last name *",
+      "visible": true
+    },
+    {
+      "dataTest": "dob",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "YYYY-MM-DD",
+      "visible": true
+    },
+    {
+      "dataTest": "country",
+      "tag": "select",
+      "tipo": null,
+      "rol": null,
+      "texto": "Your country *AlbaniaÅland IslandsAlgeriaAmerican SamoaAndorraAngolaAnguillaAnta",
+      "visible": true
+    },
+    {
+      "dataTest": "postcode-lookup-hint",
+      "tag": "small",
+      "tipo": null,
+      "rol": null,
+      "texto": "Choose your country and enter the postal code and house number. Street, city and",
+      "visible": true
+    },
+    {
+      "dataTest": "postal_code",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your Postcode *",
+      "visible": true
+    },
+    {
+      "dataTest": "house_number",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "e.g. 42 *",
+      "visible": true
+    },
+    {
+      "dataTest": "street",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your Street *",
+      "visible": true
+    },
+    {
+      "dataTest": "city",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your City *",
+      "visible": true
+    },
+    {
+      "dataTest": "state",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your State *",
+      "visible": true
+    },
+    {
+      "dataTest": "phone",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your phone *",
+      "visible": true
+    },
+    {
+      "dataTest": "email",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Your email *",
+      "visible": true
+    },
+    {
+      "dataTest": "password",
+      "tag": "input",
+      "tipo": "password",
+      "rol": null,
+      "texto": "Your password",
+      "visible": true
+    },
+    {
+      "dataTest": "register-submit",
+      "tag": "button",
+      "tipo": "submit",
+      "rol": null,
+      "texto": "Register",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-explore",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn & ExploreLearn Test AutomationHands-on courses for Playwright, Robot Frame",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-courses",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn Test AutomationHands-on courses for Playwright, Robot Framework, APIs and ",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-spector",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "API SpectorOpen-source API testing, mocking and contract testing",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-github",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "GitHubSource code, issues and contributions",
+      "visible": true
+    },
+    {
+      "dataTest": "chat-toggle",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Open chat",
+      "visible": true
+    },
+    {
+      "dataTest": "live-activity-toggle",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Show live shop activity",
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+name: QA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # La app bajo prueba es de terceros: una corrida diaria avisa si cambió.
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Calidad del código
+        run: |
+          npm run lint
+          npm run typecheck
+          npm run test:unit
+
+      - name: Suite UI y API
+        id: suite
+        run: npm test
+
+      - name: Suite contra la versión con bugs sembrados
+        id: bugs
+        if: ${{ !cancelled() }}
+        run: npm run test:bugs
+
+      - name: Trazabilidad
+        if: ${{ !cancelled() }}
+        run: npm run trazabilidad
+
+      - name: Panel
+        if: ${{ !cancelled() }}
+        run: npm run panel
+
+      - name: Trazas y capturas de los fallos
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+
+      - name: Empaquetar el sitio
+        if: ${{ !cancelled() && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  publicar:
+    needs: pruebas
+    # Se publica aunque haya fallos: el panel tiene que mostrar el estado real.
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

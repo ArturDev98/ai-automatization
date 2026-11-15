@@ -1,0 +1,840 @@
+{
+  "url": "https://practicesoftwaretesting.com",
+  "titulo": "Practice Software Testing - Toolshop - v5.0",
+  "encabezados": [
+    "Practice Software Testing - Toolshop",
+    "Sort",
+    "Price Range",
+    "Search",
+    "Filters",
+    "By category:",
+    "By brand:",
+    "Sustainability:"
+  ],
+  "elementos": [
+    {
+      "dataTest": "notification-bar",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "View the Documentation for this application.",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-home",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Home",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-categories",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Categories",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-hand-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Hand Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-power-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Power Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-other",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Other",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-special-tools",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Special Tools",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-rentals",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Rentals",
+      "visible": false
+    },
+    {
+      "dataTest": "nav-contact",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Contact",
+      "visible": true
+    },
+    {
+      "dataTest": "nav-sign-in",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Sign in",
+      "visible": true
+    },
+    {
+      "dataTest": "language-select",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Select language",
+      "visible": true
+    },
+    {
+      "dataTest": "lang-de",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "DE",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-el",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "EL",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-en",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "EN",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-es",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "ES",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-fr",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "FR",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-nl",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "NL",
+      "visible": false
+    },
+    {
+      "dataTest": "lang-tr",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "TR",
+      "visible": false
+    },
+    {
+      "dataTest": "course-promo",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "Enjoyed testing this app? Level up with hands-on software testing courses.Explor",
+      "visible": true
+    },
+    {
+      "dataTest": "course-promo-link",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Explore courses",
+      "visible": true
+    },
+    {
+      "dataTest": "filters",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Filters",
+      "visible": false
+    },
+    {
+      "dataTest": "filters",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "Sort Name (A - Z)Name (Z - A)Price (High - Low)Price (Low - High)CO₂ Rating (A -",
+      "visible": true
+    },
+    {
+      "dataTest": "sort",
+      "tag": "select",
+      "tipo": null,
+      "rol": null,
+      "texto": "sort",
+      "visible": true
+    },
+    {
+      "dataTest": "search-query",
+      "tag": "input",
+      "tipo": "text",
+      "rol": null,
+      "texto": "Search",
+      "visible": true
+    },
+    {
+      "dataTest": "search-reset",
+      "tag": "button",
+      "tipo": "reset",
+      "rol": null,
+      "texto": "X",
+      "visible": true
+    },
+    {
+      "dataTest": "search-submit",
+      "tag": "button",
+      "tipo": "submit",
+      "rol": null,
+      "texto": "Search",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKF4WGCPXV3CFGYTCPS4",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3J",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3K",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3M",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3N",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3P",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3Q",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3R",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKF4WGCPXV3CFGYTCPS5",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3S",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3T",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3V",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3W",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKF4WGCPXV3CFGYTCPS6",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3X",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3Y",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW3Z",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW40",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "category-01M7EBGKG2F6EYM9B8KQE8ZW41",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "brand-01M7EBGK469ZJ5HQGNMWBP6QRZ",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "brand-01M7EBGK469ZJ5HQGNMWBP6QS0",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "eco-friendly-filter",
+      "tag": "input",
+      "tipo": "checkbox",
+      "rol": null,
+      "texto": "",
+      "visible": true
+    },
+    {
+      "dataTest": "",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "Combination Pliers ABCDE$14.15 Pliers ABCDE$12.01 Bolt Cutters ABCDE$48.41 Long ",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKH5Y5Z6THZ35N71B8MQ",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Combination Pliers ABCDE$14.15",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Combination Pliers",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$14.15",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKHJ84S093JY5SJ9HX5C",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Pliers ABCDE$12.01",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Pliers",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$12.01",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKHQA4JEZMCN4CEJ2K9X",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Bolt Cutters ABCDE$48.41",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Bolt Cutters",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$48.41",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKHVHYEWG1TR5KYBPS9V",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Long Nose Pliers ABCDEOut of stock$14.24",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Long Nose Pliers",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "out-of-stock",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "Out of stock",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$14.24",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKJ2XJG6BTDYKR7CZS8C",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Slip Joint Pliers ABCDE$9.17",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Slip Joint Pliers",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$9.17",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKJ62X9XKCEFKT9AZWEP",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Claw Hammer with Shock Reduction Grip ABCDE$13.41",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Claw Hammer with Shock Reduction Grip",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$13.41",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKJAERDDE333677ADX7H",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Hammer ABCDE$12.58",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Hammer",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$12.58",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKJJGYD73DJQF8KXP1W4",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Claw Hammer ABCDE$11.48",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Claw Hammer",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$11.48",
+      "visible": true
+    },
+    {
+      "dataTest": "product-01M7EBGKJZ56B81XH8QNAT2AWW",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Thor Hammer ABCDE$11.14",
+      "visible": true
+    },
+    {
+      "dataTest": "compare-btn",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Compare",
+      "visible": true
+    },
+    {
+      "dataTest": "product-name",
+      "tag": "h5",
+      "tipo": null,
+      "rol": null,
+      "texto": "Thor Hammer",
+      "visible": true
+    },
+    {
+      "dataTest": "co2-rating-badge",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "ABCDE",
+      "visible": true
+    },
+    {
+      "dataTest": "product-price",
+      "tag": "span",
+      "tipo": null,
+      "rol": null,
+      "texto": "$11.14",
+      "visible": true
+    },
+    {
+      "dataTest": "pagination-prev",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Previous",
+      "visible": true
+    },
+    {
+      "dataTest": "pagination-next",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Next",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-explore",
+      "tag": "div",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn & ExploreLearn Test AutomationHands-on courses for Playwright, Robot Frame",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-courses",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "Learn Test AutomationHands-on courses for Playwright, Robot Framework, APIs and ",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-spector",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "API SpectorOpen-source API testing, mocking and contract testing",
+      "visible": true
+    },
+    {
+      "dataTest": "footer-learn-github",
+      "tag": "a",
+      "tipo": null,
+      "rol": null,
+      "texto": "GitHubSource code, issues and contributions",
+      "visible": true
+    },
+    {
+      "dataTest": "chat-toggle",
+      "tag": "button",
+      "tipo": null,
+      "rol": null,
+      "texto": "Open chat",
+      "visible": true
+    },
+    {
+      "dataTest": "live-activity-toggle",
+      "tag": "button",
+      "tipo": "button",
+      "rol": null,
+      "texto": "Show live shop activity",
+      "visible": true
+    }
+  ]
+}

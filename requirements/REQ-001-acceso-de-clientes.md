@@ -27,8 +27,7 @@
 
 ## Datos y restricciones
 
-- Cuenta de demostración: `customer@practicesoftwaretesting.com` / `welcome01`.
-- La cuenta de demostración es compartida y se bloquea tras tres intentos fallidos. Los casos
-  negativos de inicio de sesión no deben usarla: se usa un correo que no existe o un cliente
-  registrado por la propia prueba.
+- Cliente de prueba: cada corrida registra su propio cliente con `POST /users/register` de la API (correo único) y entra con él. La cuenta de demostración `customer@practicesoftwaretesting.com` es compartida, otras personas la bloquean (HTTP 423) y no es una dependencia válida para la suite.
+- Una cuenta se bloquea tras tres intentos fallidos. Los casos negativos de inicio de sesión usan
+  un correo que no existe o el cliente registrado por la propia prueba, con un solo intento fallido.
 - La base de datos de la demo se reinicia cada cierto tiempo; cada prueba crea lo que necesita.

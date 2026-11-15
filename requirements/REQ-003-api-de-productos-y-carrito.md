@@ -28,7 +28,7 @@
 
 ## Datos y restricciones
 
-- Cuenta de demostración: `customer@practicesoftwaretesting.com` / `welcome01`.
-- El caso de credenciales inválidas usa un correo que no existe, nunca la cuenta de demostración
-  (se bloquea tras tres intentos fallidos).
+- Cliente de prueba: cada corrida registra su propio cliente con `POST /users/register` de la API (correo único) y entra con él. La cuenta de demostración `customer@practicesoftwaretesting.com` es compartida, otras personas la bloquean (HTTP 423) y no es una dependencia válida para la suite.
+- El caso de credenciales inválidas usa un correo que no existe (una cuenta se bloquea tras tres
+  intentos fallidos).
 - Cada prueba crea su propio carrito y lo elimina al terminar.

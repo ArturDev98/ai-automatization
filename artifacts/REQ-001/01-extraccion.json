@@ -1,0 +1,70 @@
+{
+  "requisito": "REQ-001",
+  "titulo": "Acceso de clientes: inicio de sesión y registro",
+  "generadoPor": "extractor (Claude Haiku 5.5)",
+  "fecha": "2026-11-14",
+  "criterios": [
+    { "id": "CA-1", "texto": "Un cliente registrado que escribe su correo y su clave correctos entra a la tienda, llega a \"My account\" y ve su nombre en el menú superior." },
+    { "id": "CA-2", "texto": "Con un correo o una clave incorrectos el cliente no entra y ve el mensaje \"Invalid email or password\"." },
+    { "id": "CA-3", "texto": "El correo y la clave son obligatorios y el correo debe tener formato válido. Cada campo muestra su propio mensaje de error y no se envía el formulario." },
+    { "id": "CA-4", "texto": "Un visitante que llena el registro con datos válidos queda registrado, es llevado al inicio de sesión y puede entrar con las credenciales que acaba de crear." },
+    { "id": "CA-5", "texto": "El registro no acepta campos obligatorios vacíos ni una clave que incumpla la política: mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo." },
+    { "id": "CA-6", "texto": "Al cerrar sesión el cliente vuelve a ser visitante: el menú muestra \"Sign in\" y la página \"My account\" deja de estar disponible." }
+  ],
+  "restricciones": [
+    "La cuenta de demostración es compartida y se bloquea tras tres intentos fallidos. Los casos negativos de inicio de sesión no deben usarla: se usa un correo que no existe o un cliente registrado por la propia prueba.",
+    "La base de datos de la demo se reinicia cada cierto tiempo; cada prueba crea lo que necesita."
+  ],
+  "pantallas": [
+    {
+      "nombre": "Inicio de sesión",
+      "url": "https://practicesoftwaretesting.com/auth/login",
+      "selectores": [
+        { "dataTest": "email", "elemento": "input type=email (placeholder \"Your email\")", "uso": "Campo de correo (CA-1, CA-2, CA-3)" },
+        { "dataTest": "password", "elemento": "input type=password (placeholder \"Your password\")", "uso": "Campo de clave (CA-1, CA-2, CA-3)" },
+        { "dataTest": "login-submit", "elemento": "input type=submit (\"Login\")", "uso": "Envía el formulario (CA-1, CA-2, CA-3)" },
+        { "dataTest": "nav-sign-in", "elemento": "a (\"Sign in\")", "uso": "Enlace del menú superior en estado visitante (CA-6)" }
+      ]
+    },
+    {
+      "nombre": "Registro",
+      "url": "https://practicesoftwaretesting.com/auth/register",
+      "selectores": [
+        { "dataTest": "first-name", "elemento": "input text, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "last-name", "elemento": "input text, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "dob", "elemento": "input text (placeholder \"YYYY-MM-DD\"), marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "country", "elemento": "select, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "postal_code", "elemento": "input text, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "house_number", "elemento": "input text, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "street", "elemento": "input text, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "city", "elemento": "input text, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "state", "elemento": "input text, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "phone", "elemento": "input text, marcado con *", "uso": "Campo obligatorio del registro (CA-4, CA-5); el requisito no lo nombra" },
+        { "dataTest": "email", "elemento": "input type=text (\"Your email *\")", "uso": "Campo de correo del registro (CA-3, CA-4, CA-5)" },
+        { "dataTest": "password", "elemento": "input type=password (\"Your password\")", "uso": "Campo de clave del registro (CA-4, CA-5)" },
+        { "dataTest": "register-submit", "elemento": "button type=submit (\"Register\")", "uso": "Envía el registro (CA-4, CA-5)" }
+      ]
+    },
+    {
+      "nombre": "Mi cuenta",
+      "url": "https://practicesoftwaretesting.com/account",
+      "selectores": []
+    }
+  ],
+  "endpoints": [],
+  "datosDePrueba": [
+    { "nombre": "Cuenta de demostración", "valor": "customer@practicesoftwaretesting.com / welcome01", "origen": "REQ-001, sección Datos y restricciones. Compartida: no usar en casos negativos." }
+  ],
+  "ambiguedades": [
+    "/account (Mi cuenta) no se snapshotó: exige sesión iniciada. Sus selectores y el texto \"My account\" del menú no están verificados; no se inventaron.",
+    "El mensaje \"Invalid email or password\" (CA-2) no aparece en el snapshot porque sólo se muestra tras enviar credenciales incorrectas. No se probó, por la restricción de la cuenta compartida.",
+    "Los mensajes de error por campo (CA-3) y su texto no aparecen en los snapshots, que sólo capturan la pantalla sin enviar. El requisito no define los textos.",
+    "En el registro el campo correo es input type=text, mientras que en el inicio de sesión es type=email. CA-3 exige formato válido, pero el requisito no dice cómo se valida ni qué mensaje se muestra.",
+    "CA-4 y CA-5 hablan de campos obligatorios, pero el registro tiene además nombre, apellido, fecha de nacimiento, país, código postal, número, calle, ciudad, estado y teléfono marcados con *. El requisito sólo nombra correo y clave; no dice qué se considera \"datos válidos\".",
+    "La política de clave de CA-5 (8 caracteres, mayúscula, minúscula, número y símbolo) no aparece como ayuda en la pantalla de registro; no se pudo contrastar con la aplicación.",
+    "CA-4 indica que tras el registro el cliente es llevado al inicio de sesión. El destino de la redirección no se verificó en la aplicación porque requiere enviar el formulario.",
+    "El formato esperado de fecha de nacimiento es sólo el placeholder \"YYYY-MM-DD\"; el requisito no lo menciona.",
+    "CA-6 (\"Sign in\" tras cerrar sesión) y la pantalla de cierre de sesión no se pudieron capturar: requieren sesión iniciada.",
+    "El requisito indica que la cuenta de demostración se bloquea tras tres intentos fallidos. No se verificó, a propósito, para no bloquear la cuenta compartida."
+  ]
+}
