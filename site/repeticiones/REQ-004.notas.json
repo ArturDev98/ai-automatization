@@ -1,0 +1,13 @@
+[
+  { "hora": "15:21:37", "tipo": "puerta", "es": "La extracción abre y trae CA-1 a CA-6 uno a uno", "en": "The extraction parses and lists AC-1 to AC-6 one to one" },
+  { "hora": "15:24:51", "tipo": "pausa", "es": "El plan espera la aprobación de la persona", "en": "The plan waits for a person to approve it" },
+  { "hora": "15:28:33", "tipo": "decision", "es": "Plan aprobado: 13 casos, 12 automatizados y 1 manual", "en": "Plan approved: 13 cases, 12 automated and 1 manual" },
+  { "hora": "15:53:28", "tipo": "puerta", "es": "Solas pasan 13 de 13; con la suite completa en paralelo fallan 4", "en": "Alone, 13 of 13 pass; with the full suite in parallel, 4 fail" },
+  { "hora": "15:59:49", "tipo": "devuelve", "es": "Vuelve al automator para cambiar la espera de networkidle en ContactPage", "en": "Back to the automator to replace the networkidle wait in ContactPage" },
+  { "hora": "16:12:53", "tipo": "pide", "es": "La persona pide dejar el hallazgo H-1 como prueba en rojo (test.fail)", "en": "The person asks to keep finding H-1 as a red test (test.fail)" },
+  { "hora": "16:13:05", "tipo": "detiene", "es": "Se detiene el reporter: el plan cambia antes del reporte", "en": "The reporter is stopped: the plan changes before the report" },
+  { "hora": "16:13:30", "tipo": "devuelve", "es": "Vuelve al planner para agregar TC-014", "en": "Back to the planner to add TC-014" },
+  { "hora": "16:16:09", "tipo": "devuelve", "es": "El automator escribe TC-014", "en": "The automator writes TC-014" },
+  { "hora": "16:40:27", "tipo": "pide", "es": "La persona pide validar la corrida del CI", "en": "The person asks to check the CI run" },
+  { "hora": "16:46:00", "tipo": "devuelve", "es": "El CI pasó con un reintento: TC-009 inestable vuelve al automator", "en": "CI passed after a retry: flaky TC-009 goes back to the automator" }
+]

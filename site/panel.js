@@ -10,6 +10,7 @@
   const t = (k) => T[idioma][k] ?? k;
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   let elegida = null;
+  let pintarAccion = () => {};
 
   function pintarParada() {
     const caja = document.getElementById('parada');
@@ -44,6 +45,7 @@
     document.title = idioma === 'es' ? 'Arturo Isaza · Flujo de QA con agentes' : 'Arturo Isaza · QA workflow with agents';
     pintarParada();
     pintarGuia();
+    pintarAccion();
   }
 
   // Guía móvil: las secciones son las paradas del riel, en el mismo orden.
@@ -144,6 +146,178 @@
       el.classList.add('revelar');
       vigia.observe(el);
     });
+  }
+
+  // En acción: la corrida real comprimida a 60 s; se detiene 2,5 s en cada momento de control.
+  const rep = datos.repeticion;
+  const seccion = document.getElementById('accion');
+  if (rep && seccion) {
+    const ev = rep.eventos;
+    const cero = Date.parse(rep.inicio);
+    const CONTROL = ['puerta', 'pausa', 'decision', 'pide', 'devuelve', 'detiene'];
+    const AGENTES = ['extractor', 'planner', 'automator', 'reporter'];
+    const ESTACION = { extractor: 0, planner: 1, persona: 2, automator: 3, reporter: 4 };
+    const X = [70, 285, 500, 715, 930];
+    const ICONO = { pausa: 'manual', decision: 'manual', pide: 'pide', devuelve: 'volver', detiene: 'alto' };
+    const DURACION = 60000;
+    const PARADA = 2500;
+    const clave = (a) => (AGENTES.includes(a) ? 'e.' : 'a.') + a;
+    const hora = (e) => new Date(cero + e.t * 1000).toISOString().slice(11, 16);
+    const $ = (s) => seccion.querySelector(s);
+    const escena = $('.accion');
+    const barra = $('#accion-barra');
+    const play = $('#accion-play');
+    let v = 0;
+    let corriendo = false;
+    let quietoHasta = 0;
+    let previo = null;
+    let arrancada = false;
+
+    const verbo = (e) => {
+      let s = t('a.' + e.tipo);
+      if (e.a) s += ' ' + t(clave(e.a));
+      if (e.tipo === 'puerta') s += ' ' + t(e.resultado === 'pasa' ? 'a.pasa' : 'a.noPasa');
+      if (e.tipo === 'pruebas') s += `: ${e.pasan} ${t('a.pasan')}, ${e.fallan} ${t('a.fallan')}`;
+      if (e.cubiertos) s += `: ${e.cubiertos}`;
+      return s;
+    };
+
+    const irA = (nuevo) => {
+      v = Math.min(Math.max(nuevo, 0), 1);
+      let k = 0;
+      while (k + 1 < ev.length && ev[k + 1].v <= v) k++;
+      const hechos = ev.slice(0, k + 1);
+      const e = ev[k];
+      const enEstacion = [...hechos].reverse().find((x) => x.actor in ESTACION);
+      const estacion = enEstacion ? ESTACION[enEstacion.actor] : 0;
+      $('.tren').style.transform = `translateX(${X[estacion]}px)`;
+      seccion.querySelectorAll('.a-est').forEach((g, i) => {
+        const agente = Object.keys(ESTACION).find((a) => ESTACION[a] === i);
+        g.classList.toggle('aqui', i === estacion);
+        g.classList.toggle('hecha', hechos.some((x) => (x.tipo === 'fin' && x.actor === agente) || (agente === 'persona' && x.tipo === 'decision')));
+      });
+
+      $('.accion-reloj time').textContent = hora(e);
+      $('.accion-quien strong').textContent = t(clave(e.actor));
+      $('.accion-quien span').textContent = (rep.actores.find((a) => a.clave === e.actor) || {}).modelo || '';
+      const suyos = hechos.filter((x) => x.actor === e.actor);
+      const cuenta = (tipos) => suyos.filter((x) => tipos.includes(x.tipo)).length;
+      const pruebas = [...hechos].reverse().find((x) => x.tipo === 'pruebas');
+      const COMANDOS = ['snapshot', 'api', 'comando', 'pruebas', 'calidad', 'trazabilidad'];
+      const cifras = [
+        ['lecturas', cuenta(['lee', 'busca'])],
+        // Un comando que hace varias cosas deja varios eventos a la misma hora: cuenta uno.
+        ['comandos', new Set(suyos.filter((x) => COMANDOS.includes(x.tipo)).map((x) => x.t)).size],
+        ['archivos', cuenta(['escribe', 'edita'])],
+      ];
+      $('.accion-cifras').innerHTML =
+        cifras.map(([k2, n]) => `<div><dt>${esc(t('a.' + k2))}</dt><dd data-cifra="${k2}">${n}</dd></div>`).join('') +
+        `<div><dt>${esc(t('a.pruebasUltimas'))}</dt><dd class="texto">${pruebas ? `${pruebas.pasan} ${esc(t('a.pasan'))}, ${pruebas.fallan} ${esc(t('a.fallan'))}` : '–'}</dd></div>`;
+      $('.accion-bitacora').innerHTML = hechos
+        .slice(-6)
+        .reverse()
+        .map((x) => `<li><time>${hora(x)}</time><span><b>${esc(t(clave(x.actor)))}</b> ${esc(verbo(x))}${x.ruta ? ` <code>${esc(x.ruta)}</code>` : ''}</span></li>`)
+        .join('');
+
+      // El letrero muestra la última revisión; al quedar atrás solo se atenúa, sin reescribirse
+      // (reescribirlo haría que el lector de pantalla lo anunciara otra vez).
+      const c = [...hechos].reverse().find((x) => CONTROL.includes(x.tipo));
+      const letrero = $('.accion-letrero');
+      const id = c ? `${ev.indexOf(c)}${idioma}` : idioma;
+      if (letrero.dataset.id !== id) {
+        letrero.dataset.id = id;
+        if (!c) {
+          letrero.innerHTML = `<p class="aviso-ctl"><svg aria-hidden="true"><use href="#i-pendiente"/></svg><span>${esc(t('a.sinControl'))}</span></p>`;
+        } else {
+          // La puerta dice siempre si pasa o no, también cuando trae nota.
+          let texto = c.tipo === 'puerta' ? verbo(c) + (c.nota ? `: ${c.nota[idioma]}` : '') : c.nota ? c.nota[idioma] : verbo(c);
+          if (c.tipo === 'pausa') {
+            const d = ev.find((x) => x.tipo === 'decision' && x.t >= c.t);
+            if (d) texto += `. ${t('a.esperando')}: ${Math.round((d.t - c.t) / 60)} min`;
+          }
+          const icono = c.tipo === 'puerta' ? (c.resultado === 'pasa' ? 'ok' : 'falla') : ICONO[c.tipo];
+          letrero.innerHTML = `<p class="aviso-ctl ${c.tipo} ${c.resultado || ''}"><svg aria-hidden="true"><use href="#i-${icono}"/></svg><span><time>${hora(c)}</time> <b>${esc(t(clave(c.actor)))}</b> ${esc(texto)}</span></p>`;
+        }
+      }
+      letrero.firstElementChild.classList.toggle('pasado', !c || v - c.v >= 0.04);
+
+      barra.value = String(Math.round(v * 1000));
+      barra.setAttribute('aria-valuetext', `${hora(e)} UTC`);
+    };
+
+    const marcarPlay = () => {
+      play.setAttribute('aria-pressed', String(corriendo));
+      play.querySelector('use').setAttribute('href', corriendo ? '#i-pausa' : '#i-play');
+    };
+
+    const cuadro = (ahora) => {
+      if (!corriendo) return;
+      const dt = previo === null ? 0 : Math.min(ahora - previo, 100);
+      previo = ahora;
+      if (ahora >= quietoHasta) {
+        let nuevo = v + dt / DURACION;
+        const parada = ev.find((x) => CONTROL.includes(x.tipo) && x.v > v && x.v <= nuevo);
+        if (parada) {
+          nuevo = parada.v;
+          quietoHasta = ahora + PARADA;
+        }
+        irA(nuevo);
+        if (v >= 1) {
+          corriendo = false;
+          marcarPlay();
+          return;
+        }
+      }
+      requestAnimationFrame(cuadro);
+    };
+
+    const arrancar = () => {
+      if (v >= 1) irA(0);
+      corriendo = true;
+      arrancada = true;
+      previo = null;
+      quietoHasta = 0;
+      marcarPlay();
+      requestAnimationFrame(cuadro);
+    };
+    const parar = () => {
+      corriendo = false;
+      marcarPlay();
+    };
+
+    pintarAccion = () => {
+      seccion.querySelectorAll('[data-nota]').forEach((el) => {
+        el.textContent = ev[+el.dataset.nota].nota[idioma];
+      });
+      barra.setAttribute('aria-label', t('a.barra'));
+      if (!escena.hidden) irA(v);
+    };
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      seccion.classList.add('quieta');
+    } else {
+      escena.hidden = false;
+      $('.accion-estatico').open = false;
+      play.addEventListener('click', () => (corriendo ? parar() : arrancar()));
+      $('#accion-reinicio').addEventListener('click', () => {
+        quietoHasta = 0;
+        irA(0);
+      });
+      barra.addEventListener('input', () => {
+        arrancada = true;
+        parar();
+        irA(+barra.value / 1000);
+      });
+      if ('IntersectionObserver' in window) {
+        const vigia = new IntersectionObserver((entradas) => {
+          if (entradas.some((x) => x.isIntersecting) && !arrancada) {
+            vigia.disconnect();
+            arrancar();
+          }
+        }, { threshold: 0.35 });
+        vigia.observe(escena);
+      }
+    }
   }
 
   // Parada inicial: la última estación recorrida del primer requisito.

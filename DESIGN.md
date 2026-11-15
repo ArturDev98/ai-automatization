@@ -45,6 +45,8 @@ El tema sigue al sistema y se puede forzar con el botón; la elección se guarda
 - Al bajar, cada bloque que empezó fuera de pantalla aparece subiendo 20 px; la franja de color de cada
   línea entra de izquierda a derecha, como un tren que llega.
 - La clase que oculta la pone el script: sin JavaScript o con `prefers-reduced-motion` todo está visible.
+- La repetición de En acción avanza a la hora real comprimida a 60 s y se detiene 2,5 s en cada momento
+  de control; el letrero deja la última revisión atenuada. Con movimiento reducido se ve estática.
 
 ## Navegación
 
