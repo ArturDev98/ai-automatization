@@ -208,18 +208,18 @@
     },
     {
       "t": 518,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 518,
       "actor": "persona",
       "tipo": "pausa",
       "nota": {
         "es": "El plan espera la aprobación de la persona",
         "en": "The plan waits for a person to approve it"
       }
-    },
-    {
-      "t": 518,
-      "actor": "orquestador",
-      "tipo": "puerta",
-      "resultado": "pasa"
     },
     {
       "t": 739.7,
@@ -615,20 +615,20 @@
     {
       "t": 2234.4,
       "actor": "orquestador",
-      "tipo": "pruebas",
-      "pasan": 13,
-      "fallan": 0,
-      "inestables": 0
-    },
-    {
-      "t": 2234.4,
-      "actor": "orquestador",
       "tipo": "puerta",
       "resultado": "no-pasa",
       "nota": {
         "es": "Solas pasan 13 de 13; con la suite completa en paralelo fallan 4",
         "en": "Alone, 13 of 13 pass; with the full suite in parallel, 4 fail"
       }
+    },
+    {
+      "t": 2234.4,
+      "actor": "orquestador",
+      "tipo": "pruebas",
+      "pasan": 13,
+      "fallan": 0,
+      "inestables": 0
     },
     {
       "t": 2283.4,
@@ -759,6 +759,12 @@
     {
       "t": 3156.5,
       "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 3156.5,
+      "actor": "orquestador",
       "tipo": "pruebas",
       "pasan": 92,
       "fallan": 0,
@@ -774,12 +780,6 @@
       "t": 3156.5,
       "actor": "orquestador",
       "tipo": "calidad"
-    },
-    {
-      "t": 3156.5,
-      "actor": "orquestador",
-      "tipo": "puerta",
-      "resultado": "pasa"
     },
     {
       "t": 3334.2,
@@ -969,18 +969,18 @@
     {
       "t": 3596,
       "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 3596,
+      "actor": "orquestador",
       "tipo": "devuelve",
       "a": "automator",
       "nota": {
         "es": "El automator escribe TC-014",
         "en": "The automator writes TC-014"
       }
-    },
-    {
-      "t": 3596,
-      "actor": "orquestador",
-      "tipo": "puerta",
-      "resultado": "pasa"
     },
     {
       "t": 3599.3,
@@ -1152,6 +1152,12 @@
     {
       "t": 4086,
       "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 4086,
+      "actor": "orquestador",
       "tipo": "pruebas",
       "pasan": 94,
       "fallan": 0,
@@ -1167,12 +1173,6 @@
       "t": 4086,
       "actor": "orquestador",
       "tipo": "calidad"
-    },
-    {
-      "t": 4086,
-      "actor": "orquestador",
-      "tipo": "puerta",
-      "resultado": "pasa"
     },
     {
       "t": 4272.9,
@@ -1364,6 +1364,12 @@
     {
       "t": 4590,
       "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 4590,
+      "actor": "orquestador",
       "tipo": "pruebas",
       "pasan": 106,
       "fallan": 0,
@@ -1379,12 +1385,6 @@
       "t": 4590,
       "actor": "orquestador",
       "tipo": "calidad"
-    },
-    {
-      "t": 4590,
-      "actor": "orquestador",
-      "tipo": "puerta",
-      "resultado": "pasa"
     },
     {
       "t": 4994.9,
@@ -1510,6 +1510,12 @@
     {
       "t": 5946,
       "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 5946,
+      "actor": "orquestador",
       "tipo": "pruebas",
       "pasan": 81,
       "fallan": 0,
@@ -1519,12 +1525,6 @@
       "t": 5946,
       "actor": "orquestador",
       "tipo": "calidad"
-    },
-    {
-      "t": 5946,
-      "actor": "orquestador",
-      "tipo": "puerta",
-      "resultado": "pasa"
     },
     {
       "t": 6116.9,

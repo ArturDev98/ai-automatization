@@ -124,6 +124,13 @@ test('la pausa de aprobación y su respuesta son de la persona', () => {
   assert.deepEqual(tipos(extraer(r, 'REQ-009'), 'persona'), ['pausa', 'decision']);
 });
 
+test('a la misma hora, la puerta va antes de la acción que la sigue', () => {
+  const r = registro();
+  r.principal.push(uso('10:02:10', 'AskUserQuestion', { questions: [] }, 'q1'), salida('10:03:00', 'q1', 'respondido'));
+  const tipos10 = extraer(r, 'REQ-009').eventos.filter((e) => e.tipo === 'puerta' || e.tipo === 'pausa').map((e) => e.tipo);
+  assert.deepEqual(tipos10, ['puerta', 'pausa']);
+});
+
 test('un subagente detenido cierra con detiene y sin fin', () => {
   const r = registro();
   r.principal.push(

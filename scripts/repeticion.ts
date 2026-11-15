@@ -213,7 +213,8 @@ export function extraer(reg: Registro, req: string): Repeticion {
   const orden = crudos
     .map((c, i) => ({ c, i }))
     .filter(({ c }) => c.ms >= desde && c.ms <= hasta)
-    .sort((x, y) => x.c.ms - y.c.ms || x.i - y.i)
+    // A igual hora la puerta va primero: es la revisión que decide la acción siguiente.
+    .sort((x, y) => x.c.ms - y.c.ms || Number(y.c.tipo === 'puerta') - Number(x.c.tipo === 'puerta') || x.i - y.i)
     .map(({ c }) => c);
   const cero = orden[0]?.ms ?? desde;
   const eventos: Evento[] = orden.map(({ ms: m, ...resto }) => ({ t: Math.round((m - cero) / 100) / 10, ...resto }));
