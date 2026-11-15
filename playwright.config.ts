@@ -5,8 +5,10 @@ const API_URL = process.env.API_URL ?? 'https://api.practicesoftwaretesting.com'
 const UI_BUGS_URL = process.env.UI_BUGS_URL ?? 'https://with-bugs.practicesoftwaretesting.com';
 
 // Cada corrida aparte guarda su resultado con sufijo para no pisar el de la suite.
+// Los workers recargan esta config sin los argumentos: el sufijo les llega por el entorno.
 const aparte = ['ui-bugs', 'panel'].find((p) => process.argv.some((a) => a.includes(`--project=${p}`)));
-const sufijo = aparte ? `-${aparte.replace('ui-', '')}` : '';
+process.env.PW_SUFIJO ??= aparte ? `-${aparte.replace('ui-', '')}` : '';
+const sufijo = process.env.PW_SUFIJO;
 
 export default defineConfig({
   testDir: './tests',
