@@ -170,7 +170,7 @@
     let v = 0;
     let corriendo = false;
     let quietoHasta = 0;
-    let previo = 0;
+    let previo = null;
     let arrancada = false;
 
     const verbo = (e) => {
@@ -248,7 +248,7 @@
 
     const cuadro = (ahora) => {
       if (!corriendo) return;
-      const dt = Math.min(ahora - previo, 100);
+      const dt = previo === null ? 0 : Math.min(ahora - previo, 100);
       previo = ahora;
       if (ahora >= quietoHasta) {
         let nuevo = v + dt / DURACION;
@@ -271,7 +271,7 @@
       if (v >= 1) irA(0);
       corriendo = true;
       arrancada = true;
-      previo = performance.now();
+      previo = null;
       quietoHasta = 0;
       marcarPlay();
       requestAnimationFrame(cuadro);
