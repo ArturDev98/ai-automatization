@@ -15,6 +15,8 @@ export default defineConfig({
   // La app es de terceros: se reintenta solo en CI para no tapar inestabilidad en local.
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
+  // Carpeta propia por corrida: cada una limpia la suya y no borra las capturas de la anterior.
+  outputDir: `test-results${sufijo}`,
   timeout: 45_000,
   expect: { timeout: 10_000 },
   reporter: [
