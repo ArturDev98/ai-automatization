@@ -1,0 +1,31 @@
+{
+  "name": "ai-automatization",
+  "version": "1.0.0",
+  "description": "Flujo de QA con agentes: de un requisito a pruebas automatizadas con trazabilidad",
+  "scripts": {
+    "test": "playwright test --project=ui --project=api",
+    "test:ui": "playwright test --project=ui",
+    "test:api": "playwright test --project=api",
+    "test:bugs": "playwright test --project=ui-bugs",
+    "lint": "eslint .",
+    "typecheck": "tsc",
+    "snapshot": "tsx scripts/snapshot.ts",
+    "trazabilidad": "tsx scripts/trazabilidad.ts",
+    "panel": "tsx scripts/panel.ts",
+    "test:unit": "node --import tsx --test scripts/*.test.ts"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.15.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "private": true
+}
