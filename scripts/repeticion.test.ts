@@ -1,0 +1,155 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { extraer, nombreModelo, type Registro } from './repeticion';
+
+const RAIZ = 'C:\\Users\\alguien\\repo';
+const hora = (h: string) => `2026-01-01T${h}.000Z`;
+const linea = (h: string, type: string, content: unknown, model?: string) => ({
+  type,
+  timestamp: hora(h),
+  cwd: RAIZ,
+  message: { ...(model ? { model } : {}), content },
+});
+const uso = (h: string, name: string, input: object, id = `u-${h}`, model = 'claude-opus-5-5') =>
+  linea(h, 'assistant', [{ type: 'tool_use', id, name, input }], model);
+const salida = (h: string, id: string, texto: string) => linea(h, 'user', [{ type: 'tool_result', tool_use_id: id, content: texto }]);
+const dice = (h: string, texto: string) => linea(h, 'user', texto);
+const regreso = (h: string, agente: string) =>
+  dice(h, `Another Claude session sent a message:\n<agent-message from="${agente}">\n[Subagent hand-back] informe`);
+
+// Corrida mínima: el extractor lee, vuelca una pantalla, escribe y regresa.
+function registro(): Registro {
+  return {
+    principal: [
+      uso('10:00:00', 'Skill', { skill: 'qa-flow', args: 'REQ-009' }),
+      uso('10:00:10', 'Agent', { subagent_type: 'extractor', description: 'Extracción de REQ-009' }, 'tu-ext'),
+      salida('10:00:11', 'tu-ext', 'Async agent launched successfully.\nagentId: aaa111 (internal ID)'),
+      regreso('10:02:00', 'aaa111'),
+    ],
+    subagentes: [
+      {
+        meta: { agentType: 'extractor', toolUseId: 'tu-ext' },
+        lineas: [
+          dice('10:00:11', 'Etapa 1'),
+          uso('10:00:20', 'Read', { file_path: `${RAIZ}\\requirements\\REQ-009.md` }, 'e1', 'claude-haiku-5-5'),
+          uso('10:00:30', 'Bash', { command: 'npm run snapshot -- https://practicesoftwaretesting.com/contact x.json' }, 'e2', 'claude-haiku-5-5'),
+          uso('10:01:00', 'Write', { file_path: `${RAIZ}\\artifacts\\REQ-009\\01-extraccion.json` }, 'e3', 'claude-haiku-5-5'),
+          uso('10:01:59', 'SubagentHandback', {}, 'e4', 'claude-haiku-5-5'),
+        ],
+      },
+    ],
+  };
+}
+
+// Suma un automator que regresa a las 10:05 y deja al orquestador verificar.
+function conAutomator(r: Registro, falla: boolean): Registro {
+  r.principal.push(
+    uso('10:03:00', 'Agent', { subagent_type: 'automator', description: 'Automatizar REQ-009' }, 'tu-aut'),
+    salida('10:03:01', 'tu-aut', 'agentId: bbb222 (internal ID)'),
+    regreso('10:05:00', 'bbb222'),
+    uso('10:05:10', 'Bash', { command: 'npx playwright test -g "@REQ-009"' }, 'o1'),
+    salida('10:05:40', 'o1', falla ? '  1 failed\n  2 passed (3s)' : '  3 passed (3s)'),
+  );
+  r.subagentes.push({
+    meta: { agentType: 'automator', toolUseId: 'tu-aut' },
+    lineas: [dice('10:03:01', 'Etapa 3'), uso('10:04:00', 'Edit', { file_path: `${RAIZ}\\tests\\ui\\x.spec.ts` }, 'a1')],
+  });
+  return r;
+}
+
+const tipos = (r: ReturnType<typeof extraer>, actor: string) => r.eventos.filter((e) => e.actor === actor).map((e) => e.tipo);
+
+test('una corrida con extractor da inicio, acciones y fin con su modelo', () => {
+  const r = extraer(registro(), 'REQ-009');
+  assert.deepEqual(tipos(r, 'extractor'), ['inicio', 'lee', 'snapshot', 'escribe', 'fin']);
+  assert.deepEqual(r.actores.find((a) => a.clave === 'extractor'), { clave: 'extractor', modelo: 'Claude Haiku 5.5' });
+  assert.equal(r.eventos[0].t, 0);
+  assert.equal(r.eventos.find((e) => e.tipo === 'snapshot')?.ruta, '/contact');
+  assert.equal(r.fecha, '2026-01-01');
+});
+
+test('pruebas suma las cifras de Playwright', () => {
+  const r = extraer(conAutomator(registro(), true), 'REQ-009');
+  const p = r.eventos.find((e) => e.tipo === 'pruebas');
+  assert.equal(p?.actor, 'orquestador');
+  assert.equal(p?.pasan, 2);
+  assert.equal(p?.fallan, 1);
+});
+
+test('una ruta fuera del repo no sale y una del repo queda relativa', () => {
+  const r = registro();
+  r.subagentes[0].lineas.push(
+    uso('10:01:10', 'Read', { file_path: 'C:\\Users\\alguien\\AppData\\Local\\Temp\\x.txt' }, 'e5', 'claude-haiku-5-5'),
+    uso('10:01:20', 'Read', { file_path: '/c/Users/alguien/repo/src/pages/A.ts' }, 'e6', 'claude-haiku-5-5'),
+  );
+  const lee = extraer(r, 'REQ-009').eventos.filter((e) => e.tipo === 'lee');
+  assert.deepEqual(lee.map((e) => e.ruta), ['requirements/REQ-009.md', undefined, 'src/pages/A.ts']);
+  assert.equal(extraer(r, 'REQ-009').eventos.find((e) => e.tipo === 'escribe')?.ruta, 'artifacts/REQ-009/01-extraccion.json');
+});
+
+test('la puerta no pasa si el orquestador devuelve el trabajo al mismo agente', () => {
+  const r = conAutomator(registro(), true);
+  r.principal.push(uso('10:06:00', 'SendMessage', { to: 'bbb222', summary: 'corrige' }, 'o2'));
+  const ev = extraer(r, 'REQ-009').eventos;
+  const puertas = ev.filter((e) => e.tipo === 'puerta');
+  assert.deepEqual(puertas.map((e) => e.resultado), ['pasa', 'no-pasa']);
+  assert.equal(puertas[1].t, ev.find((e) => e.tipo === 'pruebas')?.t);
+  assert.equal(ev.find((e) => e.tipo === 'devuelve')?.a, 'automator');
+});
+
+test('un pedido de la persona antes de devolver es pide, y la puerta pasa', () => {
+  const r = conAutomator(registro(), false);
+  r.principal.push(dice('10:05:50', 'agrega un caso'), uso('10:06:00', 'SendMessage', { to: 'bbb222' }, 'o2'));
+  const res = extraer(r, 'REQ-009');
+  assert.deepEqual(tipos(res, 'persona'), ['pide']);
+  assert.equal(res.eventos.filter((e) => e.tipo === 'puerta').at(-1)?.resultado, 'pasa');
+});
+
+test('un mensaje de la persona sin devolución después no genera pide', () => {
+  const r = registro();
+  r.principal.splice(3, 0, dice('10:01:00', '¿esperamos?'));
+  assert.deepEqual(tipos(extraer(r, 'REQ-009'), 'persona'), []);
+});
+
+test('la pausa de aprobación y su respuesta son de la persona', () => {
+  const r = registro();
+  r.principal.push(uso('10:02:10', 'AskUserQuestion', { questions: [] }, 'q1'), salida('10:03:00', 'q1', 'respondido'));
+  assert.deepEqual(tipos(extraer(r, 'REQ-009'), 'persona'), ['pausa', 'decision']);
+});
+
+test('un subagente detenido cierra con detiene y sin fin', () => {
+  const r = registro();
+  r.principal.push(
+    uso('10:03:00', 'Agent', { subagent_type: 'reporter', description: 'Reporte de REQ-009' }, 'tu-rep'),
+    salida('10:03:01', 'tu-rep', 'agentId: ccc333 (internal ID)'),
+    dice('10:03:30', 'cambia el plan'),
+    uso('10:03:40', 'TaskStop', { task_id: 'ccc333' }, 'o3'),
+  );
+  r.subagentes.push({
+    meta: { agentType: 'reporter', toolUseId: 'tu-rep' },
+    lineas: [dice('10:03:01', 'Etapa 4'), uso('10:03:20', 'Glob', { pattern: '*.md' }, 'r1', 'claude-haiku-5-5')],
+  });
+  const res = extraer(r, 'REQ-009');
+  assert.deepEqual(tipos(res, 'reporter'), ['inicio', 'busca']);
+  assert.equal(res.eventos.find((e) => e.tipo === 'detiene')?.a, 'reporter');
+});
+
+test('gh run antes del primer commit no cuenta como ci', () => {
+  const r = conAutomator(registro(), false);
+  r.principal.splice(3, 0, uso('10:01:30', 'Bash', { command: 'gh run list -L 1' }, 'g0'));
+  r.principal.push(
+    uso('10:06:00', 'Bash', { command: 'git add -A && git commit -m x' }, 'g1'),
+    uso('10:06:30', 'Bash', { command: 'gh run watch 1' }, 'g2'),
+    uso('10:07:00', 'SendMessage', { to: 'bbb222' }, 'g3'),
+    regreso('10:08:00', 'bbb222'),
+    uso('10:08:30', 'Bash', { command: 'git commit -m y' }, 'g4'),
+  );
+  const ev = extraer(r, 'REQ-009').eventos;
+  assert.deepEqual(ev.filter((e) => e.tipo === 'ci').map((e) => e.t), [ev.find((e) => e.tipo === 'commit')!.t + 30]);
+  assert.equal(ev.at(-1)?.tipo, 'commit');
+});
+
+test('nombreModelo', () => {
+  assert.equal(nombreModelo('claude-fable-5-2'), 'Claude Fable 5.2');
+  assert.equal(nombreModelo('claude-haiku-5-5'), 'Claude Haiku 5.5');
+});
