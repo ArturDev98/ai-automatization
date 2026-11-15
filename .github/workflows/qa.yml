@@ -8,9 +8,20 @@ on:
     # La app bajo prueba es de terceros: una corrida diaria avisa si cambió.
     - cron: '0 11 * * *'
   workflow_dispatch:
+    inputs:
+      destino:
+        description: Dónde corre Toolshop
+        type: choice
+        options: [contenedor, publica]
+        default: contenedor
 
 permissions:
   contents: read
+
+env:
+  # La demo pública reta a los runners con Cloudflare: push y PR prueban contra contenedores.
+  # La corrida diaria va contra la pública para enterarse si cambió.
+  DESTINO: ${{ inputs.destino || (github.event_name == 'schedule' && 'publica' || 'contenedor') }}
 
 concurrency:
   group: qa-${{ github.ref }}
@@ -40,13 +51,31 @@ jobs:
           npm run typecheck
           npm run test:unit
 
+      - name: Toolshop en contenedores
+        if: ${{ env.DESTINO == 'contenedor' }}
+        run: |
+          ci/toolshop.sh sprint5
+          echo "UI_URL=http://localhost:4200" >> "$GITHUB_ENV"
+          echo "API_URL=http://localhost:8091" >> "$GITHUB_ENV"
+
       - name: Suite UI y API
         id: suite
         run: npm test
 
+      # Las dos versiones esperan la API en el mismo puerto: se cambia una por la otra.
+      - name: Toolshop con bugs en contenedores
+        id: toolshop_bugs
+        if: ${{ !cancelled() && env.DESTINO == 'contenedor' }}
+        run: |
+          ci/toolshop.sh down
+          ci/toolshop.sh sprint5-with-bugs
+          echo "UI_BUGS_URL=http://localhost:4200" >> "$GITHUB_ENV"
+          echo "API_BUGS_URL=http://localhost:8091" >> "$GITHUB_ENV"
+
       - name: Suite contra la versión con bugs sembrados
         id: bugs
-        if: ${{ !cancelled() }}
+        # Si sus contenedores no subieron, no se cae a la demo pública sin avisar.
+        if: ${{ !cancelled() && steps.toolshop_bugs.outcome != 'failure' }}
         run: npm run test:bugs
 
       - name: Trazabilidad
