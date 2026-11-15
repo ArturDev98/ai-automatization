@@ -13,7 +13,8 @@
     "trazabilidad": "tsx scripts/trazabilidad.ts",
     "panel": "tsx scripts/panel.ts",
     "test:unit": "node --import tsx --test scripts/*.test.ts",
-    "test:panel": "playwright test --project=panel"
+    "test:panel": "playwright test --project=panel",
+    "repeticion": "tsx scripts/repeticion.ts"
   },
   "license": "MIT",
   "devDependencies": {

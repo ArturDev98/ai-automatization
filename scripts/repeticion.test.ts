@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { extraer, nombreModelo, type Registro } from './repeticion';
+import { aplicarNotas, extraer, nombreModelo, revisarPrivacidad, type Registro, type Repeticion } from './repeticion';
 
 const RAIZ = 'C:\\Users\\alguien\\repo';
 const hora = (h: string) => `2026-01-01T${h}.000Z`;
@@ -66,6 +66,13 @@ test('una corrida con extractor da inicio, acciones y fin con su modelo', () => 
   assert.equal(r.eventos[0].t, 0);
   assert.equal(r.eventos.find((e) => e.tipo === 'snapshot')?.ruta, '/contact');
   assert.equal(r.fecha, '2026-01-01');
+});
+
+test('una copia de la llamada sin hora o con el mismo id no se cuenta dos veces', () => {
+  const r = registro();
+  const lineas = r.subagentes[0].lineas as { timestamp?: string; type?: string }[];
+  lineas.push({ ...lineas[1], type: 'api-request-blob', timestamp: undefined }, { ...lineas[2] });
+  assert.equal(extraer(r, 'REQ-009').eventos.filter((e) => e.tipo === 'lee' || e.tipo === 'snapshot').length, 2);
 });
 
 test('pruebas suma las cifras de Playwright', () => {
@@ -147,6 +154,32 @@ test('gh run antes del primer commit no cuenta como ci', () => {
   const ev = extraer(r, 'REQ-009').eventos;
   assert.deepEqual(ev.filter((e) => e.tipo === 'ci').map((e) => e.t), [ev.find((e) => e.tipo === 'commit')!.t + 30]);
   assert.equal(ev.at(-1)?.tipo, 'commit');
+});
+
+const conDevolucion = (): Repeticion => ({
+  req: 'REQ-009',
+  fecha: '2026-01-01',
+  inicio: '2026-01-01T15:59:00.000Z',
+  fin: '2026-01-01T16:00:00.000Z',
+  actores: [],
+  eventos: [{ t: 49, actor: 'orquestador', tipo: 'devuelve', a: 'automator' }],
+});
+
+test('una nota se pega al evento de su tipo a 60 s o menos', () => {
+  const r = aplicarNotas(conDevolucion(), [{ hora: '15:59:30', tipo: 'devuelve', es: 'vuelve', en: 'back' }]);
+  assert.deepEqual(r.eventos[0].nota, { es: 'vuelve', en: 'back' });
+});
+
+test('una nota sin evento cerca o de otro tipo hace fallar', () => {
+  assert.throws(() => aplicarNotas(conDevolucion(), [{ hora: '10:00:00', tipo: 'devuelve', es: 'x', en: 'x' }]), /10:00:00/);
+  assert.throws(() => aplicarNotas(conDevolucion(), [{ hora: '15:59:49', tipo: 'pide', es: 'x', en: 'x' }]), /15:59:49/);
+});
+
+for (const malo of ['C:\\Users\\alguien', 'C:/Users/alguien', '/c/Users/alguien', 'AppData', 'a@b.co', 'toolu_01abc', 'agent-a2021cb566021842d', 'a2021cb566021842d'])
+  test(`revisarPrivacidad rechaza ${malo}`, () => assert.throws(() => revisarPrivacidad(JSON.stringify({ x: malo }))));
+
+test('revisarPrivacidad deja pasar rutas del repo, modelos y fechas', () => {
+  revisarPrivacidad(JSON.stringify({ ruta: 'artifacts/REQ-004/02-plan.md', modelo: 'Claude Opus 5.5', inicio: '2026-11-15T15:16:13.636Z' }));
 });
 
 test('nombreModelo', () => {

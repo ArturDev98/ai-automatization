@@ -1,0 +1,1535 @@
+{
+  "req": "REQ-004",
+  "fecha": "2026-11-15",
+  "inicio": "2026-11-15T15:16:13.636Z",
+  "fin": "2026-11-15T16:58:10.538Z",
+  "actores": [
+    {
+      "clave": "orquestador",
+      "modelo": "Claude Opus 5.5"
+    },
+    {
+      "clave": "extractor",
+      "modelo": "Claude Haiku 5.5"
+    },
+    {
+      "clave": "planner",
+      "modelo": "Claude Fable 5.2"
+    },
+    {
+      "clave": "automator",
+      "modelo": "Claude Opus 5.5"
+    },
+    {
+      "clave": "reporter",
+      "modelo": "Claude Haiku 5.5"
+    },
+    {
+      "clave": "persona",
+      "modelo": null
+    }
+  ],
+  "eventos": [
+    {
+      "t": 0,
+      "actor": "extractor",
+      "tipo": "inicio"
+    },
+    {
+      "t": 2.7,
+      "actor": "extractor",
+      "tipo": "lee",
+      "ruta": "requirements/REQ-004-formulario-de-contacto.md"
+    },
+    {
+      "t": 3,
+      "actor": "extractor",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-001/01-extraccion.json"
+    },
+    {
+      "t": 3.4,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 11.7,
+      "actor": "extractor",
+      "tipo": "snapshot",
+      "ruta": "/contact"
+    },
+    {
+      "t": 27.6,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 28.2,
+      "actor": "extractor",
+      "tipo": "snapshot",
+      "ruta": "/"
+    },
+    {
+      "t": 54.6,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 72.4,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 84.6,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 97.1,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 115.6,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 134.6,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 151.3,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 171.9,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 184.7,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 194.9,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 204.6,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 226.7,
+      "actor": "extractor",
+      "tipo": "api",
+      "ruta": "/messages"
+    },
+    {
+      "t": 235.8,
+      "actor": "extractor",
+      "tipo": "snapshot",
+      "ruta": "/auth/login"
+    },
+    {
+      "t": 279.4,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 308.5,
+      "actor": "extractor",
+      "tipo": "escribe",
+      "ruta": "artifacts/REQ-004/01-extraccion.json"
+    },
+    {
+      "t": 312.5,
+      "actor": "extractor",
+      "tipo": "comando"
+    },
+    {
+      "t": 318.1,
+      "actor": "extractor",
+      "tipo": "fin"
+    },
+    {
+      "t": 334.8,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa",
+      "nota": {
+        "es": "La extracción abre y trae CA-1 a CA-6 uno a uno",
+        "en": "The extraction parses and lists AC-1 to AC-6 one to one"
+      }
+    },
+    {
+      "t": 335,
+      "actor": "planner",
+      "tipo": "inicio"
+    },
+    {
+      "t": 338.7,
+      "actor": "planner",
+      "tipo": "lee",
+      "ruta": "requirements/REQ-004-formulario-de-contacto.md"
+    },
+    {
+      "t": 338.8,
+      "actor": "planner",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/01-extraccion.json"
+    },
+    {
+      "t": 339.4,
+      "actor": "planner",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-001/02-plan.md"
+    },
+    {
+      "t": 340,
+      "actor": "planner",
+      "tipo": "busca"
+    },
+    {
+      "t": 479.5,
+      "actor": "planner",
+      "tipo": "escribe",
+      "ruta": "artifacts/REQ-004/02-plan.md"
+    },
+    {
+      "t": 492.3,
+      "actor": "planner",
+      "tipo": "fin"
+    },
+    {
+      "t": 518,
+      "actor": "persona",
+      "tipo": "pausa",
+      "nota": {
+        "es": "El plan espera la aprobación de la persona",
+        "en": "The plan waits for a person to approve it"
+      }
+    },
+    {
+      "t": 518,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 739.7,
+      "actor": "persona",
+      "tipo": "decision",
+      "nota": {
+        "es": "Plan aprobado: 13 casos, 12 automatizados y 1 manual",
+        "en": "Plan approved: 13 cases, 12 automated and 1 manual"
+      }
+    },
+    {
+      "t": 749.8,
+      "actor": "orquestador",
+      "tipo": "escribe",
+      "ruta": "artifacts/REQ-004/02-revision.md"
+    },
+    {
+      "t": 759.9,
+      "actor": "automator",
+      "tipo": "inicio"
+    },
+    {
+      "t": 762.9,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 766.7,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-plan.md"
+    },
+    {
+      "t": 767.2,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-revision.md"
+    },
+    {
+      "t": 767.8,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/01-extraccion.json"
+    },
+    {
+      "t": 768.2,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "docs/convenciones.md"
+    },
+    {
+      "t": 773.7,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 774.9,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 780.8,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 787.2,
+      "actor": "automator",
+      "tipo": "calidad"
+    },
+    {
+      "t": 794.2,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 806.3,
+      "actor": "automator",
+      "tipo": "escribe"
+    },
+    {
+      "t": 810.4,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 828.8,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 869.9,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 884,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 904.1,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 938.2,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 982.7,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1029.4,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1059.7,
+      "actor": "automator",
+      "tipo": "escribe"
+    },
+    {
+      "t": 1066.2,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1088.9,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1115.5,
+      "actor": "automator",
+      "tipo": "api",
+      "ruta": "/"
+    },
+    {
+      "t": 1136,
+      "actor": "automator",
+      "tipo": "trazabilidad"
+    },
+    {
+      "t": 1142.5,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "scripts/trazabilidad.ts"
+    },
+    {
+      "t": 1198,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1217.2,
+      "actor": "automator",
+      "tipo": "escribe",
+      "ruta": "src/data/contacto.ts"
+    },
+    {
+      "t": 1232.2,
+      "actor": "automator",
+      "tipo": "escribe",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 1237.7,
+      "actor": "automator",
+      "tipo": "escribe",
+      "ruta": "src/api/mensajes.ts"
+    },
+    {
+      "t": 1272.9,
+      "actor": "automator",
+      "tipo": "escribe",
+      "ruta": "tests/ui/contacto-formulario.spec.ts"
+    },
+    {
+      "t": 1287.3,
+      "actor": "automator",
+      "tipo": "escribe",
+      "ruta": "tests/ui/contacto-sesion.spec.ts"
+    },
+    {
+      "t": 1293.7,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "tests/ui/contacto-sesion.spec.ts"
+    },
+    {
+      "t": 1300,
+      "actor": "automator",
+      "tipo": "escribe",
+      "ruta": "tests/api/mensajes.spec.ts"
+    },
+    {
+      "t": 1310.1,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1317.8,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 11,
+      "fallan": 2,
+      "inestables": 0
+    },
+    {
+      "t": 1352.8,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 0,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 1375.2,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "test-results/contacto-formulario-Formul-b8833-rio-y-los-demás-son-válidos-ui/test-failed-1.png"
+    },
+    {
+      "t": 1386.4,
+      "actor": "automator",
+      "tipo": "escribe"
+    },
+    {
+      "t": 1391.6,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1435,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1476.3,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1519,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1547.1,
+      "actor": "automator",
+      "tipo": "api",
+      "ruta": "/contact"
+    },
+    {
+      "t": 1557.1,
+      "actor": "automator",
+      "tipo": "api",
+      "ruta": "/$c"
+    },
+    {
+      "t": 1578.6,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1606.4,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1612.3,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1628.5,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1669.2,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1709.9,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 1711.6,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 2,
+      "fallan": 1,
+      "inestables": 0
+    },
+    {
+      "t": 1736.8,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "test-results/contacto-formulario-Formul-0b3c2-rregir-los-errores-y-enviar-ui/test-failed-1.png"
+    },
+    {
+      "t": 1746.4,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1767.5,
+      "actor": "automator",
+      "tipo": "escribe"
+    },
+    {
+      "t": 1773,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1813.9,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "tests/ui/contacto-formulario.spec.ts"
+    },
+    {
+      "t": 1815.3,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 13,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 1931.3,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 11,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 1960.6,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1966.2,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 1975.6,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 39,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 1975.6,
+      "actor": "automator",
+      "tipo": "calidad"
+    },
+    {
+      "t": 2069.3,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 33,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 2132.4,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 2205.8,
+      "actor": "automator",
+      "tipo": "escribe",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 2225.8,
+      "actor": "automator",
+      "tipo": "fin"
+    },
+    {
+      "t": 2234.4,
+      "actor": "orquestador",
+      "tipo": "pruebas",
+      "pasan": 13,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 2234.4,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "no-pasa",
+      "nota": {
+        "es": "Solas pasan 13 de 13; con la suite completa en paralelo fallan 4",
+        "en": "Alone, 13 of 13 pass; with the full suite in parallel, 4 fail"
+      }
+    },
+    {
+      "t": 2283.4,
+      "actor": "orquestador",
+      "tipo": "pruebas",
+      "pasan": 88,
+      "fallan": 4,
+      "inestables": 0
+    },
+    {
+      "t": 2283.4,
+      "actor": "orquestador",
+      "tipo": "trazabilidad",
+      "cubiertos": "27/27"
+    },
+    {
+      "t": 2615.5,
+      "actor": "orquestador",
+      "tipo": "devuelve",
+      "a": "automator",
+      "nota": {
+        "es": "Vuelve al automator para cambiar la espera de networkidle en ContactPage",
+        "en": "Back to the automator to replace the networkidle wait in ContactPage"
+      }
+    },
+    {
+      "t": 2694.8,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 2703.9,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 2710.7,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 2720.5,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 2725.1,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 2726.6,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 2730.4,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 2735,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 2826.8,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 2832.1,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 13,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 2866.1,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 56,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 2953.8,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 92,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 3104.4,
+      "actor": "automator",
+      "tipo": "calidad"
+    },
+    {
+      "t": 3124.9,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3126.8,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3133.8,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3150.3,
+      "actor": "automator",
+      "tipo": "fin"
+    },
+    {
+      "t": 3156.5,
+      "actor": "orquestador",
+      "tipo": "pruebas",
+      "pasan": 92,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 3156.5,
+      "actor": "orquestador",
+      "tipo": "trazabilidad",
+      "cubiertos": "27/27"
+    },
+    {
+      "t": 3156.5,
+      "actor": "orquestador",
+      "tipo": "calidad"
+    },
+    {
+      "t": 3156.5,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 3334.2,
+      "actor": "reporter",
+      "tipo": "inicio"
+    },
+    {
+      "t": 3336.3,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-plan.md"
+    },
+    {
+      "t": 3336.5,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-revision.md"
+    },
+    {
+      "t": 3336.7,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3336.9,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/trazabilidad.json"
+    },
+    {
+      "t": 3337.1,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/results.json"
+    },
+    {
+      "t": 3337.3,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/results-bugs.json"
+    },
+    {
+      "t": 3337.5,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-002/04-reporte.md"
+    },
+    {
+      "t": 3337.8,
+      "actor": "reporter",
+      "tipo": "busca"
+    },
+    {
+      "t": 3346,
+      "actor": "reporter",
+      "tipo": "busca",
+      "ruta": "results/results.json"
+    },
+    {
+      "t": 3346.5,
+      "actor": "reporter",
+      "tipo": "busca",
+      "ruta": "results/results-bugs.json"
+    },
+    {
+      "t": 3351.3,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/results.json"
+    },
+    {
+      "t": 3351.7,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/results-bugs.json"
+    },
+    {
+      "t": 3398.5,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/results.json"
+    },
+    {
+      "t": 3398.8,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "bugs/BUG-011-factura-no-aparece-tras-confirmar-el-pago.md"
+    },
+    {
+      "t": 3399.1,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "bugs/BUG-012-filtro-de-precio-oculta-productos-por-defecto.md"
+    },
+    {
+      "t": 3399.4,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "bugs/BUG-003-login-acepta-correo-sin-formato-valido.md"
+    },
+    {
+      "t": 3399.6,
+      "actor": "persona",
+      "tipo": "pide",
+      "nota": {
+        "es": "La persona pide dejar el hallazgo H-1 como prueba en rojo (test.fail)",
+        "en": "The person asks to keep finding H-1 as a red test (test.fail)"
+      }
+    },
+    {
+      "t": 3399.7,
+      "actor": "reporter",
+      "tipo": "busca"
+    },
+    {
+      "t": 3399.9,
+      "actor": "reporter",
+      "tipo": "busca"
+    },
+    {
+      "t": 3411.8,
+      "actor": "orquestador",
+      "tipo": "detiene",
+      "a": "reporter",
+      "nota": {
+        "es": "Se detiene el reporter: el plan cambia antes del reporte",
+        "en": "The reporter is stopped: the plan changes before the report"
+      }
+    },
+    {
+      "t": 3427.7,
+      "actor": "orquestador",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/02-revision.md"
+    },
+    {
+      "t": 3431.5,
+      "actor": "orquestador",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/02-revision.md"
+    },
+    {
+      "t": 3437,
+      "actor": "orquestador",
+      "tipo": "devuelve",
+      "a": "planner",
+      "nota": {
+        "es": "Vuelve al planner para agregar TC-014",
+        "en": "Back to the planner to add TC-014"
+      }
+    },
+    {
+      "t": 3444.6,
+      "actor": "planner",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3445.2,
+      "actor": "planner",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-revision.md"
+    },
+    {
+      "t": 3445.5,
+      "actor": "planner",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-plan.md"
+    },
+    {
+      "t": 3445.7,
+      "actor": "planner",
+      "tipo": "busca"
+    },
+    {
+      "t": 3566.4,
+      "actor": "planner",
+      "tipo": "escribe",
+      "ruta": "artifacts/REQ-004/02-plan.md"
+    },
+    {
+      "t": 3578.6,
+      "actor": "planner",
+      "tipo": "fin"
+    },
+    {
+      "t": 3596,
+      "actor": "orquestador",
+      "tipo": "devuelve",
+      "a": "automator",
+      "nota": {
+        "es": "El automator escribe TC-014",
+        "en": "The automator writes TC-014"
+      }
+    },
+    {
+      "t": 3596,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 3599.3,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 3603.7,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-plan.md"
+    },
+    {
+      "t": 3622.8,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 3634.8,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 3645.4,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "tests/ui/contacto-formulario.spec.ts"
+    },
+    {
+      "t": 3648.3,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 1,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 3674.7,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 3680.3,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 3690.1,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 1,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 3710.8,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 3715.8,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 3724.7,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 3786.5,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 0,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 3786.5,
+      "actor": "automator",
+      "tipo": "calidad"
+    },
+    {
+      "t": 3975.6,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3983.9,
+      "actor": "automator",
+      "tipo": "lee"
+    },
+    {
+      "t": 3995,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3996.7,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3998.1,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 3999.3,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 4004.3,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 4012.1,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 4014.4,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 4032.1,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 4043.6,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 4045.1,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 4054,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 4061.2,
+      "actor": "automator",
+      "tipo": "trazabilidad"
+    },
+    {
+      "t": 4077.9,
+      "actor": "automator",
+      "tipo": "fin"
+    },
+    {
+      "t": 4086,
+      "actor": "orquestador",
+      "tipo": "pruebas",
+      "pasan": 94,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 4086,
+      "actor": "orquestador",
+      "tipo": "trazabilidad",
+      "cubiertos": "27/27"
+    },
+    {
+      "t": 4086,
+      "actor": "orquestador",
+      "tipo": "calidad"
+    },
+    {
+      "t": 4086,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 4272.9,
+      "actor": "reporter",
+      "tipo": "inicio"
+    },
+    {
+      "t": 4274.9,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-plan.md"
+    },
+    {
+      "t": 4275.2,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/02-revision.md"
+    },
+    {
+      "t": 4275.4,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 4275.6,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/trazabilidad.json"
+    },
+    {
+      "t": 4275.8,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/results.json"
+    },
+    {
+      "t": 4276,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/results-bugs.json"
+    },
+    {
+      "t": 4276.2,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-002/04-reporte.md"
+    },
+    {
+      "t": 4276.5,
+      "actor": "reporter",
+      "tipo": "busca"
+    },
+    {
+      "t": 4289.7,
+      "actor": "reporter",
+      "tipo": "busca",
+      "ruta": "results/results-bugs.json"
+    },
+    {
+      "t": 4290,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "results/results.json"
+    },
+    {
+      "t": 4326.5,
+      "actor": "reporter",
+      "tipo": "busca",
+      "ruta": "results/results-bugs.json"
+    },
+    {
+      "t": 4327.3,
+      "actor": "reporter",
+      "tipo": "busca",
+      "ruta": "results/results-bugs.json"
+    },
+    {
+      "t": 4327.7,
+      "actor": "reporter",
+      "tipo": "busca",
+      "ruta": "tests"
+    },
+    {
+      "t": 4328,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "bugs/BUG-012-filtro-de-precio-oculta-productos-por-defecto.md"
+    },
+    {
+      "t": 4328.2,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "bugs/BUG-010-total-general-un-centavo-menos.md"
+    },
+    {
+      "t": 4338.2,
+      "actor": "reporter",
+      "tipo": "busca",
+      "ruta": "results/results-bugs.json"
+    },
+    {
+      "t": 4338.4,
+      "actor": "reporter",
+      "tipo": "busca"
+    },
+    {
+      "t": 4446.5,
+      "actor": "reporter",
+      "tipo": "busca"
+    },
+    {
+      "t": 4454.3,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "bugs/BUG-013-envio-temprano-sin-nombre-ni-correo.md"
+    },
+    {
+      "t": 4457.8,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "bugs/BUG-014-primer-clic-en-enviar-se-pierde.md"
+    },
+    {
+      "t": 4462.6,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "bugs/BUG-015-api-acepta-mensaje-de-49-caracteres.md"
+    },
+    {
+      "t": 4465.9,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "bugs/BUG-016-correo-invalido-sin-error-en-version-con-bugs.md"
+    },
+    {
+      "t": 4467.5,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "bugs/BUG-017-adjunto-pdf-vacio-error-fuera-del-campo.md"
+    },
+    {
+      "t": 4471.2,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "bugs/BUG-018-adjunto-txt-con-contenido-se-acepta.md"
+    },
+    {
+      "t": 4474.6,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "bugs/BUG-019-mensaje-con-sesion-sin-nombre.md"
+    },
+    {
+      "t": 4503.9,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "artifacts/REQ-004/04-reporte.md"
+    },
+    {
+      "t": 4509.5,
+      "actor": "reporter",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/04-reporte.md"
+    },
+    {
+      "t": 4511.9,
+      "actor": "reporter",
+      "tipo": "lee",
+      "ruta": "artifacts/REQ-004/04-reporte.md"
+    },
+    {
+      "t": 4528,
+      "actor": "reporter",
+      "tipo": "escribe",
+      "ruta": "artifacts/REQ-004/04-reporte.md"
+    },
+    {
+      "t": 4536.3,
+      "actor": "reporter",
+      "tipo": "fin"
+    },
+    {
+      "t": 4556.1,
+      "actor": "orquestador",
+      "tipo": "edita",
+      "ruta": "tests/ui/contacto-formulario.spec.ts"
+    },
+    {
+      "t": 4590,
+      "actor": "orquestador",
+      "tipo": "pruebas",
+      "pasan": 106,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 4590,
+      "actor": "orquestador",
+      "tipo": "trazabilidad",
+      "cubiertos": "27/27"
+    },
+    {
+      "t": 4590,
+      "actor": "orquestador",
+      "tipo": "calidad"
+    },
+    {
+      "t": 4590,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 4994.9,
+      "actor": "orquestador",
+      "tipo": "commit"
+    },
+    {
+      "t": 5053.4,
+      "actor": "persona",
+      "tipo": "pide",
+      "nota": {
+        "es": "La persona pide validar la corrida del CI",
+        "en": "The person asks to check the CI run"
+      }
+    },
+    {
+      "t": 5059.3,
+      "actor": "orquestador",
+      "tipo": "ci"
+    },
+    {
+      "t": 5362,
+      "actor": "orquestador",
+      "tipo": "ci"
+    },
+    {
+      "t": 5386.8,
+      "actor": "orquestador",
+      "tipo": "devuelve",
+      "a": "automator",
+      "nota": {
+        "es": "El CI pasó con un reintento: TC-009 inestable vuelve al automator",
+        "en": "CI passed after a retry: flaky TC-009 goes back to the automator"
+      }
+    },
+    {
+      "t": 5401,
+      "actor": "automator",
+      "tipo": "lee",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 5409.5,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "src/pages/ContactPage.ts"
+    },
+    {
+      "t": 5410.8,
+      "actor": "automator",
+      "tipo": "calidad"
+    },
+    {
+      "t": 5432.1,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 0,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 5629.2,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 5635,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 5636.3,
+      "actor": "automator",
+      "tipo": "lee"
+    },
+    {
+      "t": 5719.4,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 5726.4,
+      "actor": "automator",
+      "tipo": "pruebas",
+      "pasan": 0,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 5726.4,
+      "actor": "automator",
+      "tipo": "calidad"
+    },
+    {
+      "t": 5732.7,
+      "actor": "automator",
+      "tipo": "calidad"
+    },
+    {
+      "t": 5913,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 5918.6,
+      "actor": "automator",
+      "tipo": "edita",
+      "ruta": "artifacts/REQ-004/03-ejecucion.md"
+    },
+    {
+      "t": 5919.6,
+      "actor": "automator",
+      "tipo": "comando"
+    },
+    {
+      "t": 5936.5,
+      "actor": "automator",
+      "tipo": "fin"
+    },
+    {
+      "t": 5946,
+      "actor": "orquestador",
+      "tipo": "pruebas",
+      "pasan": 81,
+      "fallan": 0,
+      "inestables": 0
+    },
+    {
+      "t": 5946,
+      "actor": "orquestador",
+      "tipo": "calidad"
+    },
+    {
+      "t": 5946,
+      "actor": "orquestador",
+      "tipo": "puerta",
+      "resultado": "pasa"
+    },
+    {
+      "t": 6116.9,
+      "actor": "orquestador",
+      "tipo": "commit"
+    }
+  ]
+}

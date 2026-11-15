@@ -1,4 +1,7 @@
-export type Actor = 'orquestador' | 'persona' | 'extractor' | 'planner' | 'automator' | 'reporter';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+export type Actor ='orquestador' | 'persona' | 'extractor' | 'planner' | 'automator' | 'reporter';
 export type Tipo =
   | 'inicio' | 'fin' | 'lee' | 'busca' | 'escribe' | 'edita' | 'snapshot' | 'api' | 'comando'
   | 'pruebas' | 'calidad' | 'trazabilidad' | 'puerta' | 'pausa' | 'decision' | 'pide' | 'devuelve'
@@ -102,7 +105,14 @@ export function extraer(reg: Registro, req: string): Repeticion {
   if (iSkill < 0) throw new Error(`No hay una llamada a qa-flow con ${req} en la sesión`);
   const raiz = principal[iSkill].cwd ?? '';
   const desde = ms(principal[iSkill]);
-  const lineas = principal.slice(iSkill);
+  const usadas = new Set<string>();
+  const lineas = principal.slice(iSkill).filter((l) => {
+    if (Number.isNaN(ms(l))) return false;
+    const ids = bloques(l).filter((b) => b.type === 'tool_use').map((b) => b.id ?? '');
+    if (ids.length && ids.every((id) => usadas.has(id))) return false;
+    ids.forEach((id) => usadas.add(id));
+    return true;
+  });
 
   const resultados = new Map<string, { texto: string; ms: number }>();
   for (const l of lineas) for (const b of bloques(l)) if (b.type === 'tool_result' && b.tool_use_id) resultados.set(b.tool_use_id, { texto: contenido(b.content), ms: ms(l) });
@@ -217,15 +227,102 @@ export function extraer(reg: Registro, req: string): Repeticion {
   return { req, fecha: inicio.slice(0, 10), inicio, fin: new Date(hasta).toISOString(), actores, eventos };
 }
 
+export interface Nota { hora: string; tipo: Tipo; es: string; en: string }
+
+export function aplicarNotas(r: Repeticion, notas: Nota[]): Repeticion {
+  const cero = Date.parse(r.inicio);
+  const eventos = r.eventos.map((e) => ({ ...e }));
+  for (const n of notas) {
+    const objetivo = Date.parse(`${r.fecha}T${n.hora}.000Z`);
+    const cerca = eventos
+      .filter((e) => e.tipo === n.tipo && Math.abs(cero + e.t * 1000 - objetivo) <= 60_000)
+      .sort((a, b) => Math.abs(cero + a.t * 1000 - objetivo) - Math.abs(cero + b.t * 1000 - objetivo))[0];
+    if (!cerca) throw new Error(`La nota de las ${n.hora} (${n.tipo}) no cae sobre ningún evento`);
+    cerca.nota = { es: n.es, en: n.en };
+  }
+  return { ...r, eventos };
+}
+
+// Red de seguridad sobre la lista blanca: si algo de esto aparece, no se escribe nada.
+const PRIVADO: [string, RegExp][] = [
+  ['ruta de Windows', /[A-Za-z]:(\\\\|\/)/],
+  ['ruta de Git Bash', /\/[a-z]\/Users\//i],
+  ['AppData', /AppData/i],
+  ['correo', /[\w.+-]+@[\w-]+\.[a-z]{2,}/i],
+  ['id de herramienta', /toolu_/],
+  ['id de agente', /\ba[0-9a-f]{16}\b/],
+];
+
+export function revisarPrivacidad(json: string): void {
+  for (const [nombre, patron] of PRIVADO) {
+    const m = json.match(patron);
+    if (m) throw new Error(`La repetición contiene un dato privado (${nombre}): ${m[0]}`);
+  }
+}
+
+const leerJsonl = (ruta: string): object[] =>
+  readFileSync(ruta, 'utf8')
+    .split('\n')
+    .filter((l) => l.trim())
+    .flatMap((l) => {
+      try {
+        return [JSON.parse(l)];
+      } catch {
+        return [];
+      }
+    });
+
+export function leerRegistro(sesionJsonl: string): Registro {
+  const dir = join(sesionJsonl.replace(/\.jsonl$/, ''), 'subagents');
+  const subagentes = existsSync(dir)
+    ? readdirSync(dir)
+        .filter((f) => f.endsWith('.meta.json'))
+        .map((f) => ({
+          meta: JSON.parse(readFileSync(join(dir, f), 'utf8')),
+          lineas: existsSync(join(dir, f.replace('.meta.json', '.jsonl'))) ? leerJsonl(join(dir, f.replace('.meta.json', '.jsonl'))) : [],
+        }))
+    : [];
+  return { principal: leerJsonl(sesionJsonl), subagentes };
+}
+
+function main() {
+  const [sesion, req] = process.argv.slice(2);
+  if (!sesion || !/^REQ-\d+$/.test(req ?? '')) {
+    console.error('Uso: npm run repeticion -- <sesion.jsonl> REQ-00X');
+    process.exit(1);
+  }
+  const base = join(process.cwd(), 'site', 'repeticiones');
+  const archivoNotas = join(base, `${req}.notas.json`);
+  let r = extraer(leerRegistro(sesion), req);
+  if (existsSync(archivoNotas)) r = aplicarNotas(r, JSON.parse(readFileSync(archivoNotas, 'utf8')));
+  const json = JSON.stringify(r, null, 2) + '\n';
+  try {
+    revisarPrivacidad(json);
+  } catch (e) {
+    console.error((e as Error).message);
+    process.exit(1);
+  }
+  mkdirSync(base, { recursive: true });
+  writeFileSync(join(base, `${req}.json`), json);
+  const min = Math.round((Date.parse(r.fin) - Date.parse(r.inicio)) / 60_000);
+  console.log(`Repetición: site/repeticiones/${req}.json (${r.eventos.length} eventos, ${min} min)`);
+}
+
+if (require.main === module) main();
+
 function agregarSubagente(lineas: Linea[], actor: Actor, raiz: string, crudos: Crudo[], modelos: Map<Actor, string>) {
   const resultados = new Map<string, string>();
   for (const l of lineas) for (const b of bloques(l)) if (b.type === 'tool_result' && b.tool_use_id) resultados.set(b.tool_use_id, contenido(b.content));
   const primera = lineas.find((l) => l.timestamp);
   if (primera) crudos.push({ ms: ms(primera), actor, tipo: 'inicio' });
+  // El registro guarda copias sin hora de cada llamada (api-request-blob): cuentan una vez.
+  const vistas = new Set<string>();
   for (const l of lineas) {
+    if (Number.isNaN(ms(l))) continue;
     if (l.message?.model && !modelos.has(actor)) modelos.set(actor, l.message.model);
     for (const b of bloques(l)) {
-      if (b.type !== 'tool_use' || !b.name) continue;
+      if (b.type !== 'tool_use' || !b.name || vistas.has(b.id ?? '')) continue;
+      vistas.add(b.id ?? '');
       const t = ms(l);
       const inp = b.input ?? {};
       if (RUTA_DE[b.name]) {
