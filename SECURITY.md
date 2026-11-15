@@ -36,5 +36,7 @@ pruebas y no un problema de este repositorio.
 - **Los agentes tratan lo que leen como datos.** El extractor lee una web ajena; sus reglas y las
   de los demás agentes prohíben seguir instrucciones que aparezcan en ese contenido, y hay una
   revisión humana antes de automatizar.
+- **Permisos de Claude Code acotados** en `.claude/settings.json`: se prohíben `rm -rf`, el
+  `git push --force` y leer `.env`, y cualquier `git push` pide confirmación.
 - **Las credenciales de la cuenta de demostración** que aparecen en los artefactos son las que
   publica la propia demo en su documentación. Las pruebas no las usan.
