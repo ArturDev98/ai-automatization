@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Imagen para compartir del panel</title>
+<!-- Plantilla de site/og.png: la captura scripts/og.ts a 2x. Mismo mapa de metro y tema oscuro del panel. -->
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;700;800;900&family=Overpass+Mono:wght@500;700&display=block" rel="stylesheet">
+<style>
+  :root { --papel: #0f1418; --superficie: #182026; --tinta: #eff2ee; --tinta-2: #aab3b8; --raya: #2b353c; --l1: #ff5a75; --l2: #5aa5ff; --l3: #3fd184; --l4: #c29bff; }
+  html, body, p { margin: 0; }
+  .og { position: relative; width: 1200px; height: 627px; overflow: hidden; background: var(--papel); color: var(--tinta); font-family: 'Overpass', sans-serif; }
+  .marca { position: absolute; left: 56px; top: 44px; display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; }
+  .marca::before { content: ''; width: 14px; height: 14px; border-radius: 50%; border: 5px solid var(--tinta); }
+  .url { position: absolute; right: 56px; top: 48px; font-family: 'Overpass Mono', monospace; font-size: 18px; color: var(--tinta-2); }
+  h1 { position: absolute; left: 56px; top: 104px; width: 1090px; margin: 0; font-size: 52px; font-weight: 900; line-height: 1.04; letter-spacing: -0.01em; }
+  .mapa { position: absolute; left: 40px; top: 250px; width: 1120px; height: 300px; border: 2px solid rgba(239, 242, 238, 0.85); border-radius: 22px; background: var(--superficie); }
+  .pie { position: absolute; left: 56px; bottom: 30px; font-size: 21px; color: var(--tinta-2); }
+  .pie b { color: var(--tinta); font-weight: 800; }
+  svg text { font-family: 'Overpass', sans-serif; }
+</style>
+</head>
+<body>
+<div class="og">
+  <p class="marca">Arturo Isaza</p>
+  <p class="url">arturdev98.github.io/ai-automatization</p>
+  <h1>De un requisito a pruebas automatizadas, estación por estación.</h1>
+  <svg class="mapa" viewBox="0 0 1120 300" aria-hidden="true"></svg>
+  <p class="pie"><b>Cuatro agentes de IA y una revisión humana</b>&nbsp; · &nbsp;Playwright&nbsp; · &nbsp;Claude Code</p>
+</div>
+<script>
+  // Mapa simplificado del panel: cuatro requisitos que se juntan en la revisión humana y siguen.
+  const svg = document.querySelector('.mapa');
+  const ns = 'http://www.w3.org/2000/svg';
+  const nodo = (tag, attrs, texto) => {
+    const el = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    if (texto) el.textContent = texto;
+    return svg.appendChild(el);
+  };
+  const ESTACIONES = [
+    [250, 'Extractor', 'Lee con Haiku'], [420, 'Planner', 'Diseña con Fable'], [590, 'Revisión humana', 'Aprueba una persona'],
+    [760, 'Automator', 'Automatiza con Opus'], [930, 'Reporter', 'Reporta con Haiku'],
+  ];
+  for (const [x, nombre, modelo] of ESTACIONES) {
+    nodo('text', { x, y: 42, 'text-anchor': 'middle', fill: '#eff2ee', 'font-size': 19, 'font-weight': 800 }, nombre);
+    nodo('text', { x, y: 64, 'text-anchor': 'middle', fill: '#aab3b8', 'font-size': 14 }, modelo);
+  }
+  const LINEAS = ['--l1', '--l2', '--l3', '--l4'].map((v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim());
+  const check = (x, y) => {
+    nodo('circle', { cx: x, cy: y, r: 12, fill: '#0f1418', stroke: '#eff2ee', 'stroke-width': 3 });
+    nodo('path', { d: `M${x - 5} ${y + 0.5}l3.5 3.5 6.5-7`, fill: 'none', stroke: '#eff2ee', 'stroke-width': 2.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+  };
+  LINEAS.forEach((color, i) => {
+    const y = 110 + i * 50, yc = 158 + i * 24;
+    nodo('path', { d: `M128 ${y}H470C520 ${y} 520 ${yc} 560 ${yc}H620C660 ${yc} 660 ${y} 710 ${y}H1084`, fill: 'none', stroke: color, 'stroke-width': 11, 'stroke-linejoin': 'round' });
+    nodo('path', { d: `M1080 ${y - 9}l14 9-14 9z`, fill: color });
+    nodo('rect', { x: 26, y: y - 15, width: 104, height: 30, rx: 6, fill: color });
+    nodo('text', { x: 78, y: y + 6, 'text-anchor': 'middle', fill: '#0f1418', 'font-size': 15, 'font-weight': 800, 'font-family': 'Overpass Mono' }, `REQ-00${i + 1}`);
+    for (const x of [250, 420, 760, 930]) check(x, y);
+  });
+  nodo('rect', { x: 570, y: 138, width: 40, height: 112, rx: 20, fill: '#0f1418', stroke: '#eff2ee', 'stroke-width': 3 });
+  for (let i = 0; i < 4; i++) check(590, 158 + i * 24);
+</script>
+</body>
+</html>

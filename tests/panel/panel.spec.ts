@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { comprimir, duracionSegundos } from '../../scripts/panel-repeticion';
@@ -38,6 +38,23 @@ test.describe('Panel generado', () => {
       return img.naturalWidth;
     }, href!);
     expect(ancho).toBeGreaterThan(0);
+  });
+
+  // Sin og:image, LinkedIn muestra un recuadro vacío en la sección Proyectos del perfil.
+  test('la imagen para compartir es absoluta y se publica con sus medidas', async ({ page }) => {
+    await page.goto(PANEL);
+    const url = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(url).toMatch(/^https:\/\/arturdev98\.github\.io\/ai-automatization\/og\.png\?v=\d+$/);
+    const archivo = resolve('site/dist', new URL(url!).pathname.split('/').pop()!);
+    expect(existsSync(archivo)).toBe(true);
+    const medidas = await page.evaluate(async (ruta) => {
+      const img = new Image();
+      img.src = ruta;
+      await img.decode();
+      return [img.naturalWidth, img.naturalHeight];
+    }, pathToFileURL(archivo).href);
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', String(medidas[0]));
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', String(medidas[1]));
   });
 
   test('elegir una estación muestra su parada', async ({ page }) => {
