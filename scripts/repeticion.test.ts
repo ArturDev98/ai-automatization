@@ -266,3 +266,49 @@ test('nombreModelo', () => {
   assert.equal(nombreModelo('claude-fable-5-2'), 'Claude Fable 5.2');
   assert.equal(nombreModelo('claude-haiku-5-5'), 'Claude Haiku 5.5');
 });
+
+test('un agente de REQ-0091 no se cuela al extraer REQ-009', () => {
+  const r = registro();
+  r.principal[1] = uso('10:00:10', 'Agent', { subagent_type: 'extractor', description: 'Extracción de REQ-0091' }, 'tu-ext');
+  assert.deepEqual(tipos(extraer(r, 'REQ-009'), 'extractor'), []);
+});
+
+test('dos regresos en el mismo mensaje dan un fin a cada agente', () => {
+  const r = registro();
+  r.principal.splice(
+    3,
+    1,
+    uso('10:00:40', 'Agent', { subagent_type: 'planner', description: 'Plan de REQ-009' }, 'tu-pla'),
+    salida('10:00:41', 'tu-pla', 'agentId: ccc333 (internal ID)'),
+    dice(
+      '10:02:00',
+      'Another Claude session sent a message:\n<agent-message from="aaa111">\n[Subagent hand-back] uno\n</agent-message>\n' +
+        'Another Claude session sent a message:\n<agent-message from="ccc333">\n[Subagent hand-back] dos\n</agent-message>',
+    ),
+  );
+  r.subagentes.push({
+    meta: { agentType: 'planner', toolUseId: 'tu-pla' },
+    lineas: [dice('10:00:41', 'Etapa 2'), uso('10:01:30', 'Write', { file_path: `${RAIZ}\\artifacts\\REQ-009\\02-plan.md` }, 'p1', 'claude-fable-5-2')],
+  });
+  const ev = extraer(r, 'REQ-009');
+  assert.equal(tipos(ev, 'extractor').at(-1), 'fin');
+  assert.equal(tipos(ev, 'planner').at(-1), 'fin');
+});
+
+test('un modelo que no es de Claude no se publica y se toma el siguiente', () => {
+  assert.equal(nombreModelo('<synthetic>'), null);
+  const r = registro();
+  r.subagentes[0].lineas.splice(1, 0, uso('10:00:15', 'Glob', { pattern: 'x' }, 'e0', '<synthetic>'));
+  assert.equal(extraer(r, 'REQ-009').actores.find((a) => a.clave === 'extractor')?.modelo, 'Claude Haiku 5.5');
+});
+
+test('dos notas sobre el mismo evento hacen fallar', () => {
+  assert.throws(
+    () =>
+      aplicarNotas(conDevolucion(), [
+        { hora: '15:59:30', tipo: 'devuelve', es: 'a', en: 'a' },
+        { hora: '15:59:55', tipo: 'devuelve', es: 'b', en: 'b' },
+      ]),
+    /mismo evento/,
+  );
+});

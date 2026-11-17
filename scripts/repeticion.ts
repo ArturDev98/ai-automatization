@@ -51,10 +51,24 @@ const rutaDe = (url: RegExpMatchArray | null) => (url && (!url[2] || /[\s"'?#]/.
 // Mensajes del sistema que llegan como texto del usuario y no los escribió la persona.
 const NO_PERSONA = /^\s*(Base directory|<task-notification|Another Claude session|<system-reminder|<local-command|<command-|<bash-|Caveat:|This session is being continued|\[Request interrupted)/;
 
-export function nombreModelo(id: string): string {
+// Ids que no son de un modelo (como <synthetic>) dan null: no se publican.
+export function nombreModelo(id: string): string | null {
   const m = id.match(/^claude-([a-z]+)-(\d+)-(\d+)/);
-  return m ? `Claude ${m[1][0].toUpperCase()}${m[1].slice(1)} ${m[2]}.${m[3]}` : id;
+  return m ? `Claude ${m[1][0].toUpperCase()}${m[1].slice(1)} ${m[2]}.${m[3]}` : null;
 }
+
+function anotarModelo(modelos: Map<Actor, string>, actor: Actor, id: string | undefined) {
+  const nombre = id ? nombreModelo(id) : null;
+  if (nombre && !modelos.has(actor)) modelos.set(actor, nombre);
+}
+
+// El requisito como palabra entera: REQ-0091 no cuenta como REQ-009.
+const nombraReq = (texto: unknown, req: string) =>
+  [...String(texto ?? '').matchAll(/(?<![\w-])REQ-\d+/g)].some((m) => m[0] === req);
+
+// Un mensaje puede traer varios regresos; cada agent-message cuenta por separado.
+const regresos = (txt: string) =>
+  [...txt.matchAll(/<agent-message from="(\w+)">([\s\S]*?)(?=<agent-message from=|$)/g)].filter((m) => m[2].includes('[Subagent hand-back]')).map((m) => m[1]);
 
 const ms = (l: Linea) => Date.parse(l.timestamp ?? '');
 const bloques = (l: Linea): Bloque[] => (Array.isArray(l.message?.content) ? l.message!.content : []);
@@ -129,7 +143,7 @@ export function extraer(reg: Registro, req: string): Repeticion {
   const modelos = new Map<Actor, string>();
   for (const l of lineas)
     for (const b of bloques(l)) {
-      if (b.type !== 'tool_use' || b.name !== 'Agent' || !String(b.input?.description ?? '').includes(req)) continue;
+      if (b.type !== 'tool_use' || b.name !== 'Agent' || !nombraReq(b.input?.description, req)) continue;
       const sub = reg.subagentes.find((s) => s.meta.toolUseId === b.id);
       const actor = sub?.meta.agentType as Actor;
       if (!sub || !AGENTES.includes(actor)) continue;
@@ -148,17 +162,18 @@ export function extraer(reg: Registro, req: string): Repeticion {
     const t = ms(l);
     const txt = textoDe(l);
     if (txt !== null) {
-      const de = txt.match(/<agent-message from="(\w+)">[\s\S]*\[Subagent hand-back\]/)?.[1];
-      if (de && actorDeId.has(de)) {
-        fines.push({ ms: t, actor: actorDeId.get(de)! });
-        crudos.push({ ms: t, actor: actorDeId.get(de)!, tipo: 'fin' });
-      } else if (!l.isMeta && !NO_PERSONA.test(txt)) personas.push(t);
+      const de = regresos(txt).filter((id) => actorDeId.has(id));
+      for (const id of de) {
+        fines.push({ ms: t, actor: actorDeId.get(id)! });
+        crudos.push({ ms: t, actor: actorDeId.get(id)!, tipo: 'fin' });
+      }
+      if (!de.length && !l.isMeta && !NO_PERSONA.test(txt)) personas.push(t);
       continue;
     }
     for (const b of bloques(l)) {
       if (b.type !== 'tool_use') continue;
       const inp = b.input ?? {};
-      if (l.message?.model && !modelos.has('orquestador')) modelos.set('orquestador', l.message.model);
+      anotarModelo(modelos, 'orquestador', l.message?.model);
       if (b.name === 'Bash' || b.name === 'PowerShell') {
         const cmd = String(inp.command ?? '');
         if (/git commit/.test(cmd)) {
@@ -186,7 +201,7 @@ export function extraer(reg: Registro, req: string): Repeticion {
         crudos.push({ ms: t, actor: 'orquestador', tipo: b.name === 'SendMessage' ? 'devuelve' : 'detiene', a });
         dirigidas.push({ ms: t, tipo: b.name, a });
         anclas.push(t);
-      } else if (b.name === 'Agent' && String(inp.description ?? '').includes(req)) {
+      } else if (b.name === 'Agent' && nombraReq(inp.description, req)) {
         dirigidas.push({ ms: t, tipo: 'Agent' });
         anclas.push(t);
       }
@@ -240,7 +255,7 @@ export function extraer(reg: Registro, req: string): Repeticion {
   const vistos = [...new Set(orden.map((c) => c.actor))];
   const actores = (['orquestador', ...AGENTES, 'persona'] as Actor[])
     .filter((a) => a === 'orquestador' || vistos.includes(a))
-    .map((clave) => ({ clave, modelo: modelos.has(clave) ? nombreModelo(modelos.get(clave)!) : null }));
+    .map((clave) => ({ clave, modelo: modelos.get(clave) ?? null }));
 
   const inicio = new Date(cero).toISOString();
   return { req, fecha: inicio.slice(0, 10), inicio, fin: new Date(hasta).toISOString(), actores, eventos };
@@ -253,12 +268,20 @@ export function aplicarNotas(r: Repeticion, notas: Nota[]): Repeticion {
   const cero = Date.parse(r.inicio);
   let eventos = r.eventos.map((e) => ({ ...e }));
   const hhmmss = (e: Evento) => new Date(cero + e.t * 1000).toISOString().slice(11, 19);
-  for (const n of notas) {
+  // Cada nota se ubica antes de aplicar ninguna: así dos sobre el mismo evento no se pisan sin aviso.
+  const objetivos = notas.map((n) => {
     const objetivo = Date.parse(`${r.fecha}T${n.hora}.000Z`);
     const cerca = eventos
       .filter((e) => e.tipo === n.tipo && Math.abs(cero + e.t * 1000 - objetivo) <= 60_000)
       .sort((a, b) => Math.abs(cero + a.t * 1000 - objetivo) - Math.abs(cero + b.t * 1000 - objetivo))[0];
     if (!cerca) throw new Error(`La nota de las ${n.hora} (${n.tipo}) no cae sobre ningún evento`);
+    return { n, cerca };
+  });
+  objetivos.forEach(({ n, cerca }, i) => {
+    const otra = objetivos.findIndex((o) => o.cerca === cerca);
+    if (otra !== i) throw new Error(`Las notas de las ${objetivos[otra].n.hora} y las ${n.hora} caen sobre el mismo evento (${n.tipo} de las ${hhmmss(cerca)})`);
+  });
+  for (const { n, cerca } of objetivos) {
     if (n.descartar && n.tipo === 'pide') {
       eventos = eventos.filter((e) => e !== cerca);
       for (const p of eventos.filter((e) => e.porPide === cerca.t)) {
@@ -355,7 +378,7 @@ function agregarSubagente(lineas: Linea[], actor: Actor, raiz: string, crudos: C
   const vistas = new Set<string>();
   for (const l of lineas) {
     if (Number.isNaN(ms(l))) continue;
-    if (l.message?.model && !modelos.has(actor)) modelos.set(actor, l.message.model);
+    anotarModelo(modelos, actor, l.message?.model);
     for (const b of bloques(l)) {
       if (b.type !== 'tool_use' || !b.name || vistas.has(b.id ?? '')) continue;
       vistas.add(b.id ?? '');
